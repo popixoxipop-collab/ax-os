@@ -155,6 +155,41 @@ n=200 results vs multilingual baseline:
 
 Shipping C-prime as new default (`nl2ir_head_xling_hn.pt`). B-prime parked until a redesign that snapshots the original LaBSE for stage-1 is worth the wall-time.
 
+### Step 12 — K_HN sweep, OOT analysis, cross-encoder family (commit `b6726b0`)
+
+Three follow-up tracks to see if anything beats C-prime:
+
+**T1 — K_HN sweep**: train heads with K_HN ∈ {4 (C-prime), 8, 16}. K_HN=4 wins on en+ko, K_HN=16 only ties ja by 0.5pp. Raising K contaminates the InfoNCE denominator with genuine semantic neighbours.
+
+**T2 — failure pattern dump**: of 24/54/44 misses (en/ko/ja), exactly **~65% are SHALLOW** (answer in top5, ranked > 1) and **~35% are EXPECTED_OOT** (not in top5). The reranker hypothesis applies to the SHALLOW slice; OOT is unrecoverable by reranking.
+
+**T2-followup — OOT drill (`oot_analysis_report.json`)**:
+- en (9 OOT): median cluster size 16 — underspecified queries (e.g. "linear combination calculator" → which `lincomb_add_N_M`?).
+- ko (19 OOT): median cluster size **1** — singleton expected algos. NLLB lost the literal in 10/19: "16개의 inkrement으로 더하기", "발생을 셀 C".
+- ja (15 OOT): same singleton pattern. "順位を優化する 4" for "optimize shift subtract 4".
+
+Realistic reranker ceiling (top5 of multilingual head as hard upper bound): en ≤ 0.965, ko ≤ 0.905, ja ≤ 0.925.
+
+**T3 — Cross-encoder family head-to-head** (n=200 top1):
+
+| approach | en | ko | ja | mean |
+|----------|-----:|-----:|-----:|-----:|
+| Frozen + random neg | 0.500 | 0.385 | 0.395 | 0.427 |
+| Frozen + HN (B-prime initial) | 0.555 | 0.445 | 0.415 | 0.472 |
+| Partial-FT (top 3 layers) | 0.560 | 0.495 | 0.405 | 0.487 |
+| Full-FT 2k anchors / 1 ep (B-prime fixed) | 0.550 | 0.500 | 0.475 | 0.508 |
+| Full-FT 4k anchors / 2 ep (B-prime FULL) | 0.680 | 0.605 | 0.590 | 0.625 |
+| **C-prime (bi-encoder + HN)** | **0.880** | **0.730** | **0.780** | **0.797** |
+
+Capacity helps inside the cross-encoder family (full > partial > frozen) but even the strongest cross-encoder loses to C-prime by 12-20pp. Doubling again to 8k anchors / 4 ep would still land below C-prime on the observed slope and adds ~5× inference latency.
+
+**Why C-prime keeps winning**: the registry is a **1536-D hybrid** (LaBSE_paraphrase-mean ⊕ IR-encoder(opcodes)). C-prime exploits both halves; the cross-encoder forwards `(q [SEP] c)` text-only and discards the IR channel entirely. The [[nl2x-lib]] insight again: the IR channel is real signal, and approaches that don't use it pay for the omission.
+
+**Verdict**: ship C-prime, park the cross-encoder reranker. Realistic next-step leverage is now in 3 areas, not in reranker improvements:
+1. Hybrid-aware reranker that ingests *both* text channels AND the IR-encoder vector for each candidate (not vanilla cross-encoder).
+2. Higher-quality ko/ja MT (NLLB → Gemini paid-tier) for the singleton OOT bucket.
+3. Cluster-distinctive descriptions for singleton algos so the bi-encoder has a sharper target.
+
 ### Track 3 — nl2x_lib generality dogfood
 
 Swapped encoder_B from the custom-trained IR Transformer to off-the-shelf [[sentence-transformers]] all-mpnet-base-v2 on the CID-opcode string. Same 1243 algos, same 200 held-out paraphrases (seed=123):
