@@ -115,6 +115,18 @@ Same 30-query held-out for ko/ja (from `eval_multilingual_cache.json`):
 
 Korean closes about ⅓ of the en→ko gap (16.7pp → 10.0pp). Japanese unchanged — within n=30 noise. English preserved, no negative transfer from adding ko/ja pairs.
 
+#### Re-test at n=200 (commit `5c5e329`)
+
+Same 200 en held-out (seed=123) translated to ko/ja via NLLB-200, evaluated with Wilson 95% CIs:
+
+| lang | en-only head | multilingual head | Δ top1 |
+|------|--------------|-------------------|--------|
+| en | 0.850 [.79, .89] | 0.870 [.82, .91] | +2.0pp |
+| ko | 0.605 [.54, .67] | 0.685 [.62, .75] | **+8.0pp** |
+| ja | 0.655 [.59, .72] | 0.765 [.70, .82] | **+11.0pp ★** |
+
+★ = statistically significant at 95% (|Δ| > combined CI half-width). The n=30 "ja unchanged" was sampling noise: with 7× more queries, ja becomes the *largest* improvement (+11pp). All three trends are in the expected direction; ja is the only one whose CI cleanly excludes zero. Lesson: n=30 was underpowered for detecting any improvement smaller than ~7pp on this distribution.
+
 ### Track 3 — nl2x_lib generality dogfood
 
 Swapped encoder_B from the custom-trained IR Transformer to off-the-shelf [[sentence-transformers]] all-mpnet-base-v2 on the CID-opcode string. Same 1243 algos, same 200 held-out paraphrases (seed=123):
