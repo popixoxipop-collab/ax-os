@@ -127,6 +127,34 @@ Same 200 en held-out (seed=123) translated to ko/ja via NLLB-200, evaluated with
 
 ★ = statistically significant at 95% (|Δ| > combined CI half-width). The n=30 "ja unchanged" was sampling noise: with 7× more queries, ja becomes the *largest* improvement (+11pp). All three trends are in the expected direction; ja is the only one whose CI cleanly excludes zero. Lesson: n=30 was underpowered for detecting any improvement smaller than ~7pp on this distribution.
 
+### Step 11 — attention probes + hard negatives (commit `cd8fc86`)
+
+Question: residual 9-20pp top1 gap (top5 has the answer but top1 doesn't, especially in ko/ja) — is this the moment for attention (Q-K-V)?
+
+Phase 1 probed two frozen-backbone attention paths:
+
+- **A (ColBERT MaxSim, frozen LaBSE-XM tokens)**: en 0.615 / ko 0.485 / ja 0.470, **−25 to −30pp** vs baseline. 307 ms/query.
+- **B (cross-encoder, frozen LaBSE + linear head over [CLS], random negatives)**: en 0.500 / ko 0.385 / ja 0.395, **−37 to −37pp**. Loss collapsed during training because random negatives are trivially separable from positives.
+
+Conclusion: attention is *already* inside LaBSE; what's missing is task-specific fine-tune + hard negatives, not "more attention."
+
+Phase 2 mined the top-8 wrong candidates per training pair from the multilingual bi-encoder (`hard_negs.npz`, 25887 pairs × 8 negs) — e.g. `abs` paraphrase → `{abs_safe, abs_int, abs_sub, abs_long}`. Then ran two paths in parallel:
+
+- **C-prime**: same residual MLP head, retrained with K_HN=4 hard negs added to the InfoNCE denominator.
+- **B-prime**: unfreeze LaBSE-XM backbone, pointwise CE on (positive vs 4 hard negs), 2000 anchors, 1 epoch.
+
+n=200 results vs multilingual baseline:
+
+| lang | baseline | **C-prime** | B-prime |
+|------|----------|-------------|---------|
+| en | 0.870 | **0.880 (+1.0)** | 0.555 (−31.5) |
+| ko | 0.685 | **0.730 (+4.5)** | 0.445 (−24.0) |
+| ja | 0.765 | **0.780 (+1.5)** | 0.415 (−35.0) |
+
+**C-prime wins decisively** with the smallest change (loss-only). **B-prime fails** because the fine-tuned backbone shifts the LaBSE embedding manifold, but the frozen NL2IR head and the pre-built registry were trained on the *original* distribution — re-encoding the registry with the FT'd backbone re-introduces the very channel-mismatch bug [[nl2x-lib]] was built to fix.
+
+Shipping C-prime as new default (`nl2ir_head_xling_hn.pt`). B-prime parked until a redesign that snapshots the original LaBSE for stage-1 is worth the wall-time.
+
 ### Track 3 — nl2x_lib generality dogfood
 
 Swapped encoder_B from the custom-trained IR Transformer to off-the-shelf [[sentence-transformers]] all-mpnet-base-v2 on the CID-opcode string. Same 1243 algos, same 200 held-out paraphrases (seed=123):
