@@ -99,8 +99,36 @@ The training pipeline only ever saw English paraphrases (gemini-2.5-flash output
 - `cid_dataset/nl_embeddings.npz` — 1536-D LB+IR hybrid registry
 - `bench_routing.py`, `ablation_channels.py`, `ablation_with_nl2ir.py` — reproducible eval
 
+## Step 10 follow-ups (commit `cdc9129`, 2026-05-28)
+
+### Track 2 — Multilingual head (partial close of ko/ja gap)
+
+Trained a multilingual NL2IR head on en+ko+ja paraphrases (25887 tuples vs en-only 11187). Translation was done locally via [[nllb-200]] (`facebook/nllb-200-distilled-600M` on MPS, ~6 min for 14736 phrases) after Gemini free-tier rate limits killed the API path.
+
+Same 30-query held-out for ko/ja (from `eval_multilingual_cache.json`):
+
+| lang | en-only head | multilingual head | Δ top1 |
+|------|--------------|-------------------|--------|
+| en | 0.767 | 0.767 | +0.000 |
+| ko | 0.600 | **0.667** | **+0.067** |
+| ja | 0.633 | 0.633 | +0.000 |
+
+Korean closes about ⅓ of the en→ko gap (16.7pp → 10.0pp). Japanese unchanged — within n=30 noise. English preserved, no negative transfer from adding ko/ja pairs.
+
+### Track 3 — nl2x_lib generality dogfood
+
+Swapped encoder_B from the custom-trained IR Transformer to off-the-shelf [[sentence-transformers]] all-mpnet-base-v2 on the CID-opcode string. Same 1243 algos, same 200 held-out paraphrases (seed=123):
+
+| condition | top1 | top3 | top5 |
+|---|---|---|---|
+| (1) A-only (LaBSE 768D) | 0.620 | 0.770 | 0.845 |
+| (2) Naive fallback (LaBSE in B slot) | 0.620 | 0.775 | 0.835 |
+| (3) **nl2x_lib fix (head in B slot)** | **0.690** | **0.865** | **0.900** |
+
+The naive-fallback bug is *mild* here (+0.000 vs A-only) because both encoders are sentence-transformer family — closer manifolds than the original LaBSE-vs-custom-IR-Transformer case. Even so, [[nl2x-lib]] head lifts top1 +7.0pp, top3 +9.5pp, top5 +5.5pp. The library generalizes as a *second-channel activator*, not just a "fix this specific bug" patch.
+
 ## Related
 
 - [[os-for-agent]] — host project
 - [[f-core]] — consumer NeuralOS
-- [[labse-embedding-similarity]], [[infonce-contrastive]], [[nl2ir-projection-head]], [[negative-result]]
+- [[labse-embedding-similarity]], [[infonce-contrastive]], [[nl2ir-projection-head]], [[negative-result]], [[nl2x-lib]], [[nllb-200]]
