@@ -48,3 +48,9 @@
 - 기존 페이지 업데이트: `f-core` (세션 목록), `v-trans` (P97 적용)
 - index.md: +7 entries (concepts 4 + sources 2 + entity 1)
 - 의미: F-CORE 첫 본격 ingest. P91 onion peel PASS, P95 Oracle, P111 SU(2) r=-0.77.
+
+## [2026-05-28 13:30] ingest | os-for-agent project + Step 1-8 pipeline
+- New entity: os-for-agent
+- New source: os-for-agent-step1-8
+- New concept: nl2ir-projection-head
+- index updated with 1 entity + 1 concept + 1 source
