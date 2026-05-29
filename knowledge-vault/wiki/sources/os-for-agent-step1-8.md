@@ -190,6 +190,29 @@ Capacity helps inside the cross-encoder family (full > partial > frozen) but eve
 2. Higher-quality ko/ja MT (NLLB → Gemini paid-tier) for the singleton OOT bucket.
 3. Cluster-distinctive descriptions for singleton algos so the bi-encoder has a sharper target.
 
+### Step 13 — three failed leverage attempts (commit `5bfe7ac`)
+
+All three follow-ups from Step 12 were tested and all three regress on n=200 top1. C-prime stays.
+
+| track | en | ko | ja | mean Δ | decision |
+|-------|---:|---:|---:|---:|--------|
+| C-prime baseline | 0.880 | 0.730 | 0.780 | — | ship |
+| (a) Singleton describe() augmentation | 0.875 | 0.725 | 0.785 | −0.2pp | drop |
+| (b) Hybrid late-fusion reranker | 0.875 | 0.740 | 0.745 | −1.0pp | drop (top3/top5 ↑ but top1 ↓) |
+| (c) NLLB-1.3B re-translation | — | 0.700 | 0.730 | −4.0pp | drop |
+
+Hypotheses falsified by data:
+- "Singleton describes are too thin → augment them" — the OOT misses are *query-side* (broken NLLB output, underspecified en queries), not registry-side.
+- "Bigger MT model produces better ko/ja translations" — 1.3B is *more fluent* and that hurts. The 600M output preserves literal terms ("k / 2 비트"); the 1.3B paraphrases them ("k / 2 비트 사이즈", "論理右転移 k×7") and drifts away from the plain technical text in `describe(a)`. For technical retrieval, MT quality = literal preservation, not target-language fluency.
+- "A trainable hybrid scorer over (q_lb, c_lb, q_ir, c_ir) will exploit the IR channel and beat C-prime" — top3/top5 rise on every language but top1 sags on en/ja. The contrastive objective fits the top-4 hard-neg training distribution and doesn't transfer cleanly to the 20-way inference task. Latency is 3-5 ms/query so the architecture is the natural landing for a listwise/distillation reranker v2 if one ever beats C-prime on top1.
+
+Cumulative session totals (Step 8 → 13) unchanged: ko +12.5pp, ja +12.5pp, en +5.5pp.
+
+Realistic future directions that go *deeper* than what we tried:
+- Query-rewriting / query-expansion LLM (attacks the OOT translation bucket from the input side rather than the model side).
+- Listwise / distillation reranker (the only viable reranker direction given the top1-vs-top5 split from Track B).
+- Stronger backbone or paraphrase pool (raises the bi-encoder ceiling itself instead of trying to rerank under it).
+
 ### Track 3 — nl2x_lib generality dogfood
 
 Swapped encoder_B from the custom-trained IR Transformer to off-the-shelf [[sentence-transformers]] all-mpnet-base-v2 on the CID-opcode string. Same 1243 algos, same 200 held-out paraphrases (seed=123):
