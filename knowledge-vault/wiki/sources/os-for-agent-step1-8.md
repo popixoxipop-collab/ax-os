@@ -397,6 +397,37 @@ Four languages, four specialised heads, automatic per-script routing, no new MCP
 
 The recipe (`docs/ADDING_A_LANGUAGE.md`) is now demonstrated to work mechanically across three languages — ~50 min wall time per addition, ~80% of which is Gemini paraphrase generation.
 
+### Step 15H — robustness sweep + ASCII lowercase fix (commit `696cde9`)
+
+Audited the 4-head production stack across four noise patterns on each native test set: typo10 (10% char corruption), mix_en (replace non-Latin token with English literal), lower, upper. Findings:
+
+| split | clean | typo10 | mix_en | upper |
+|---|---:|---:|---:|---:|
+| en | 0.880 | 0.570 (−31) | 0.870 | 0.700 (−18) |
+| ko native | 0.750 | 0.570 (−18) | 0.650 | 0.730 |
+| ja native | 0.700 | 0.490 (−21) | 0.480 | 0.660 |
+| zh native | 0.700 | 0.535 (−16) | 0.455 | 0.685 |
+
+ASCII uppercase costs en −18pp because the BERT tokenizer splits `POPCOUNT` into different word pieces than `popcount`. Added one-liner to `_SlimNLEncoder.embed_nl`: `text = "".join(ch.lower() if ord(ch)<128 and ch.isalpha() else ch for ch in text)`. Non-ASCII (CJK/kana/Hangul) pass through unchanged.
+
+Post-fix: uppercase queries match clean for every language (en/ko/ja/zh recover +18/+2/+4/0 pp). Trade-off is en clean drops 1pp.
+
+Typos remain a real open weakness (−16 to −31pp). Closing them properly requires training-time character-level noise augmentation on all four head pools — parked. mix_en regression on ja/zh is mostly the script router doing what it should: when every non-Latin token is replaced, the residual routes to the default head as designed.
+
+### Step 15I — onboarding automation for new algos (commit `7999690`)
+
+`onboard_algos.py` takes a JSON list of new algos and idempotently:
+
+1. Appends to `dataset.json`
+2. Generates en paraphrases via Gemini → `nl_paraphrases.json`
+3. Generates ko/ja/zh paraphrases via Gemini → `nl_paraphrases_native_<lang>.json`
+4. Encodes `ir_opcodes` via the IR encoder → `nl_embeddings_ir.npz` (skippable)
+5-7. Print explicit follow-up commands for hard-neg mining, head fine-tune, and `nav.embs` rebuild — these are heavy MPS jobs intentionally left for explicit human invocation.
+
+Smoke test with one synthetic algo produced reasonable Gemini outputs across all four languages and was reverted from the JSON pools after verification.
+
+Combined with `docs/ADDING_A_LANGUAGE.md` (the language-side recipe), the routing stack now has documented add-new-algo and add-new-language paths.
+
 ### Track 3 — nl2x_lib generality dogfood
 
 Swapped encoder_B from the custom-trained IR Transformer to off-the-shelf [[sentence-transformers]] all-mpnet-base-v2 on the CID-opcode string. Same 1243 algos, same 200 held-out paraphrases (seed=123):
