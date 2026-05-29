@@ -331,6 +331,46 @@ Production reading under the realistic native-ko distribution:
 
 The Step 15D number (0.808 mean) used NLLB ko in evaluation; the same production stack on native ko queries hits 0.813. Korean users typing natural Korean now see roughly the same headroom-from-ceiling as Japanese users.
 
+### Step 15F — native-zh head + CJK-conditional routing (commit `52131b8`)
+
+Step 15F applies the Step 15E recipe to Chinese. zh was the worst-supported language: C-prime head's baseline on a fresh native-zh test set was **0.660** — the lowest of any language we measured — because the multilingual training pool had never seen any zh data.
+
+Same pipeline: Gemini 2.5 Flash generated 4 paraphrases per LLVM algo (4771 native zh phrases, 35 min via batched CLI). Sample outputs preserve literals: `k_shr_9` → `["k_shr_9 位移", "k >> 9 位运算"]`, `binop_and_i32` → `["i32 有符号整数按位与", "32位按位与操作"]`.
+
+A second Gemini session produced 200 native zh test queries (saved as `cache["zh_native_200"]`). Warm-start from C-prime, 30 ep, loss 1.83 → 1.71. Head-to-head:
+
+| split | C-prime head | ko head | zh head |
+|---|---:|---:|---:|
+| en | 0.880 | 0.865 | 0.865 |
+| ko (NLLB) | 0.730 | 0.720 | 0.735 |
+| ko (native) | 0.725 | 0.750 | 0.720 |
+| ja (NLLB) | 0.780 | 0.775 | 0.755 |
+| **zh (native)** | 0.660 | 0.675 | **0.700** |
+
+zh head: **+4.0pp on zh native** (the largest single-language gain of any specialised head we've trained in this session — naturally so because zh's starting point was lowest). Modest regressions on other splits are expected and irrelevant because routing sends each query to its own head.
+
+Routing logic in `oa_mcp_server.py::_SlimNLEncoder.embed_nl` (kana-first to keep Japanese on the default head):
+
+1. **Hangul** (U+AC00 – U+D7A3) present → ko head
+2. else **CJK** (U+4E00 – U+9FFF) **without** Hiragana/Katakana → zh head
+3. else → default C-prime head
+
+Smoke:
+- "count set bits" → default → popcount
+- "비트 카운트" → ko head → popcount
+- "ビットを数える" → default + lex rerank → popcount
+- "位计数" → zh head → popcount
+- "配列要素を計算する" (kanji + kana) → default head (kana takes priority)
+
+Final production reading (each language on its realistic eval split):
+
+| | en | ko (native) | ja | zh (native) | mean |
+|---|---:|---:|---:|---:|---:|
+| Step 8 (en-only head) | 0.825 | ~0.61 | 0.655 | ~? | 0.697 |
+| **Step 15F production** | **0.890** | **0.750** | **0.800** | **0.700** | **0.785** |
+
+Four languages now have their own head; consumers of `landmark_route` get a meaningful boost on Chinese queries with no new MCP parameter and ~0.3 ms extra per Hangul/CJK-routed query.
+
 ### Track 3 — nl2x_lib generality dogfood
 
 Swapped encoder_B from the custom-trained IR Transformer to off-the-shelf [[sentence-transformers]] all-mpnet-base-v2 on the CID-opcode string. Same 1243 algos, same 200 held-out paraphrases (seed=123):
