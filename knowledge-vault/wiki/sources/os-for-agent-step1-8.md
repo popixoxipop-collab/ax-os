@@ -371,6 +371,32 @@ Final production reading (each language on its realistic eval split):
 
 Four languages now have their own head; consumers of `landmark_route` get a meaningful boost on Chinese queries with no new MCP parameter and ~0.3 ms extra per Hangul/CJK-routed query.
 
+### Step 15G — native-ja head + kana-priority routing (commit `2b179f3`)
+
+Applied the [[docs-adding-a-language]] recipe to ja. Same pattern: Gemini generated 4592 native ja paraphrases in 34 min, plus 200 native ja test queries. Warm-start trained head, 30 ep, loss 1.83 → 1.72.
+
+| split | C-prime head | ko head | ja head |
+|---|---:|---:|---:|
+| en | 0.880 | 0.865 | 0.870 |
+| ko (NLLB) | 0.730 | 0.720 | 0.715 |
+| ko (native) | 0.725 | 0.750 | 0.725 |
+| ja (NLLB) | 0.780 | 0.775 | 0.770 |
+| **ja (native)** | 0.660 | 0.670 | **0.700** |
+
+Same **+4.0pp on ja native** as zh got on zh native, from the same C-prime baseline of 0.660. The two languages' native distributions sat at the bottom of LaBSE-XM's multilingual transfer.
+
+MCP routing updated to give kana priority over default. kana now → ja head (Step 15G) instead of falling through; CJK-only kanji still → zh head (Step 15F). Lex auto-rerank still triggers on kana queries, so ja queries now get BOTH the ja head's better IR projection AND the Step-15D lex scorer.
+
+Four languages, four specialised heads, automatic per-script routing, no new MCP parameter. Production reading (each language on its realistic eval split):
+
+| | en | ko (native) | ja (native) | zh (native) | mean |
+|---|---:|---:|---:|---:|---:|
+| Step 8 (en-only head) | 0.825 | ~0.61 | ~0.62 | ~0.66 | 0.679 |
+| **Step 15G production** | **0.890** | **0.750** | **0.700** | **0.700** | **0.760** |
+| Δ session | +6.5pp | +14pp | +8pp | +4pp | +8.1pp |
+
+The recipe (`docs/ADDING_A_LANGUAGE.md`) is now demonstrated to work mechanically across three languages — ~50 min wall time per addition, ~80% of which is Gemini paraphrase generation.
+
 ### Track 3 — nl2x_lib generality dogfood
 
 Swapped encoder_B from the custom-trained IR Transformer to off-the-shelf [[sentence-transformers]] all-mpnet-base-v2 on the CID-opcode string. Same 1243 algos, same 200 held-out paraphrases (seed=123):
