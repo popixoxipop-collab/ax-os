@@ -1,0 +1,22 @@
+{
+  "name": "ax-os",
+  "version": "1.0.0",
+  "description": "AX OS - Hierarchical Adaptive Dimensionality Expansion for LLM reliability",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "node --test dist/**/*.test.js",
+    "lint": "eslint src/**/*.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": ["llm", "ai", "reliability", "adaptive", "capacity"],
+  "author": "Claude Code",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0"
+  }
+}
