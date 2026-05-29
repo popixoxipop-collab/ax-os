@@ -213,6 +213,34 @@ Realistic future directions that go *deeper* than what we tried:
 - Listwise / distillation reranker (the only viable reranker direction given the top1-vs-top5 split from Track B).
 - Stronger backbone or paraphrase pool (raises the bi-encoder ceiling itself instead of trying to rerank under it).
 
+### Step 14 — listwise reranker wins, PRF + pool-expansion fail (commit `0a3cfe4`)
+
+Three deeper tracks tested, one real positive.
+
+| approach | en | ko | ja | mean Δ |
+|----------|---:|---:|---:|---:|
+| C-prime baseline | 0.880 | 0.730 | 0.780 | — |
+| F1 — PRF1 (query + top-1 canonical) | 0.875 | 0.735 | 0.770 | −0.3pp |
+| F1 — PRF3 (query + top-3 canonicals) | 0.610 | 0.560 | 0.580 | **−21pp** |
+| **F2 — Listwise reranker (top-20 CE)** | **0.895** | **0.740** | 0.775 | **+0.67pp** |
+| F3 — Pool expansion (NLLB-1.3B back-trans) | 0.880 | 0.720 | 0.755 | −1.2pp |
+
+**F1 PRF**: PRF1 is roughly neutral; PRF3 is catastrophic because two of three appended canonicals are wrong-cluster and drown out the query. Assumes stage-1 ranking is correct, which is what we're trying to fix.
+
+**F2 Listwise** (the win): same hybrid features as Step 13 Track B, but loss is **20-way CE over the actual top-20 candidates** that C-prime retrieves at inference. The training/inference distribution mismatch hypothesis from Step 13 is now data-supported. en +1.5pp, ko +1.0pp, ja −0.5pp (within noise). Latency +9-17 ms/query (single MLP forward over 20 candidates). Ship as optional stage-2 where top1 is worth the latency.
+
+**F3 Pool expansion**: NLLB-1.3B translated 14.4k ko/ja paraphrases back to en (~32 min wall time). Training pool 25.9k → 40.3k. Result: −1.2pp avg. Back-translations are redundant noise, not new signal — and the en-heavy shift slightly weakens the multilingual head.
+
+Cumulative session totals (Step 8 → 14):
+- en  0.825 → 0.895   **+7.0pp**
+- ko  0.605 → 0.740   **+13.5pp**
+- ja  0.655 → 0.775   **+12.0pp**
+- mean 0.695 → 0.803  **+10.8pp**
+
+Ship configuration:
+- `nl2ir_head_xling_hn.pt`  — stage-1 default head (C-prime).
+- `listwise_rerank.pt`      — optional stage-2 reranker for top1-critical paths.
+
 ### Track 3 — nl2x_lib generality dogfood
 
 Swapped encoder_B from the custom-trained IR Transformer to off-the-shelf [[sentence-transformers]] all-mpnet-base-v2 on the CID-opcode string. Same 1243 algos, same 200 held-out paraphrases (seed=123):
