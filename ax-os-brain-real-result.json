@@ -1,0 +1,1 @@
+{"expression": "rank(-ts_rank(close, 20))", "sharpe": 0.62, "fitness": 0.32, "turnover": 0.3027, "returns": null, "alpha_id": "RRd5Rvmj", "error": null, "elapsed_sec": 141.9}

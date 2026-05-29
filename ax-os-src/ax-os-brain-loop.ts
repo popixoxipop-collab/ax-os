@@ -102,9 +102,11 @@ export function mockSimulate(expression: string): SimResult {
   for (let i = 0; i < expression.length; i++) h = (h * 31 + expression.charCodeAt(i)) >>> 0;
   const noise = ((h % 1000) / 1000 - 0.5) * 0.5;
 
+  // NOTE: use unsigned >>> shifts — signed >> goes negative when h >= 2^31,
+  // which produced impossible negative turnover (caught by real BRAIN sim 2026-05-30).
   const sharpe  = Math.max(0.1, Math.min(4.0, base + noise));
-  const fitness = Math.max(0.1, Math.min(3.0, sharpe * (0.7 + ((h >> 8) % 100) / 200)));
-  const turnover = 0.1 + ((h >> 16) % 100) / 200;
+  const fitness = Math.max(0.1, Math.min(3.0, sharpe * (0.7 + ((h >>> 8) % 100) / 200)));
+  const turnover = 0.1 + ((h >>> 16) % 100) / 200;
 
   return {
     expression,

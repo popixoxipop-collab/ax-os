@@ -274,7 +274,8 @@ export {
 // ============================================================================
 export {
   AEQStatus, AEQModelConfig, AEQRegistry, DEFAULT_AEQ_CONFIGS,
-  LOCAL_GPU, AEQIntegration,
+  AEQMeasurement, AEQ_MEASURED_2026_05_30, LOCAL_GPU, MEASUREMENT_HOST,
+  AEQIntegration,
 } from "./ax-os-aeq-integration.js";
 
 // ============================================================================
