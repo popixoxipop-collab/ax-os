@@ -301,6 +301,36 @@ Final session totals (Step 8 → 15D):
 | **Step 15D production (auto rerank)** | **0.890** | **0.735** | **0.800** | **0.808** |
 | Δ session | **+6.5pp** | **+13.0pp** | **+14.5pp** | **+11.3pp** |
 
+### Step 15E — native-ko head + Hangul-conditional routing (commit `8636eb9`)
+
+The Step 13 OOT analysis showed NLLB strips literal technical tokens from Korean translations (e.g. "k_shr_7" → "7비트 시프트", "16 increment" → "16개의 inkrement으로 더하기"). The Step 15B diff dump made this concrete: ko queries hit the textual-sibling LOST pattern that lex features could not rescue, because the literals were already gone before the encoder saw them. Fix the input side instead of the model side.
+
+Gemini 2.5 Flash generated 4 paraphrases per LLVM algo (4587 native ko phrases for 1239/1243 algos, 29 min via batched CLI). Sample outputs preserve literals AND disambiguate signed vs unsigned: `k_shr_9` → `["k_shr_9 비트 연산", "k >> 9 시프트 연산"]`, `binop_and_i32` → `["i32 비트와이즈 AND", "32비트 signed 정수 AND 연산"]`. Exactly the LOST patterns from Step 15B.
+
+A new ko head was trained: warm-start from the C-prime head (cold start diverged at random loss ~4.4), 30 epochs at LR=3e-4×0.3 on a pool of 30407 pairs (11187 en + 7362 NLLB ko + 4520 native ko + 7338 ja).
+
+To measure honestly, a separate Gemini session produced 200 native ko test queries for `expected_200` (saved as `cache["ko_native_200"]`). Head-to-head on n=200 each, top1:
+
+| split | Step 15D head | Native-ko head | Recovered head (parked) |
+|---|---:|---:|---:|
+| en | 0.880 | 0.865 (−1.5) | 0.870 (−1.0) |
+| ko (NLLB-translated) | 0.730 | 0.720 (−1.0) | 0.725 (−0.5) |
+| **ko (native, Gemini)** | 0.725 | **0.750 (+2.5)** | 0.735 (+1.0) |
+
+Hypothesis confirmed: the native-ko head wins on native ko queries and loses on NLLB ko queries — the NLLB ko test was self-distillation under matched training/test distribution. The "recovered" head (10 ep fine-tune on no-native pool) partially clawed back the NLLB-ko regression but lost half the native gain, so it's parked.
+
+Production wire-in: `_SlimNLEncoder` now loads both heads, and `embed_nl` auto-routes per query by Hangul script (U+AC00–U+D7A3). No new MCP parameter. Latency overhead is one extra head forward when Hangul is detected (~0.3 ms). en/ja queries continue to use the Step 15D C-prime + auto rerank stack.
+
+Production reading under the realistic native-ko distribution:
+
+| | en | ko (native) | ja | mean |
+|---|---:|---:|---:|---:|
+| Step 8 (en-only head) | 0.825 | ~0.61 | 0.655 | 0.697 |
+| **Step 15E production** | **0.890** | **0.750** | **0.800** | **0.813** |
+| Δ session | **+6.5pp** | **+14pp** (vs NLLB ko +12.5) | **+14.5pp** | **+11.6pp** |
+
+The Step 15D number (0.808 mean) used NLLB ko in evaluation; the same production stack on native ko queries hits 0.813. Korean users typing natural Korean now see roughly the same headroom-from-ceiling as Japanese users.
+
 ### Track 3 — nl2x_lib generality dogfood
 
 Swapped encoder_B from the custom-trained IR Transformer to off-the-shelf [[sentence-transformers]] all-mpnet-base-v2 on the CID-opcode string. Same 1243 algos, same 200 held-out paraphrases (seed=123):
