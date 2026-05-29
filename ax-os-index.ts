@@ -247,6 +247,43 @@ export {
 } from "./ax-os-adaptive-router.js";
 
 // ============================================================================
+// PHASE 8: BRAIN Full Loop
+// ============================================================================
+export {
+  SimResult, EvalResult, LoopCycleResult, BrainLoopConfig,
+  validateExpression, mockSimulate, realSimulate, evaluate, BrainFullLoop,
+} from "./ax-os-brain-loop.js";
+
+// ============================================================================
+// PHASE 9: Eval Framework
+// ============================================================================
+export {
+  EvalLens, EvalVote, EvalResult as AdversarialEvalResult, EvalConfig,
+  BRAIN_EVAL_LENSES, AdversarialEvaluator, confidenceGate,
+} from "./ax-os-eval.js";
+
+// ============================================================================
+// PHASE 10: Model Specialization Map
+// ============================================================================
+export {
+  ModelRole, ModelProfile, ModelMap,
+} from "./ax-os-model-map.js";
+
+// ============================================================================
+// PHASE 12: AEQ Integration
+// ============================================================================
+export {
+  AEQStatus, AEQModelConfig, AEQRegistry, DEFAULT_AEQ_CONFIGS,
+  LOCAL_GPU, AEQIntegration,
+} from "./ax-os-aeq-integration.js";
+
+// ============================================================================
+// VERSION
+// ============================================================================
+export const VERSION = "2.0.0";
+export const PHASES_COMPLETE = [1,2,3,4,5,6,7,8,9,10,11,12];
+
+// ============================================================================
 // ADAPTERS (Ollama + Anthropic)
 // ============================================================================
 
