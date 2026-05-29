@@ -8,8 +8,7 @@ import {
   LLMRequest,
   LLMResponse,
   CapacityLevel,
-  Logits,
-  AttentionWeights
+  Logits
 } from "./ax-os-types.js";
 
 /**
@@ -44,8 +43,6 @@ export class OpenAIAdapter implements LLMClient {
   constructor(config: OpenAIAdapterConfig) {
     this.config = {
       baseURL: "https://api.openai.com/v1",
-      defaultMaxTokens: 1024,
-      defaultTemperature: 0.7,
       ...config
     };
   }
@@ -82,7 +79,14 @@ export class OpenAIAdapter implements LLMClient {
       throw new Error(`OpenAI API error: ${response.status} - ${error}`);
     }
 
-    const data = await response.json();
+    const data = await response.json() as {
+      choices: Array<{
+        message: { content: string };
+        finish_reason: string;
+        logprobs?: { content?: Array<{ logprob: number }> };
+      }>;
+      usage?: { total_tokens?: number };
+    };
     const choice = data.choices[0];
 
     // Extract logits if available
@@ -243,7 +247,7 @@ export function createLLMAdapter(
 ): LLMClient {
   switch (provider) {
     case "openai":
-      return new OpenAIAdapter(config as OpenAIAdapterConfig);
+      return new OpenAIAdapter(config as unknown as OpenAIAdapterConfig);
     case "mock":
       return new MockLLMAdapter(config as { latencyMs?: number; failRate?: number });
     // Dynamic imports to avoid hard dep when provider is unused

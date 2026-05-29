@@ -127,7 +127,7 @@ export class ReactAgentExecutor implements AgentExecutor {
         if (this.verbose) console.log(`  🔧 ${call.name}(${JSON.stringify(call.args)})`);
 
         const result = await this.tools.execute(
-          { tool: call.tool ?? call.name, args: call.args, outputKey: `_react_${call.name}` },
+          { tool: call.name, args: call.args, outputKey: `_react_${call.name}` },
           toolCtx
         );
 

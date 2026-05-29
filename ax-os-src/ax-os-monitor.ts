@@ -8,8 +8,7 @@ import {
   PerformanceSnapshot,
   AlertThreshold,
   CapacityLevel,
-  GateValue,
-  AXOSError
+  GateValue
 } from "./ax-os-types.js";
 
 /**

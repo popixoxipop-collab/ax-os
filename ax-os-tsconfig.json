@@ -8,15 +8,16 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "dist",
-    "rootDir": "src",
+    "outDir": "ax-os-dist",
+    "rootDir": "ax-os-src",
     "lib": ["ES2022"],
+    "types": ["node"],
     "resolveJsonModule": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["ax-os-src/**/*"],
+  "exclude": ["node_modules", "ax-os-dist", "ax-os-src/ax-os-example.ts"]
 }

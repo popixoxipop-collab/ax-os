@@ -290,11 +290,6 @@ export const PHASES_COMPLETE = [1,2,3,4,5,6,7,8,9,10,11,12];
 export { OllamaAdapter, OllamaAdapterConfig } from "./ax-os-ollama-adapter.js";
 export { AnthropicAdapter, AnthropicAdapterConfig } from "./ax-os-anthropic-adapter.js";
 
-// ============================================================================
-// VERSION
-// ============================================================================
-
-export const VERSION = "2.0.0";
 export const CODE_POLICY_VERSION = "2";
 
 // ============================================================================

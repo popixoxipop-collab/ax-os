@@ -16,7 +16,6 @@ import {
 } from "./ax-os-types.js";
 
 import { DEFAULT_TOPK_CONFIG } from "./ax-os-topk-controller.js";
-import { DEFAULT_ENTROPY_CONFIG } from "./ax-os-entropy-controller.js";
 
 /**
  * Weight configuration for gate computation
@@ -144,16 +143,14 @@ export class GateManager {
   private state: GateState;
   private weights: GateWeights;
   private topKConfig: TopKConfig;
-  private entropyConfig: EntropyConfig;
 
   constructor(
     weights: Partial<GateWeights> = {},
     topKConfig: Partial<TopKConfig> = {},
-    entropyConfig: Partial<EntropyConfig> = {}
+    _entropyConfig: Partial<EntropyConfig> = {}
   ) {
     this.weights = { ...DEFAULT_GATE_WEIGHTS, ...weights };
     this.topKConfig = { ...DEFAULT_TOPK_CONFIG, ...topKConfig };
-    this.entropyConfig = { ...DEFAULT_ENTROPY_CONFIG, ...entropyConfig };
     
     this.state = {
       currentValue: 0.5,

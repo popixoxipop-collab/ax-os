@@ -1,22 +1,23 @@
 {
   "name": "ax-os",
-  "version": "1.0.0",
-  "description": "AX OS - Hierarchical Adaptive Dimensionality Expansion for LLM reliability",
+  "version": "2.0.0",
+  "description": "AX OS v2 — Multi-Agent OS on local LLMs (Ollama) + Claude API. ReAct, A2A delegation, vector memory, adaptive routing, BRAIN alpha search.",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "ax-os-dist/ax-os-index.js",
+  "types": "ax-os-dist/ax-os-index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "test": "node --test dist/**/*.test.js",
-    "lint": "eslint src/**/*.ts",
-    "typecheck": "tsc --noEmit"
+    "build": "tsc -p ax-os-tsconfig.json && echo '{\"type\":\"module\"}' > ax-os-dist/package.json",
+    "dev": "tsc -p ax-os-tsconfig.json --watch",
+    "test": "vitest run --config ax-os-vitest.config.mjs",
+    "verify": "node ax-os-verify-build.mjs",
+    "typecheck": "tsc -p ax-os-tsconfig.json --noEmit"
   },
-  "keywords": ["llm", "ai", "reliability", "adaptive", "capacity"],
+  "keywords": ["llm", "multi-agent", "ollama", "react", "agent-orchestration", "rag", "adaptive-routing"],
   "author": "Claude Code",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "typescript": "^5.3.0"
+    "typescript": "^5.3.0",
+    "vitest": "^4.0.0"
   }
 }

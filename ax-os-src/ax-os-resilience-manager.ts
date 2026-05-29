@@ -10,9 +10,7 @@ import {
   ResilienceState,
   CapacityLevel,
   GateState,
-  PerformanceSnapshot,
-  ResilienceError,
-  AXOSError
+  ResilienceError
 } from "./ax-os-types.js";
 
 /**

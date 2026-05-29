@@ -12,7 +12,6 @@ import {
   LLMRequest,
   LLMResponse,
   LLMClient,
-  TokenMetadata,
   PerformanceSnapshot,
   ResilienceState,
   AXOSError
@@ -20,7 +19,7 @@ import {
 
 import { TopKController } from "./ax-os-topk-controller.js";
 import { EntropyController } from "./ax-os-entropy-controller.js";
-import { GateManager, compute_g } from "./ax-os-gate-manager.js";
+import { GateManager } from "./ax-os-gate-manager.js";
 import { ResilienceManager } from "./ax-os-resilience-manager.js";
 import { Monitor, MonitorConfig } from "./ax-os-monitor.js";
 
@@ -182,8 +181,8 @@ export class AXRuntime {
         effectiveCapacity = Math.max(0, effectiveCapacity - 2) as CapacityLevel;
       }
       
-      // Create checkpoint
-      const checkpoint = this.resilienceManager.createCheckpoint(
+      // Create checkpoint (side effect: records checkpoint in resilience manager)
+      this.resilienceManager.createCheckpoint(
         effectiveCapacity,
         this.gateManager.getState(),
         this.hashRequest(request),

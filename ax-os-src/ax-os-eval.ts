@@ -101,7 +101,7 @@ CRITIQUE: <one paragraph explaining your finding>`;
 
       return {
         lens,
-        pass:       passMatch?.[1]?.toLowerCase() === "yes" ?? false,
+        pass:       passMatch?.[1]?.toLowerCase() === "yes",
         confidence: parseFloat(confMatch?.[1] ?? "0.5"),
         critique:   critMatch?.[1]?.trim() ?? text.slice(0, 200),
         latencyMs:  Date.now() - t0,
