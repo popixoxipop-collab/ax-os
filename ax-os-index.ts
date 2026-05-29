@@ -195,6 +195,25 @@ export {
 } from "./ax-os-orchestrator.js";
 
 // ============================================================================
+// PHASE 4: ReAct Loop
+// ============================================================================
+
+export { LLMMessage } from "./ax-os-types.js";
+
+export {
+  ParsedToolCall,
+  parseToolCalls,
+  stripToolCalls,
+  buildObservation,
+  buildToolDescriptions,
+} from "./ax-os-react-parser.js";
+
+export {
+  ReactExecutorConfig,
+  ReactAgentExecutor,
+} from "./ax-os-react-executor.js";
+
+// ============================================================================
 // ADAPTERS (Ollama + Anthropic)
 // ============================================================================
 

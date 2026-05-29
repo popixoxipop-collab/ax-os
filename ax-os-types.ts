@@ -175,8 +175,19 @@ export interface AXOutput<T = unknown> {
 // LLM ADAPTER TYPES
 // ============================================================================
 
+/** Single turn in a multi-turn conversation. */
+export interface LLMMessage {
+  readonly role: "system" | "user" | "assistant";
+  readonly content: string;
+}
+
 export interface LLMRequest {
   readonly prompt: string;
+  /**
+   * When provided, the adapter uses these messages instead of `prompt`.
+   * Enables multi-turn conversations required by ReAct loops.
+   */
+  readonly messages?: readonly LLMMessage[];
   readonly maxTokens: number;
   readonly temperature: number;
   readonly topP: number;

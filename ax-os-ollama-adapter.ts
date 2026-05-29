@@ -73,11 +73,15 @@ export class OllamaAdapter implements LLMClient {
     const model = this.selectModel(capacityLevel);
     const params = CAPACITY_PARAMS[capacityLevel];
 
-    const messages: OllamaMessage[] = [];
-    if (this.systemPrompt) {
-      messages.push({ role: "system", content: this.systemPrompt });
-    }
-    messages.push({ role: "user", content: request.prompt });
+    // Use provided messages (ReAct multi-turn) or build single-turn from prompt
+    const messages: OllamaMessage[] = request.messages
+      ? request.messages.map(m => ({ role: m.role, content: m.content }))
+      : (() => {
+          const msgs: OllamaMessage[] = [];
+          if (this.systemPrompt) msgs.push({ role: "system", content: this.systemPrompt });
+          msgs.push({ role: "user", content: request.prompt });
+          return msgs;
+        })();
 
     const body = {
       model,
