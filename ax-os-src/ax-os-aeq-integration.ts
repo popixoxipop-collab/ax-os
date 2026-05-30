@@ -61,6 +61,18 @@ export const DEFAULT_AEQ_CONFIGS: AEQModelConfig[] = [
     capabilities:    ["code", "analyze", "alpha_gen"],
     status:          "pending",
   },
+  {
+    // MEASURED 2026-05-30 on Apple M1 Max (MLX 0.31.1) — see AEQ_MEASURED_MISTRAL_7B.
+    // Artifact exists on disk (4.08GB safetensors, bits=4 group=64), hence "available".
+    // Numbers below are the MEASURED q4 artifact, not estimates (CLAUDE.md §13).
+    baseModel:       "mistralai/Mistral-7B-Instruct-v0.3",
+    compressedPath:  "~/Desktop/AEQ/models/mistral-7b-v0.3-q4",
+    quantScheme:     "uniform q4 (group 64)",
+    expectedVRAM_GB: 4.1,      // MEASURED artifact size 4077.5MB (M1 Max; weights only)
+    expectedSpeedup: 1.17,     // MEASURED 10.1/8.6 tok/s (M1 Max — CUDA target will differ)
+    capabilities:    ["code", "analyze", "research"],
+    status:          "available",
+  },
 ];
 
 // ── MEASURED AEQ benchmark (2026-05-30, M1 Max, MLX 0.31.2) ──────────────────
@@ -94,6 +106,29 @@ export const AEQ_MEASURED_2026_05_30 = {
     "perplexity 60 (vs 48 bf16), 35.6 tok/s. Mixed-precision recipes are WORSE " +
     "on both axes — mixed_3_6 ppl=131, mixed_2_6 collapses (ppl 162k). " +
     "Mixed-precision/AEQ must be re-validated on large MoE before adoption.",
+};
+
+// ── MEASURED AEQ compression of Mistral-7B (2026-05-30, M1 Max, MLX 0.31.1) ──
+// Real q4 compression run (aeq_compress_mistral_q4.py). Same uniform-q4 scheme,
+// now on a 7B dense model — the registered "available" artifact above.
+// KEY FINDING: q4 is NEARLY LOSSLESS at this scale. Perplexity rises only
+//   11.34 → 11.52 (+1.6%) for 3.56x compression and +17% throughput. Contrast
+//   Qwen-1.5B where q4 cost +25% ppl — larger dense models tolerate q4 far
+//   better, so the measured-best scheme strengthens with scale (still dense,
+//   NOT a claim about MoE — that remains untested). (CLAUDE.md §13)
+export const AEQ_MEASURED_MISTRAL_7B = {
+  model:    "Mistral-7B-Instruct-v0.3",
+  platform: "Apple M1 Max, MLX 0.31.1",
+  scheme:   "uniform q4 (group 64)",
+  evalText: "34-token paragraph on quantization",
+  results: [
+    { variant: "bf16",       sizeMB: 14496.1, compression: 1.00, perplexity: 11.34, tokPerSec: 8.6 },
+    { variant: "q4_uniform", sizeMB: 4077.5,  compression: 3.56, perplexity: 11.52, tokPerSec: 10.1 },
+  ] as AEQMeasurement[],
+  conclusion:
+    "Mistral-7B uniform q4: 3.56x compression (14.5GB -> 4.08GB), perplexity " +
+    "11.34 -> 11.52 (+1.6%, near-lossless), 8.6 -> 10.1 tok/s (+17%). q4 quality " +
+    "loss shrinks with model size vs Qwen-1.5B (+25%). Registered as available.",
 };
 
 // ── Runtime config for the CUDA target machine (NOT this Mac) ────────────────

@@ -1,0 +1,23 @@
+{
+  "model": "Mistral-7B-Instruct-v0.3",
+  "platform": "MLX 0.31.1, Apple Silicon",
+  "scheme": "uniform q4 (group 64) — measured-best from 2026-05-30 (CLAUDE.md §13)",
+  "eval_text_tokens": 34,
+  "artifact_path": "/Users/xox/Desktop/AEQ/models/mistral-7b-v0.3-q4",
+  "results": [
+    {
+      "variant": "bf16",
+      "size_mb": 14496.1,
+      "compression": 1.0,
+      "perplexity": 11.34,
+      "tok_s": 8.6
+    },
+    {
+      "variant": "q4_uniform",
+      "size_mb": 4077.5,
+      "compression": 3.56,
+      "perplexity": 11.52,
+      "tok_s": 10.1
+    }
+  ]
+}
