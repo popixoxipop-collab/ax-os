@@ -1,5 +1,5 @@
 /** AgentRegistry routing + BRAIN loop primitives */
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "./_harness.mjs";
 import { AgentRegistry } from "../ax-os-dist/ax-os-agent-registry.js";
 import { mockSimulate, evaluate } from "../ax-os-dist/ax-os-brain-loop.js";
 

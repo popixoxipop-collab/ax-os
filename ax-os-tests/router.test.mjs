@@ -1,5 +1,5 @@
 /** AdaptiveRouter — EMA learning + routing priority */
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "./_harness.mjs";
 import { AdaptiveRouter } from "../ax-os-dist/ax-os-adaptive-router.js";
 import { AgentRegistry }  from "../ax-os-dist/ax-os-agent-registry.js";
 

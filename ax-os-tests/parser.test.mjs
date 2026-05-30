@@ -1,5 +1,5 @@
 /** ReAct parser — tool call extraction */
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from "./_harness.mjs";
 import { parseToolCalls, stripToolCalls, buildObservation } from "../ax-os-dist/ax-os-react-parser.js";
 
 describe("parseToolCalls", () => {

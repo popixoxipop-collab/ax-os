@@ -134,8 +134,21 @@ const ax = new AXRuntime({
 
 ```bash
 npm run build
-node dist/ax-os-example.js
+node ax-os-dist/ax-os-example.js
 ```
+
+## Testing
+
+Tests run on node's built-in test runner — **zero external dependencies**, so
+a clean clone needs only `npm install` (for TypeScript) before running:
+
+```bash
+npm test            # build + run all specs (node --test)
+npm run test:nobuild   # re-run specs against an existing build
+npm run verify         # standalone end-to-end smoke check of ax-os-dist/
+```
+
+27 specs across parser, agent registry, BRAIN loop, and adaptive router.
 
 ## API Reference
 
