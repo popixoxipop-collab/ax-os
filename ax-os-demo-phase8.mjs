@@ -103,6 +103,31 @@ function mockSim(expr) {
   return {sharpe:+sharpe.toFixed(4),fitness:+fitness.toFixed(4),turnover:+turnover.toFixed(4),alphaId:`mock_${(h>>>0).toString(16).slice(0,8)}`,error:null};
 }
 
+// ─── Real BRAIN simulator (BRAIN_REAL=1) ──────────────────────────────────
+// Calls brain/simulator.py run_simulate via subprocess (real WorldQuant API).
+// Mirrors the compiled library realSimulate(); ~140s per expression + quota.
+function realSim(expr) {
+  const esc = expr.replace(/'/g,"\\'").replace(/\\/g,"\\\\");
+  try {
+    const out = execSync(`cd "${FINANCE_PATH}" && python3 -c "
+import sys,json; sys.path.insert(0,'.')
+from brain.simulator import run_simulate
+res = run_simulate(['${esc}'], concurrency=1)
+print(json.dumps(res[0] if res else {}))"`,{timeout:1_800_000,encoding:"utf8"}).trim();
+    const line = out.split("\n").find(l=>l.startsWith("{"))??"{}";
+    const r = JSON.parse(line);
+    return {
+      sharpe:   typeof r.sharpe   ==="number" ? r.sharpe   : null,
+      fitness:  typeof r.fitness  ==="number" ? r.fitness  : null,
+      turnover: typeof r.turnover ==="number" ? r.turnover : null,
+      alphaId:  typeof r.alpha_id ==="string" ? r.alpha_id : null,
+      error:    typeof r.error    ==="string" ? r.error    : null,
+    };
+  } catch(e) {
+    return {sharpe:null,fitness:null,turnover:null,alphaId:null,error:String(e)};
+  }
+}
+
 // ─── Ollama multi-turn client ─────────────────────────────────────────────
 function makeClient(model) {
   return { async generate({messages,maxTokens=512,temperature=0.7}) {
@@ -222,10 +247,19 @@ High-SR patterns: decay+rank combos, ts_corr(returns,delay), rank(income/metric)
 
     // 4. Simulate
     process.stdout.write(`  [simulate] `);
-    const sim = REAL_MODE
-      ? (() => { console.log("calling BRAIN API..."); return null; })()
-      : mockSim(finalExpr);
-    if(!sim){ console.log("(real sim not run in this demo path)"); continue; }
+    let sim;
+    if (REAL_MODE) {
+      console.log("calling real BRAIN API (run_simulate, ~140s, real WorldQuant quota)...");
+      const r = realSim(finalExpr);   // brain/simulator.py run_simulate
+      if (r.error || r.sharpe === null) {
+        console.log(`  ✗ BRAIN sim error: ${r.error ?? "no sharpe returned"}`);
+        results.push({ cycle, expression: finalExpr, passed: false, reason: "sim_error", sr: null, dupScore });
+        continue;
+      }
+      sim = { sharpe: r.sharpe, fitness: r.fitness, turnover: r.turnover, alphaId: r.alphaId, error: null };
+    } else {
+      sim = mockSim(finalExpr);
+    }
     console.log(`SR=${sim.sharpe} FIT=${sim.fitness} TURN=${sim.turnover}`);
 
     // 5. Evaluate
