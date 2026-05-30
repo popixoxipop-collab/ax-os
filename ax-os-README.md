@@ -139,16 +139,21 @@ node ax-os-dist/ax-os-example.js
 
 ## Testing
 
-Tests run on node's built-in test runner — **zero external dependencies**, so
-a clean clone needs only `npm install` (for TypeScript) before running:
+Tests run on node's built-in test runner — **zero external dependencies**.
+The specs import the compiled `ax-os-dist/`, so build first:
 
 ```bash
-npm test            # build + run all specs (node --test)
-npm run test:nobuild   # re-run specs against an existing build
-npm run verify         # standalone end-to-end smoke check of ax-os-dist/
+npm run build                       # tsc -> ax-os-dist/
+node --test ax-os-tests/*.test.mjs  # 27 specs, no install needed
+node ax-os-verify-build.mjs         # standalone end-to-end smoke check
 ```
 
 27 specs across parser, agent registry, BRAIN loop, and adaptive router.
+
+> Note: this project's manifest is `ax-os-package.json` (it lives flat in a
+> shared home directory), so `npm test` / `npm run verify` only resolve when
+> npm reads it as `package.json`. The `node --test` and `node` commands above
+> always work and are the canonical entry points.
 
 ## API Reference
 
