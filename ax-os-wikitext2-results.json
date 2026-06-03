@@ -1,0 +1,82 @@
+{
+  "mistral7b_q4": {
+    "model": "/Users/xox/Desktop/AEQ/models/mistral-7b-v0.3-q4",
+    "size_b": 7.0,
+    "variant": "q4",
+    "ppl": 9.26939501252914,
+    "n_tokens": 9589,
+    "elapsed_s": 80.3,
+    "dataset": "wikitext-2-raw-v1/test",
+    "seq_len": 512
+  },
+  "qwen1.5b_q4": {
+    "model": "mlx-community/Qwen2.5-1.5B-Instruct-4bit",
+    "size_b": 1.5,
+    "variant": "q4",
+    "ppl": 16.752409178257203,
+    "n_tokens": 9589,
+    "elapsed_s": 60.7,
+    "dataset": "wikitext-2-raw-v1/test",
+    "seq_len": 512
+  },
+  "qwen1.5b_bf16": {
+    "model": "mlx-community/Qwen2.5-1.5B-Instruct-bf16",
+    "size_b": 1.5,
+    "variant": "bf16",
+    "ppl": 14.411941716988295,
+    "n_tokens": 9589,
+    "elapsed_s": 123.2,
+    "dataset": "wikitext-2-raw-v1/test",
+    "seq_len": 512
+  },
+  "qwen3b_q4": {
+    "model": "mlx-community/Qwen2.5-3B-Instruct-4bit",
+    "size_b": 3.0,
+    "variant": "q4",
+    "ppl": 14.579740276117489,
+    "n_tokens": 9589,
+    "elapsed_s": 189.9,
+    "dataset": "wikitext-2-raw-v1/test",
+    "seq_len": 512
+  },
+  "qwen3b_bf16": {
+    "model": "mlx-community/Qwen2.5-3B-Instruct-bf16",
+    "size_b": 3.0,
+    "variant": "bf16",
+    "ppl": 12.748538316814631,
+    "n_tokens": 9589,
+    "elapsed_s": 250.5,
+    "dataset": "wikitext-2-raw-v1/test",
+    "seq_len": 512
+  },
+  "qwen7b_q4": {
+    "model": "mlx-community/Qwen2.5-7B-Instruct-4bit",
+    "size_b": 7.0,
+    "variant": "q4",
+    "ppl": 10.529785405626274,
+    "n_tokens": 9589,
+    "elapsed_s": 226.1,
+    "dataset": "wikitext-2-raw-v1/test",
+    "seq_len": 512
+  },
+  "qwen7b_bf16": {
+    "model": "mlx-community/Qwen2.5-7B-Instruct-bf16",
+    "size_b": 7.0,
+    "variant": "bf16",
+    "ppl": 9.215419276886273,
+    "n_tokens": 9589,
+    "elapsed_s": 47.9,
+    "dataset": "wikitext-2-raw-v1/test",
+    "seq_len": 512
+  },
+  "mistral7b_bf16": {
+    "model": "mistralai/Mistral-7B-Instruct-v0.3",
+    "size_b": 7.0,
+    "variant": "bf16",
+    "ppl": 8.924122038761057,
+    "n_tokens": 9589,
+    "elapsed_s": 516.2,
+    "dataset": "wikitext-2-raw-v1/test",
+    "seq_len": 512
+  }
+}
