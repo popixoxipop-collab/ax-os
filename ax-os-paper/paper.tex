@@ -310,8 +310,13 @@ hardware platform (Apple M1 Max, 68.7\,GB unified memory, MLX backend):
 
 \noindent\textbf{Perplexity} $\text{PPL} = \exp(\bar{\ell})$: where
 $\bar{\ell} = \mathbb{E}[\text{CE}(\mathbf{l}_{1:T-1}, \mathbf{x}_{2:T})]$
-is the mean cross-entropy of the model's logits on a fixed 34-token evaluation
-text, cast to \texttt{float32} before the exponential.
+is the mean cross-entropy of the model's logits, cast to \texttt{float32}
+before the exponential.  We report perplexity under two protocols.  The
+scale-stratified study (\cref{tab:scale}, \cref{tab:mistral},
+\cref{fig:scale_ppl}) uses standard WikiText-2.  The 5-way scheme-selection
+screen (\cref{tab:qwen_5way}) uses a fixed short evaluation text; its absolute
+perplexities are larger and are \emph{not} directly comparable to the
+WikiText-2 numbers, as it is used only to rank schemes relative to one another.
 
 \noindent\textbf{Throughput} $\tau$ (tok/s): wall-clock time to generate 64
 tokens from a fixed prompt, divided into the token count.
@@ -414,8 +419,10 @@ ppl\,$=$\,162\,755 respectively).
 
 \begin{table}[t]
   \centering
-  \caption{Five-way quantization benchmark on Qwen2.5-1.5B-Instruct
-    (Apple M1 Max, MLX 0.31.2).  Lower perplexity is better.
+  \caption{Five-way quantization screening benchmark on Qwen2.5-1.5B-Instruct
+    (Apple M1 Max, MLX 0.31.2).  Perplexity here uses the fixed short-text
+    screening protocol (\cref{sec:method:aeq}), not WikiText-2, and is not
+    directly comparable to \cref{tab:scale}.  Lower perplexity is better;
     \texttt{q4\_uniform} is the Pareto-dominant scheme.}
   \label{tab:qwen_5way}
   \begin{tabular}{lrrrr}
@@ -443,7 +450,7 @@ ppl\,$=$\,162\,755 respectively).
 \end{figure}
 
 \textbf{Scale comparison.}  \cref{tab:scale} presents the uniform q4
-compression results for both model sizes.  The key metric is the perplexity
+compression results across model scales and architectures.  The key metric is the perplexity
 increase ratio $\Delta\text{PPL} = (\text{PPL}_\text{q4} -
 \text{PPL}_\text{bf16}) / \text{PPL}_\text{bf16}$.
 
@@ -565,6 +572,13 @@ comparison (Qwen vs.\ Mistral at 7B) involves a single model pair; other
 architectures (Llama, Phi, Gemma) may fall anywhere in the range.
 Extrapolating these trends to sub-1B or above-7B is a hypothesis, not an
 empirical result.
+
+\textbf{Single artifact per configuration.}  Each (model, precision) cell is
+a single quantized artifact evaluated once.  Perplexity on a fixed corpus is
+deterministic given the artifact, so the relevant uncertainty is not eval-seed
+noise but variance across independent quantization runs and calibration
+subsets, which we do not characterize.  A multi-run study would be needed to
+attach formal confidence intervals to the reported $\Delta$PPL values.
 
 \textbf{Quantization implementation differences.}  The Qwen q4 models were
 obtained from mlx-community (group size unspecified) while the Mistral q4
