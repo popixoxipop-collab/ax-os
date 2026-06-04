@@ -1,0 +1,4 @@
+# graphify internal/machine-local state — not for version control
+.graphify_python
+.graphify_*.json
+cache/
