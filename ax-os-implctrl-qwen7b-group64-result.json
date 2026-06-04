@@ -1,0 +1,24 @@
+{
+  "experiment": "implementation-difference control (Qwen2.5-7B q4 group64 local)",
+  "source_bf16": "mlx-community/Qwen2.5-7B-Instruct-bf16",
+  "local_artifact": "/Users/xox/Desktop/AEQ/models/qwen2.5-7b-q4-group64-local",
+  "local_q4_size_mb": 4284.3,
+  "pipeline": "mlx_lm.convert q_bits=4 q_group_size=64 (identical to Mistral)",
+  "platform": "MLX 0.31.1, Apple Silicon",
+  "dataset": "wikitext-2-raw-v1/test",
+  "seq_len": 512,
+  "n_tokens": 398899,
+  "elapsed_s": 1469.6,
+  "ppl": {
+    "qwen7b_bf16": 9.2154,
+    "qwen7b_q4_mlxcommunity": 10.5298,
+    "qwen7b_q4_local_group64": 10.7199
+  },
+  "deg_pct": {
+    "mlxcommunity_q4": 14.26,
+    "local_q4_group64": 16.33,
+    "mistral7b_crossarch": 3.87
+  },
+  "pipeline_explains_pct_of_gap": -19.8,
+  "verdict": "CONFOUND_RULED_OUT — arch-dominates-scale HOLDS"
+}
