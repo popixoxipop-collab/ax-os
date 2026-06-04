@@ -610,9 +610,11 @@ The Mistral-7B-Instruct-v0.3 q4 artifact (4,078\,MB, ppl\,$+3.9\%$,
 throughput $+17\%$) is registered in the AX OS \texttt{AEQIntegration} registry
 as a drop-in agent model for consumer hardware with $\geq$5\,GB free VRAM.
 
-Future work includes extending the scale study to 3B, 13B, and 34B parameter
-checkpoints, validating mixed-precision AEQ on MoE architectures, and
-measuring throughput on CUDA targets to complement the Apple Silicon results.
+Future work includes extending the scale study to 13B and 34B parameter
+checkpoints to determine whether the Qwen ΔPPL plateau continues, controlling
+for quantization implementation differences across architectures, validating
+mixed-precision AEQ on MoE architectures, and measuring throughput on CUDA
+targets to complement the Apple Silicon results.
 
 \clearpage
 \bibliographystyle{plainnat}
