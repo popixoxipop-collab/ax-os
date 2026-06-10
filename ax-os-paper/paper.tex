@@ -30,9 +30,9 @@ sizes (1.5B, 3B, 7B) and Mistral-7B shows that within the Qwen family,
 uniform q4 (group size 64) perplexity degradation is nearly flat at
 $+15.0\%$, $+11.7\%$, $+13.5\%$---scale alone does not drive quantization
 robustness.  Cross-architecture variation dominates: Mistral-7B degrades only
-$+3.9\%$ versus Qwen2.5-7B's $+13.5\%$ at the same $3.5\times$ compression
-ratio, a $3.5\times$ gap that motivates architecture-stratified rather than
-scale-only quantization decisions.  Mixed-precision alternatives (3-bit low
+$+3.9\%$ versus Qwen2.5-7B's $+13.5\%$–$+16.3\%$ at the same $3.5\times$
+compression ratio, a $3.5\times$–$4.2\times$ gap that motivates
+architecture-stratified rather than scale-only quantization decisions.  Mixed-precision alternatives (3-bit low
 layers) collapse in quality at 1.5B scale, reinforcing the uniform scheme
 choice.  To ensure these results are exactly reproducible on any target
 machine, we contribute two pieces of deployment infrastructure:
@@ -291,8 +291,8 @@ fork, adding zero observable overhead in mock mode.
 \label{sec:method:aeq}
 
 We apply the MLX \texttt{mlx\_lm.convert} API with \texttt{q\_bits=4},
-\texttt{q\_group\_size=64} to two dense transformer models: Qwen2.5-1.5B-Instruct
-and Mistral-7B-Instruct-v0.3.  This uniform quantization scheme assigns 4 bits
+\texttt{q\_group\_size=64} to four dense transformer models: Qwen2.5-1.5B-Instruct,
+Qwen2.5-3B-Instruct, Qwen2.5-7B-Instruct, and Mistral-7B-Instruct-v0.3.  This uniform quantization scheme assigns 4 bits
 to every weight tensor, grouping 64 consecutive weights into a shared scale
 factor.
 
@@ -381,25 +381,15 @@ was changed.
 \subsection{Oracle Switching: Design Verification}
 \label{sec:exp:oracle}
 
-The oracle switching contribution is a design pattern, not an empirical
-measurement, so we evaluate its properties structurally.
-
-\textbf{Portability.}  The inline \texttt{realSim()} requires no compiled
-\texttt{dist/}: the demo script imports no library module.  On a clean clone
-the mock path is immediately available; the live path additionally requires
-Python and \texttt{brain.simulator} on the local machine.
-
-\textbf{Zero mock-mode overhead.}  The \texttt{if} guard is a single string
-equality check (\texttt{process.env.BRAIN\_REAL === '1'}) before any
-subprocess fork.  No subprocess is spawned and no file descriptor is opened
-when the guard is false.
-
-\textbf{Live-path architecture.}  The \texttt{execSync} call is configured
-with a 1,800,000\,ms timeout to accommodate the $\sim$140\,s API round-trip
-observed in the WorldQuant alpha simulation environment.  The subprocess
-protocol (one-line JSON on \texttt{stdout}) is independent of the oracle's
-internal implementation, making the pattern applicable to any Python-backed
-oracle with a JSON-serialisable output.
+The oracle switching contribution is a design pattern evaluated structurally.
+The inline \texttt{realSim()} function requires no compiled \texttt{dist/}:
+activation is controlled by a single environment variable
+(\texttt{BRAIN\_REAL=1}), with zero overhead in mock mode (one string
+equality check before any subprocess fork).  The live path spawns a Python
+subprocess with a 1,800,000\,ms timeout matching the observed
+$\sim$140\,s WorldQuant API round-trip; the one-line JSON protocol is
+independent of oracle internals, generalising to any Python-backed
+JSON-serialisable oracle.
 
 \subsection{Quantization Quality vs.\ Scale}
 \label{sec:exp:aeq}
@@ -481,6 +471,12 @@ $3.5\times$ more robust than Qwen2.5-7B ($+13.5\%$) at identical parameter
 count.  \cref{tab:mistral} provides the full Mistral-7B comparison including
 throughput.
 
+The cross-architecture conclusion is robust to the short-corpus uncertainty
+in the 7B estimate: at $+13.5\%$ (short-corpus) the gap is $3.5\times$;
+at $+16.3\%$ (companion full-corpus, \cref{sec:results:limits}) it is
+$4.2\times$---both far exceeding the $1.3\times$ intra-family range and
+ruling out a scale explanation for the cross-architecture gap.
+
 \begin{table}[t]
   \centering
   \caption{Mistral-7B-Instruct-v0.3 uniform q4 compression
@@ -534,8 +530,9 @@ evaluation reveals two distinct effects.  First, within the Qwen2.5 model
 family, uniform q4 $\Delta$PPL is nearly scale-invariant: $+15.0\%$, $+11.7\%$,
 $+13.5\%$ at 1.5B, 3B, and 7B respectively---a $1.3\times$ range despite a
 $4.7\times$ parameter increase.  Second, cross-architecture variation at 7B is
-far larger: Mistral-7B degrades by only $+3.9\%$, a $3.5\times$ gap versus
-Qwen2.5-7B at the same scale and compression ratio.  These results suggest that,
+far larger: Mistral-7B degrades by only $+3.9\%$, a $3.5\times$–$4.2\times$ gap versus
+Qwen2.5-7B at the same scale and compression ratio (range reflects the
+$+13.5\%$ short-corpus and $+16.3\%$ full-corpus estimates for 7B).  These results suggest that,
 in the 1.5B--7B regime, model architecture is a stronger predictor of
 quantization robustness than scale---a pattern consistent with, though not
 directly measured by, \citet{xu2024scaling} and \citet{ouyang2024lowbit} in the
