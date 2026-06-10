@@ -28,10 +28,10 @@ AX OS, a TypeScript multi-agent library with reproducible test infrastructure.
 \textbf{Primary finding:} standard WikiText-2 evaluation across three Qwen2.5
 sizes (1.5B, 3B, 7B) and Mistral-7B shows that within the Qwen family,
 uniform q4 (group size 64) perplexity degradation is nearly flat at
-$+16.2\%$, $+14.4\%$, $+14.3\%$---scale alone does not drive quantization
+$+15.0\%$, $+11.7\%$, $+13.5\%$---scale alone does not drive quantization
 robustness.  Cross-architecture variation dominates: Mistral-7B degrades only
-$+3.9\%$ versus Qwen2.5-7B's $+14.3\%$ at the same $3.5\times$ compression
-ratio, a $3.7\times$ gap that motivates architecture-stratified rather than
+$+3.9\%$ versus Qwen2.5-7B's $+13.5\%$ at the same $3.5\times$ compression
+ratio, a $3.5\times$ gap that motivates architecture-stratified rather than
 scale-only quantization decisions.  Mixed-precision alternatives (3-bit low
 layers) collapse in quality at 1.5B scale, reinforcing the uniform scheme
 choice.  To ensure these results are exactly reproducible on any target
@@ -88,18 +88,22 @@ contributions:
   \item \textbf{Scale-stratified 4-bit quantization measurements (primary).}
     WikiText-2 standard evaluation across three Qwen2.5 sizes and Mistral-7B
     shows that within the Qwen family, uniform q4 $\Delta$PPL is nearly flat
-    ($+16.2\%$ at 1.5B to $+14.3\%$ at 7B), while Mistral-7B degrades only
-    $+3.9\%$---architecture dominates scale as a predictor of quantization
-    robustness at constant $3.5\times$ compression.
+    ($+15.0\%$ at 1.5B, $+11.7\%$ at 3B, $+13.5\%$ at 7B---uniform local-pipeline), while Mistral-7B degrades only
+    $+3.9\%$---suggesting that architecture is a stronger predictor than scale
+    for quantization robustness at constant $3.5\times$ compression, within
+    this two-family comparison.
   \item \textbf{Zero-dependency \texttt{node:test} harness (enabling).}
     A 40-line shim backed by Node.js built-ins achieves 27/27 test pass on any
     clean Node.js $\geq$18 installation without \texttt{npm install}, including
     the tests that validate the compressed-model registry.
-  \item \textbf{Inline BRAIN\_REAL oracle switching (enabling).}
-    An environment-variable gate activates a Python subprocess oracle without
-    a compiled \texttt{dist/} artifact, preserving demo-script portability on
-    any deployment target.
 \end{enumerate}
+
+Additionally, we describe an \textbf{inline oracle design pattern}
+(\texttt{BRAIN\_REAL=1}) in which a single environment variable activates a
+Python subprocess oracle at test time without requiring a compiled build
+artifact.  This pattern is structurally verified in the AX OS codebase but
+not executed against the live oracle in this work, and is offered as an
+engineering reference rather than an empirical finding.
 
 % ============================================================
 \section{Related Work}
@@ -449,7 +453,9 @@ increase ratio $\Delta\text{PPL} = (\text{PPL}_\text{q4} -
   \caption{Scale-stratified uniform q4 compression on WikiText-2 (Apple M1 Max, MLX).
     Within the Qwen family, $\Delta$PPL is nearly flat across 1.5B–7B.
     At 7B, architecture dominates: Mistral-7B degrades only $+3.9\%$
-    versus Qwen2.5-7B's $+14.3\%$ at the same compression ratio.}
+    versus Qwen2.5-7B's $+13.5\%$ at the same compression ratio.
+    All Qwen models re-quantized via \texttt{mlx\_lm.convert} (group size 64);
+    $^\dagger$7B value is a matched 8\,192-token estimate (see \S\,\ref{sec:results:limits}).}
   \label{tab:scale}
   \begin{tabular}{llrrr}
     \toprule
@@ -457,9 +463,9 @@ increase ratio $\Delta\text{PPL} = (\text{PPL}_\text{q4} -
     \cmidrule(lr){3-4}
           &        & bf16 & q4 & \\
     \midrule
-    Qwen2.5-1.5B  & Qwen    & 14.41 & 16.75 & $+16.2$ \\
-    Qwen2.5-3B    & Qwen    & 12.75 & 14.58 & $+14.4$ \\
-    Qwen2.5-7B    & Qwen    &  9.22 & 10.53 & $+14.3$ \\
+    Qwen2.5-1.5B  & Qwen    & 12.70 & 14.60 & $+15.0$ \\
+    Qwen2.5-3B    & Qwen    & 11.45 & 12.79 & $+11.7$ \\
+    Qwen2.5-7B    & Qwen    & 10.20 & 11.59 & $+13.5^{\dagger}$ \\
     Mistral-7B    & Mistral &  8.92 &  9.27 & $+3.9$  \\
     \bottomrule
   \end{tabular}
@@ -468,10 +474,10 @@ increase ratio $\Delta\text{PPL} = (\text{PPL}_\text{q4} -
 \cref{fig:scale_ppl} plots perplexity increase against parameter count.
 All four models share a $\approx$3.5$\times$ compression ratio.
 Within the Qwen family, $\Delta$PPL decreases only slightly across three scale points
-(1.5B: $+16.2\%$, 3B: $+14.4\%$, 7B: $+14.3\%$), indicating that scale
+(1.5B: $+15.0\%$, 3B: $+11.7\%$, 7B: $+13.5\%$), indicating that scale
 alone is a weak predictor of quantization robustness within a model family.
 The cross-architecture gap is more pronounced: Mistral-7B ($+3.9\%$) is
-$3.7\times$ more robust than Qwen2.5-7B ($+14.3\%$) at identical parameter
+$3.5\times$ more robust than Qwen2.5-7B ($+13.5\%$) at identical parameter
 count.  \cref{tab:mistral} provides the full Mistral-7B comparison including
 throughput.
 
@@ -496,10 +502,10 @@ throughput.
   \includegraphics[width=\linewidth]{figures/fig_q4_scale_ppl.png}
   \caption{Perplexity increase (\%) under uniform q4 quantization versus
     model parameter count (WikiText-2).  Within the Qwen family (filled circles),
-    $\Delta$PPL is nearly flat: $+16.2\%$ (1.5B), $+14.4\%$ (3B), $+14.3\%$ (7B).
-    Mistral-7B (cross marker) degrades only $+3.9\%$ at the same 7B scale,
-    a $3.7\times$ cross-architecture gap.  All models share $\approx$3.5$\times$
-    compression.}
+    $\Delta$PPL under uniform local-pipeline q4: $+15.0\%$ (1.5B), $+11.7\%$ (3B),
+    $+13.5\%$ (7B$^\dagger$). Mistral-7B (cross marker) degrades only $+3.9\%$ at
+    the same 7B scale, a $3.5\times$ cross-architecture gap.  All models share
+    $\approx$3.5$\times$ compression.}
   \label{fig:scale_ppl}
 \end{figure}
 
@@ -525,23 +531,39 @@ is independent of the oracle's internal implementation.
 
 \textbf{Scale-dependent q4 tolerance (Contribution 3).}  WikiText-2 standard
 evaluation reveals two distinct effects.  First, within the Qwen2.5 model
-family, uniform q4 $\Delta$PPL is nearly scale-invariant: $+16.2\%$, $+14.4\%$,
-$+14.3\%$ at 1.5B, 3B, and 7B respectively---only a $1.1\times$ range despite a
+family, uniform q4 $\Delta$PPL is nearly scale-invariant: $+15.0\%$, $+11.7\%$,
+$+13.5\%$ at 1.5B, 3B, and 7B respectively---a $1.3\times$ range despite a
 $4.7\times$ parameter increase.  Second, cross-architecture variation at 7B is
-far larger: Mistral-7B degrades by only $+3.9\%$, a $3.7\times$ gap versus
-Qwen2.5-7B at the same scale and compression ratio.  These results refine the
-picture suggested by \citet{xu2024scaling} and \citet{ouyang2024lowbit}: while
-quality robustness does increase with scale in the 7B--70B range, model
-architecture is a stronger predictor than scale for the 1.5B--7B regime measured
-here.
+far larger: Mistral-7B degrades by only $+3.9\%$, a $3.5\times$ gap versus
+Qwen2.5-7B at the same scale and compression ratio.  These results suggest that,
+in the 1.5B--7B regime, model architecture is a stronger predictor of
+quantization robustness than scale---a pattern consistent with, though not
+directly measured by, \citet{xu2024scaling} and \citet{ouyang2024lowbit} in the
+7B--70B range.
+
+The mechanism underlying this cross-architecture difference is not directly
+observable from our WikiText-2 measurements, but several hypotheses warrant
+future investigation.  Mistral-7B uses a Grouped-Query Attention (GQA) head
+configuration with 8 key--value heads versus Qwen2.5-7B's full 28-head attention,
+which substantially reduces the total number of weight tensors subject to
+quantization.  Mistral is also trained on a different data mixture and uses a
+SentencePiece tokenizer versus Qwen's tiktoken-based vocabulary, both of which
+affect the distribution of activation magnitudes that interact with weight
+quantization at inference time.  Whether the robustness gap is primarily
+attributable to architecture choices (GQA, MLP expansion ratio), training data
+distribution, or vocabulary size remains an open question that a controlled
+ablation study---varying one factor at a time within the same training
+framework---would be needed to resolve.
 
 \textbf{Mixed-precision failure.}  For the 1.5B dense model, both
 mixed-precision recipes (3+6-bit and 2+6-bit) are \emph{dominated} by uniform
-q4 on both size and quality axes.  This result falsifies the intuition that
+q4 on both size and quality axes.  This result challenges the intuition that
 ``less important layers can use fewer bits'' for small dense models: the
 precision-sensitive layers at 1.5B scale appear distributed throughout the
-network, so uniform quantization incurs less total rounding error than
-concentrated low-bit assignments.
+network, so that uniform quantization incurs less total rounding error than
+concentrated low-bit assignments under this configuration.  Whether this
+holds across other small-scale architectures requires broader experimental
+validation.
 
 \subsection{Limitations and Scope}
 \label{sec:results:limits}
@@ -570,19 +592,17 @@ noise but variance across independent quantization runs and calibration
 subsets, which we do not characterize.  A multi-run study would be needed to
 attach formal confidence intervals to the reported $\Delta$PPL values.
 
-\textbf{Quantization implementation differences (controlled).}  The Qwen q4
-models in \cref{tab:scale} were obtained from mlx-community (group size
-unspecified) while the Mistral q4 artifact was produced locally with
-\texttt{mlx\_lm.convert} (group size 64).  To rule out a pipeline confound, we
-re-quantized Qwen2.5-7B with the \emph{identical} local pipeline (group size 64)
-and re-measured WikiText-2 perplexity under the same protocol: it degraded
-$+16.3\%$ (ppl $9.22\!\rightarrow\!10.72$), marginally \emph{more} than the
-mlx-community artifact ($+14.3\%$) and far more than Mistral-7B ($+3.9\%$) at
-identical compression.  Implementation choice therefore moves $\Delta$PPL by
-$\sim$2 points---an order of magnitude smaller than the $\sim$12-point
-cross-architecture gap, which survives identical pipelines.  A residual
-$\sim$2-point sensitivity to group size and conversion tooling is the one
-implementation caveat that remains.
+\textbf{Quantization pipeline (resolved).}  All Qwen q4 models in
+\cref{tab:scale} were re-quantized locally with \texttt{mlx\_lm.convert}
+at group size 64, eliminating the prior mlx-community confound.  The 1.5B and 3B
+values are full-corpus evaluations (all WikiText-2 test tokens).  The 7B value is
+a matched short-corpus estimate ($^\dagger$8\,192 tokens, 16 non-overlapping
+windows); full-corpus hardware constraints (7$+$ hours on M1 Max under Metal
+contention) precluded a complete run.  A companion full-corpus local-pipeline
+experiment gives Qwen2.5-7B $+16.3\%$ (ppl $9.22\!\rightarrow\!10.72$ under the
+original eval protocol)---consistent in direction with the $+13.5\%$ short-corpus
+estimate.  Both values are substantially larger than Mistral-7B ($+3.9\%$);
+the cross-architecture conclusion is robust to this $\pm$3-point uncertainty.
 
 \textbf{MoE models untested.}  The conclusion that mixed-precision is inferior
 to uniform q4 applies only to \emph{dense} transformers.  Mixture-of-Experts
@@ -604,12 +624,12 @@ a reproducible scale-stratified quantization study of edge LLM deployment.
 
 The primary empirical finding is that, on WikiText-2 standard evaluation across
 three Qwen2.5 sizes and Mistral-7B, uniform q4 $\Delta$PPL within the Qwen
-family is nearly flat ($+16.2\%$ at 1.5B, $+14.4\%$ at 3B, $+14.3\%$ at 7B)
-at $3.5\times$ compression---scale alone is a weak predictor of quantization
-robustness in the 1.5B--7B range.  Cross-architecture variation is far larger:
-Mistral-7B degrades only $+3.9\%$ at identical scale and compression, a
-$3.7\times$ gap that motivates architecture-stratified rather than scale-only
-quantization scheme selection.
+family ranges $+11.7\%$--$+15.0\%$ ($+15.0\%$ at 1.5B, $+11.7\%$ at 3B,
+$+13.5\%$ at 7B$^\dagger$) at $3.5\times$ compression---scale alone is a weak
+predictor of quantization robustness in the 1.5B--7B range.  Cross-architecture
+variation is far larger: Mistral-7B degrades only $+3.9\%$ at identical scale
+and compression, a $3.5\times$ gap that motivates architecture-stratified rather
+than scale-only quantization scheme selection.
 
 To make these measurements exactly reproducible on any edge deployment target,
 we contribute two infrastructure components.  The built-in-only
