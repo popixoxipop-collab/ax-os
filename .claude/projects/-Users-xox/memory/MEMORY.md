@@ -1,5 +1,8 @@
 # Global Workflow Memory
 
+## Post-Backprop Challenge (2026-06-11) ★★★★★ — 작업 시 먼저 읽기
+- [postbackprop_competition_rules.md](postbackprop_competition_rules.md) — **절대 제약: ①global backward/autograd/표준optimizer 금지 ②from_pretrained 금지 ③4B+params ④token-level conversational LM ⑤T4 3hr**. BLL(detach 경계)=합법. 상금 달성 어려움, best valid attempt 목표. hook `postbackprop-rules-guard.py` 감시.
+
 ## Setup
 - Global CLAUDE.md: ~/CLAUDE.md
 - Shell functions: cc, ccp, ccr, cwt, cwt-ls, cwt-rm, cwt-clean, cc-status, cc-sync, cc-parallel, cc-do, cc-plan
@@ -74,6 +77,7 @@
 - [aeq_synthetic_sft_degrades.md](aeq_synthetic_sft_degrades.md) — **★ 합성 CoT SFT는 clean·well-posed여도 base EQ 추론 32%→12% 열화**(2026-06-05 solvable n=25 측정). 모델 자연추론>합성절차. SFT 레버 막힘 → solver+fusion 확정. 측정도구 `data/solvable_eval.jsonl`+`build_solvable_eval.py`. 자산: `improved_eq_gen.py`/`improved_cipher_gen.py`/`eval_format.py`+hook.
 - [aeq_quant_correction_findings.md](aeq_quant_correction_findings.md) — **★ 양자화는 정확도 병목 아님**(2D보정 91%회수=정확도0). 활성-인지 저랭크보정 브릿지 실증(LQER/ASER). 갭은 어댑터.
 - [aeq_bianfu_spec_match.md](aeq_bianfu_spec_match.md) — **★ 로컬 LoRA는 bianfu(0.83) 정합 필수: r=32/scale=1.0/lm_head포함/dropout=0.0** (2026-06-08 어댑터 바이너리 비교). round_4(r16/scale0.5/lm_head없음)는 미달. lm_head는 MLX keys 명시 필수(자동탐색 누락). hook `bianfu-spec-guard.py` 강제(bypass AEQ_ABLATION=1). round_5 재학습 `/Volumes/D50/AEQ/adaptive/round_5/`.
+- [aeq_task_arithmetic_breakthrough.md](aeq_task_arithmetic_breakthrough.md) — **★★ SFT 전부 막힌 뒤 task negation 미세 외삽 α=0.1로 bianfu 0.83→0.84 돌파** (2026-06-09). W=(1+α)bianfu−α·warmstart, 절벽 가파름(0.2=0.73/0.3=0.41/0.5=0.00). +Ricci surgery로 순수α2.0(0.00붕괴)→0.80 회복(발산 절제). 키정렬 backbone→model 필수. 자산 `/Volumes/D50/AEQ/neg_delta_a*/surg_a*`. D50 디스크풀 주의.
 
 ## AEQ GPU 환경 (2026-05-24 업데이트) ★★★★★
 - [aeq_gpu_environment.md](aeq_gpu_environment.md) — **로컬 GPU: RTX 5070 Ti (SM12.0, 15.9GB)** — RTX 3060에서 업그레이드됨. SM12.0 패치 필수. 벤치 기준: Multi-Batch 422.8 tok/s.
@@ -93,6 +97,9 @@
 
 ## 실험 전 원본 보존 (2026-04-25) ★★★★★
 - [feedback_preserve_originals.md](feedback_preserve_originals.md) — **수정 실험 전 원본 백업 필수** (git checkout으로 uncommitted 개발본 유실 교훈)
+
+## Claim 워프 Legacy 연구방향 (2026-06-10) ★★★★★ — 다음=포락선 유도
+- [project_warp_feasibility_envelope.md](project_warp_feasibility_envelope.md) — **양에너지 워프 셸의 핵융합 실현 포락선** = 사용자 legacy 니치. 우선권 정찰 full-text 완료(Fuchs/Warp Factory/Astrum 전부 포락선·스케일링·SOCP최적성 미점유 → OPEN). 킬러앵글=Wall#3(10⁴³J) vs Astrum "lab-scale" 판결. 경쟁 가열(Dec25–Mar26 러시), 속도 관건. 다음=(A) M(R,v) 유도→paper-orchestra. `Claim/HANDOFF_warp_envelope.md`.
 
 ## Claim 시리즈 추론망 (2026-06-04) ★★★★★
 - [claim_reasoning_network.md](claim_reasoning_network.md) — **P1-P52 추론망 전체 구조**: SUMMARY가 허브(betweenness 0.055), 수정체인 35개, Wall#5 유일 철거→Wall#3 강화, 취약고리=SUMMARY→P41 도약. graphify 통합그래프 2190노드/3064엣지. `graphify-out/graph_unified.html`. **+공격면(2026-06-04): B1~B4 reconciled, A1 braneworld 계산완료(BBN 범주오류), P53 exhaustion 초안(gap L1), B5 pending.**

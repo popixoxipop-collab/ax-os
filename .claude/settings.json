@@ -63,6 +63,11 @@
         "hooks": [
           {
             "type": "command",
+            "command": "python3 /Users/xox/.claude/hooks/scripts/postbackprop-rules-guard.py",
+            "timeout": 3000
+          },
+          {
+            "type": "command",
             "command": "node /Users/xox/.claude/hooks/scripts/secret-scanner.js",
             "timeout": 5000
           },
@@ -110,6 +115,11 @@
       {
         "matcher": "Edit",
         "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /Users/xox/.claude/hooks/scripts/postbackprop-rules-guard.py",
+            "timeout": 3000
+          },
           {
             "type": "command",
             "command": "node /Users/xox/.claude/hooks/scripts/secret-scanner.js",
@@ -192,6 +202,11 @@
           {
             "type": "command",
             "command": "python3 /Users/xox/.claude/hooks/scripts/icloud-drive-guard.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 /Users/xox/.claude/hooks/scripts/resource-limit-guard.py",
+            "timeout": 4000
           }
         ]
       },
@@ -388,5 +403,8 @@
   },
   "effortLevel": "high",
   "skipDangerousModePermissionPrompt": true,
-  "theme": "dark-daltonized"
+  "skipWorkflowUsageWarning": true,
+  "theme": "dark-daltonized",
+  "agentPushNotifEnabled": true,
+  "model": "sonnet"
 }
