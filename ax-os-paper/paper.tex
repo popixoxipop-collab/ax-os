@@ -10,8 +10,8 @@
 \usepackage[T1]{fontenc}
 \usepackage[capitalize]{cleveref}
 
-\title{AX OS: Reproducible Zero-Dependency Testing, Live Oracle Integration,
-       and Scale-Stratified 4-bit Quantization for Edge LLM Agents}
+\title{AX OS: Scale-Stratified 4-bit Quantization for Edge LLM Agents,
+       with Reproducible Zero-Dependency Test Infrastructure}
 
 \author{Anonymous}
 
@@ -23,25 +23,27 @@
 \begin{abstract}
 % ============================================================
 
-We present AX OS, a TypeScript multi-agent operating system library that
-addresses three co-occurring problems in edge LLM deployment.
-\textbf{(1) Reproducible testing:} we replace a vitest-based test suite with a
-40-line \texttt{\_harness.mjs} shim backed entirely by Node.js built-ins
-(\texttt{node:test}, \texttt{node:assert/strict}), achieving 27/27 test pass
-on any clean Node.js~$\geq$18 machine without \texttt{npm install}.
-\textbf{(2) Inline oracle switching:} a single \texttt{BRAIN\_REAL=1}
-environment variable activates a Python subprocess to call a live financial
-alpha simulator, preserving demo-script portability with no build dependency.
-\textbf{(3) Scale-stratified 4-bit compression:} standard WikiText-2 evaluation
-across three Qwen2.5 sizes (1.5B, 3B, 7B) and Mistral-7B shows that within
-the Qwen family, uniform q4 (group size 64) perplexity degradation is nearly
-flat at $+16.2\%$, $+14.4\%$, $+14.3\%$---scale alone does not drive
-quantization robustness.  Cross-architecture variation dominates: Mistral-7B
-degrades only $+3.9\%$ versus Qwen2.5-7B's $+14.3\%$ at the same $3.5\times$
-compression ratio, motivating architecture-stratified quantization decisions.
-Mixed-precision alternatives (3-bit low layers) collapse in quality at 1.5B
-scale, reinforcing the scheme choice.  The AX OS model registry (\texttt{AEQIntegration}) makes the
-compressed Mistral-7B artifact directly loadable as a drop-in agent model.
+We study scale-stratified 4-bit quantization for edge LLM deployment using
+AX OS, a TypeScript multi-agent library with reproducible test infrastructure.
+\textbf{Primary finding:} standard WikiText-2 evaluation across three Qwen2.5
+sizes (1.5B, 3B, 7B) and Mistral-7B shows that within the Qwen family,
+uniform q4 (group size 64) perplexity degradation is nearly flat at
+$+16.2\%$, $+14.4\%$, $+14.3\%$---scale alone does not drive quantization
+robustness.  Cross-architecture variation dominates: Mistral-7B degrades only
+$+3.9\%$ versus Qwen2.5-7B's $+14.3\%$ at the same $3.5\times$ compression
+ratio, a $3.7\times$ gap that motivates architecture-stratified rather than
+scale-only quantization decisions.  Mixed-precision alternatives (3-bit low
+layers) collapse in quality at 1.5B scale, reinforcing the uniform scheme
+choice.  To ensure these results are exactly reproducible on any target
+machine, we contribute two pieces of deployment infrastructure:
+\textbf{(1) a zero-dependency \texttt{\_harness.mjs} shim} backed entirely by
+Node.js built-ins (\texttt{node:test}, \texttt{node:assert/strict}), achieving
+27/27 test pass without \texttt{npm install}; and \textbf{(2) inline oracle
+switching} via a single \texttt{BRAIN\_REAL=1} environment variable that
+activates a live Python subprocess oracle without a compiled build artifact.
+The compressed Mistral-7B artifact is registered in the \texttt{AEQIntegration}
+model registry and validated by the installation-free harness, making it
+directly loadable as a drop-in agent model.
 
 \end{abstract}
 
@@ -50,67 +52,53 @@ compressed Mistral-7B artifact directly loadable as a drop-in agent model.
 \label{sec:intro}
 % ============================================================
 
-Deploying large language model (LLM) agents on edge hardware requires solving
-three interlocking problems simultaneously: \emph{model compression} that
-retains acceptable quality, \emph{verifiable test infrastructure} that
-survives clean-environment deployments, and \emph{live oracle integration}
-that couples the agent to external simulators without heavyweight middleware.
-Prior work has addressed each problem in isolation, but no system has treated
-them as a unified, co-designed concern.
+Deploying large language model (LLM) agents on edge hardware requires first
+answering a model-selection question: which model, at which precision, retains
+acceptable quality under memory constraints?  Answering this question
+reproducibly requires test infrastructure that survives clean-environment
+deployments and oracle integration that couples the agent to external simulators
+without heavyweight middleware.  Prior work on quantization has studied the 7B--70B
+regime~\citep{zhao2025benchmarking,xu2024scaling,ouyang2024lowbit}; the
+sub-7B range that governs most edge deployments remains undercharacterised.
+Prior work on ML reproducibility~\citep{gundersen2018state,pineau2021improving}
+identifies dependency management as a leading cause of
+irreproducibility, yet most agent frameworks still require a full \texttt{npm}
+or \texttt{pip} install to run their test suites.
 
-On the compression side, the dominant post-training quantization (PTQ)
-methods---GPTQ~\citep{frantar2023gptq},
-AWQ~\citep{lin2023awq}, and
-SqueezeLLM~\citep{kim2024squeezellm}---demonstrate that 4-bit
-weight quantization can be applied with minimal quality loss on billion-parameter
-models.  Comprehensive surveys of efficient LLM techniques
-\citep{wan2024efficient,zhu2024survey} establish quantization as the
-dominant deployment-time compression strategy.  However, the \emph{relationship
-between model scale and quantization quality loss} has remained undercharacterised.
-Recent benchmarks~\citep{zhao2025benchmarking} evaluate methods across
-model sizes of 7B--70B, and two concurrent scaling-law studies
-\citep{xu2024scaling,ouyang2024lowbit} show that larger models are
-systematically more robust to bit-width reduction.  Extending this analysis
-to sub-3B models: standard WikiText-2 evaluation shows Qwen2.5 $\Delta$PPL is
-nearly flat across 1.5B–7B ($+16.2\%$, $+14.4\%$, $+14.3\%$), while
-Mistral-7B degrades only $+3.9\%$---a cross-architecture effect larger than the
-within-family scale effect
-under the same 4-bit uniform compression---a 3.7$\times$ gap in quality loss
-at identical 7B scale.  This finding has direct
-implications for model selection in memory-constrained edge deployments.
+The dominant post-training quantization (PTQ) methods---GPTQ~\citep{frantar2023gptq},
+AWQ~\citep{lin2023awq}, and SqueezeLLM~\citep{kim2024squeezellm}---demonstrate
+that 4-bit weight quantization can be applied with minimal quality loss on
+billion-parameter models.  Comprehensive surveys~\citep{wan2024efficient,zhu2024survey}
+establish uniform q4 as the dominant deployment-time compression strategy.
+Existing scaling analyses~\citep{xu2024scaling,ouyang2024lowbit} cover the
+7B--70B range; we extend the measurement below 7B to the sizes that govern most
+edge deployments.
 
-On the infrastructure side, edge agents must execute reliably on hardware
-that may lack internet access and may not carry a full Node.js or Python
-dependency tree.  The ML reproducibility literature
-\citep{gundersen2018state,pineau2021improving} identifies dependency
-management as one of the leading causes of experiment irreproducibility.
-Production-grade local inference studies~\citep{rajesh2025productiongrade}
-confirm that framework choice---among llama.cpp, MLX, MLC-LLM, Ollama, and
-PyTorch MPS---creates measurable throughput and reliability differences on
-Apple Silicon, making an installation-free test harness essential
-for validating agent behavior across platforms.
+Once compressed, agents must be validated on the same hardware they target.
+Production local-inference studies~\citep{rajesh2025productiongrade} show that
+framework choice among llama.cpp, MLX, MLC-LLM, Ollama, and PyTorch MPS creates
+measurable differences on Apple Silicon.  Yet validating behavior across these
+platforms requires a test harness that runs without a full dependency install---a
+gap AX OS addresses with a Node.js built-in shim---and an oracle coupling
+mechanism that does not depend on a compiled build artifact.
 
-On the oracle-integration side, agents that interact with external simulators
-(financial alpha engines, physics simulators, etc.) typically depend on
-network calls or complex interprocess scaffolding.  We show that a single
-environment variable (\texttt{BRAIN\_REAL=1}) can activate a live Python
-subprocess oracle at test time, making the toggle auditable, deterministic,
-and reproducible by construction.
-
-This paper presents \textbf{AX OS}, which makes three contributions:
+This paper makes one empirical contribution supported by two infrastructure
+contributions:
 \begin{enumerate}
-  \item A \textbf{zero-dependency \texttt{node:test} harness} for LLM agent
-    testing that works on any clean Node.js $\geq$18 installation without
-    \texttt{npm install}.
-  \item \textbf{Inline BRAIN\_REAL oracle switching}: an environment-variable
-    gate that activates a Python subprocess to call a live financial alpha
-    simulator during integration tests.
-  \item \textbf{Scale-stratified 4-bit quantization measurements}: WikiText-2
-    standard evaluation showing that within the Qwen family, uniform q4
-    perplexity degradation is nearly flat ($+16.2\%$ at 1.5B to $+14.3\%$ at 7B), while
-    Mistral-7B degrades only $+3.9\%$---demonstrating that architecture
-    dominates scale as a predictor of quantization robustness at constant
-    $3.5\times$ compression.
+  \item \textbf{Scale-stratified 4-bit quantization measurements (primary).}
+    WikiText-2 standard evaluation across three Qwen2.5 sizes and Mistral-7B
+    shows that within the Qwen family, uniform q4 $\Delta$PPL is nearly flat
+    ($+16.2\%$ at 1.5B to $+14.3\%$ at 7B), while Mistral-7B degrades only
+    $+3.9\%$---architecture dominates scale as a predictor of quantization
+    robustness at constant $3.5\times$ compression.
+  \item \textbf{Zero-dependency \texttt{node:test} harness (enabling).}
+    A 40-line shim backed by Node.js built-ins achieves 27/27 test pass on any
+    clean Node.js $\geq$18 installation without \texttt{npm install}, including
+    the tests that validate the compressed-model registry.
+  \item \textbf{Inline BRAIN\_REAL oracle switching (enabling).}
+    An environment-variable gate activates a Python subprocess oracle without
+    a compiled \texttt{dist/} artifact, preserving demo-script portability on
+    any deployment target.
 \end{enumerate}
 
 % ============================================================
@@ -215,12 +203,14 @@ contributions and their relationships.
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{figures/fig_system_overview.png}
-  \caption{AX OS comprises three independent contributions integrated into
-    a single zero-dependency TypeScript library.  Left: the \texttt{\_harness.mjs}
-    module replaces vitest with Node.js built-ins.  Centre: the
-    \texttt{BRAIN\_REAL} environment variable gates live versus mock oracle
-    calls.  Right: the scale-stratified q4 compression pipeline exposes
-    compressed artifacts through the \texttt{AEQIntegration} registry.}
+  \caption{AX OS system overview.  The scale-stratified q4 compression pipeline
+    (right) produces artifacts registered in \texttt{AEQIntegration}; the
+    zero-dependency \texttt{\_harness.mjs} (left) validates these registry
+    entries on any clean Node.js $\geq$18 without \texttt{npm install}; and
+    the \texttt{BRAIN\_REAL} oracle gate (centre) couples the agent to live
+    external simulators without a compiled build step.  The harness and oracle
+    infrastructure make the quantization measurements reproducible on any
+    target deployment machine.}
   \label{fig:system_overview}
 \end{figure}
 
@@ -609,24 +599,27 @@ figures for the live path are architecture-derived, not measured.
 \label{sec:conclusion}
 % ============================================================
 
-We presented AX OS, a TypeScript multi-agent OS library that simultaneously
-addresses test reproducibility, live oracle integration, and model compression
-for edge LLM deployment.
+We presented AX OS, a TypeScript multi-agent OS library, as the platform for
+a reproducible scale-stratified quantization study of edge LLM deployment.
 
-Our built-in-only \texttt{\_harness.mjs} harness eliminates the vitest
-install requirement with a 40-line wrapper around Node.js built-ins, achieving
-27/27 test pass on clean checkouts.  The inline \texttt{BRAIN\_REAL} oracle
-switching pattern couples a live Python simulation oracle to the agent
-demonstration script without requiring a compiled \texttt{dist/} directory,
-preserving portability.
+The primary empirical finding is that, on WikiText-2 standard evaluation across
+three Qwen2.5 sizes and Mistral-7B, uniform q4 $\Delta$PPL within the Qwen
+family is nearly flat ($+16.2\%$ at 1.5B, $+14.4\%$ at 3B, $+14.3\%$ at 7B)
+at $3.5\times$ compression---scale alone is a weak predictor of quantization
+robustness in the 1.5B--7B range.  Cross-architecture variation is far larger:
+Mistral-7B degrades only $+3.9\%$ at identical scale and compression, a
+$3.7\times$ gap that motivates architecture-stratified rather than scale-only
+quantization scheme selection.
 
-Most concretely, WikiText-2 standard evaluation across three Qwen2.5 sizes
-and Mistral-7B shows that within the Qwen family, uniform q4 $\Delta$PPL is nearly
-flat ($+16.2\%$ at 1.5B, $+14.4\%$ at 3B, $+14.3\%$ at 7B) at $3.5\times$
-compression---scale alone is a weak predictor of quantization robustness.
-Cross-architecture variation is larger: Mistral-7B degrades only $+3.9\%$ at
-identical scale and compression, a $3.7\times$ gap that motivates
-architecture-stratified rather than scale-only quantization scheme selection.
+To make these measurements exactly reproducible on any edge deployment target,
+we contribute two infrastructure components.  The built-in-only
+\texttt{\_harness.mjs} eliminates the vitest install requirement with a 40-line
+wrapper around Node.js built-ins, achieving 27/27 test pass---including the
+\texttt{registry-loop} tests that validate the compressed-model
+entries---on clean checkouts.  The inline \texttt{BRAIN\_REAL} oracle switching
+pattern couples a live Python simulation oracle to the agent demonstration
+script without requiring a compiled \texttt{dist/} directory, preserving
+portability across deployment platforms.
 
 The Mistral-7B-Instruct-v0.3 q4 artifact (4,078\,MB, ppl\,$+3.9\%$,
 throughput $+17\%$) is registered in the AX OS \texttt{AEQIntegration} registry
