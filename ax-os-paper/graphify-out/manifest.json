@@ -1,7 +1,20 @@
 {
-  "/Users/xox/ax-os-paper/paper.pdf": 1780535436.784071,
+  "/Users/xox/ax-os-paper/eval_ppl_wikitext2.py": 1781113594.1682193,
+  "/Users/xox/ax-os-paper/eval_ppl_quick.py": 1781119679.712202,
+  "/Users/xox/ax-os-paper/gen_scale_ppl_fig.py": 1781122678.502863,
+  "/Users/xox/ax-os-paper/README.md": 1781141149.7115614,
+  "/Users/xox/ax-os-paper/ppl_results.txt": 1781118566.7198317,
+  "/Users/xox/ax-os-paper/HANDOFF.md": 1780634567.571498,
+  "/Users/xox/ax-os-paper/path_a_artifacts/qwen15b_q4_local/README.md": 1781114001.3000784,
+  "/Users/xox/ax-os-paper/path_a_artifacts/qwen3b_q4_local/README.md": 1781114013.8770835,
+  "/Users/xox/ax-os-paper/path_a_artifacts/mistral7b_q4_local/README.md": 1781115594.8783898,
+  "/Users/xox/ax-os-paper/path_a_artifacts/qwen7b_q4_local/README.md": 1781114044.0147297,
+  "/Users/xox/ax-os-paper/path_a_artifacts/mistral7b_bf16/README.md": 1781115559.6329944,
+  "/Users/xox/ax-os-paper/graphify-out/graph.html": 1781141549.223076,
+  "/Users/xox/ax-os-paper/graphify-out/GRAPH_REPORT.md": 1781141544.6749964,
+  "/Users/xox/ax-os-paper/paper.pdf": 1781124288.7755592,
   "/Users/xox/ax-os-paper/figures/fig_quantization_pareto.png": 1780183664.597993,
   "/Users/xox/ax-os-paper/figures/fig_system_overview.png": 1780183664.598373,
   "/Users/xox/ax-os-paper/figures/fig_harness_architecture.png": 1780183664.5973058,
-  "/Users/xox/ax-os-paper/figures/fig_q4_scale_ppl.png": 1780532976.730173
+  "/Users/xox/ax-os-paper/figures/fig_q4_scale_ppl.png": 1781124248.2127204
 }
