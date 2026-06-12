@@ -16,7 +16,7 @@ Uniform protocol: non-overlapping 512-token windows, full WikiText-2 test split,
 
 - **Cross-architecture gap at 7B**: 1.9× (Qwen more sensitive than Mistral)
 - **Intra-family scale effect**: 1.8× range across 4.7× parameter increase (15.0%→8.5%), monotonically decreasing
-- **Paper score**: 73.02/100 (paper-orchestra 6-axis rubric)
+- **Paper score**: 76.1/100 (paper-orchestra 6-axis rubric, post-Thread2 re-score)
 
 ## Files
 
