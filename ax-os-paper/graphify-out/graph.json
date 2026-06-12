@@ -86,63 +86,63 @@
       "file_type": "code",
       "source_file": "/Users/xox/ax-os-paper/eval_ppl_wikitext2.py",
       "source_location": "L1",
-      "id": "users_xox_ax_os_paper_eval_ppl_wikitext2_py",
-      "community": 9,
-      "norm_label": "eval_ppl_wikitext2.py"
+      "community": 13,
+      "norm_label": "eval_ppl_wikitext2.py",
+      "id": "users_xox_ax_os_paper_eval_ppl_wikitext2_py"
     },
     {
       "label": "eval_wikitext2_ppl()",
       "file_type": "code",
       "source_file": "/Users/xox/ax-os-paper/eval_ppl_wikitext2.py",
-      "source_location": "L18",
-      "id": "eval_ppl_wikitext2_eval_wikitext2_ppl",
-      "community": 9,
-      "norm_label": "eval_wikitext2_ppl()"
+      "source_location": "L23",
+      "community": 13,
+      "norm_label": "eval_wikitext2_ppl()",
+      "id": "eval_ppl_wikitext2_eval_wikitext2_ppl"
     },
     {
       "label": "main()",
       "file_type": "code",
       "source_file": "/Users/xox/ax-os-paper/eval_ppl_wikitext2.py",
-      "source_location": "L46",
-      "id": "eval_ppl_wikitext2_main",
-      "community": 9,
-      "norm_label": "main()"
+      "source_location": "L74",
+      "community": 13,
+      "norm_label": "main()",
+      "id": "eval_ppl_wikitext2_main"
     },
     {
       "label": "eval_ppl_quick.py",
       "file_type": "code",
       "source_file": "/Users/xox/ax-os-paper/eval_ppl_quick.py",
       "source_location": "L1",
-      "id": "users_xox_ax_os_paper_eval_ppl_quick_py",
-      "community": 8,
-      "norm_label": "eval_ppl_quick.py"
+      "community": 12,
+      "norm_label": "eval_ppl_quick.py",
+      "id": "users_xox_ax_os_paper_eval_ppl_quick_py"
     },
     {
       "label": "eval_ppl_quick()",
       "file_type": "code",
       "source_file": "/Users/xox/ax-os-paper/eval_ppl_quick.py",
       "source_location": "L15",
-      "id": "eval_ppl_quick_eval_ppl_quick",
-      "community": 8,
-      "norm_label": "eval_ppl_quick()"
+      "community": 12,
+      "norm_label": "eval_ppl_quick()",
+      "id": "eval_ppl_quick_eval_ppl_quick"
     },
     {
       "label": "main()",
       "file_type": "code",
       "source_file": "/Users/xox/ax-os-paper/eval_ppl_quick.py",
       "source_location": "L42",
-      "id": "eval_ppl_quick_main",
-      "community": 8,
-      "norm_label": "main()"
+      "community": 12,
+      "norm_label": "main()",
+      "id": "eval_ppl_quick_main"
     },
     {
       "label": "gen_scale_ppl_fig.py",
       "file_type": "code",
       "source_file": "/Users/xox/ax-os-paper/gen_scale_ppl_fig.py",
       "source_location": "L1",
-      "id": "users_xox_ax_os_paper_gen_scale_ppl_fig_py",
-      "community": 10,
-      "norm_label": "gen_scale_ppl_fig.py"
+      "community": 14,
+      "norm_label": "gen_scale_ppl_fig.py",
+      "id": "users_xox_ax_os_paper_gen_scale_ppl_fig_py"
     },
     {
       "label": "AX OS Paper \u2014 Architecture-Aware Quantization Sensitivity Study",
@@ -153,9 +153,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_ax_os_paper",
       "community": 1,
-      "norm_label": "ax os paper \u2014 architecture-aware quantization sensitivity study"
+      "norm_label": "ax os paper \u2014 architecture-aware quantization sensitivity study",
+      "id": "readme_ax_os_paper"
     },
     {
       "label": "eval_ppl_wikitext2.py \u2014 Full-corpus PPL evaluation (512-token non-overlapping windows)",
@@ -166,9 +166,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_eval_ppl_wikitext2",
       "community": 1,
-      "norm_label": "eval_ppl_wikitext2.py \u2014 full-corpus ppl evaluation (512-token non-overlapping windows)"
+      "norm_label": "eval_ppl_wikitext2.py \u2014 full-corpus ppl evaluation (512-token non-overlapping windows)",
+      "id": "readme_eval_ppl_wikitext2"
     },
     {
       "label": "eval_ppl_quick.py \u2014 Quick eval (first 8192 tokens, 16 windows)",
@@ -179,9 +179,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_eval_ppl_quick",
       "community": 1,
-      "norm_label": "eval_ppl_quick.py \u2014 quick eval (first 8192 tokens, 16 windows)"
+      "norm_label": "eval_ppl_quick.py \u2014 quick eval (first 8192 tokens, 16 windows)",
+      "id": "readme_eval_ppl_quick"
     },
     {
       "label": "gen_scale_ppl_fig.py \u2014 Regenerate fig_q4_scale_ppl figure",
@@ -192,9 +192,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_gen_scale_ppl_fig",
       "community": 1,
-      "norm_label": "gen_scale_ppl_fig.py \u2014 regenerate fig_q4_scale_ppl figure"
+      "norm_label": "gen_scale_ppl_fig.py \u2014 regenerate fig_q4_scale_ppl figure",
+      "id": "readme_gen_scale_ppl_fig"
     },
     {
       "label": "paper.tex \u2014 Main LaTeX source (9 pages)",
@@ -205,9 +205,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_paper_tex",
-      "community": 7,
-      "norm_label": "paper.tex \u2014 main latex source (9 pages)"
+      "community": 8,
+      "norm_label": "paper.tex \u2014 main latex source (9 pages)",
+      "id": "readme_paper_tex"
     },
     {
       "label": "Cross-architecture gap at 7B: 1.9\u00d7 (Qwen more sensitive than Mistral)",
@@ -218,9 +218,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_cross_arch_gap",
-      "community": 5,
-      "norm_label": "cross-architecture gap at 7b: 1.9\u00d7 (qwen more sensitive than mistral)"
+      "community": 3,
+      "norm_label": "cross-architecture gap at 7b: 1.9\u00d7 (qwen more sensitive than mistral)",
+      "id": "readme_cross_arch_gap"
     },
     {
       "label": "Intra-family scale effect: 1.8\u00d7 range across 4.7\u00d7 parameter increase (15.0%\u21928.5%), monotonically decreasing",
@@ -231,9 +231,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_intra_family_scale_effect",
       "community": 1,
-      "norm_label": "intra-family scale effect: 1.8\u00d7 range across 4.7\u00d7 parameter increase (15.0%\u21928.5%), monotonically decreasing"
+      "norm_label": "intra-family scale effect: 1.8\u00d7 range across 4.7\u00d7 parameter increase (15.0%\u21928.5%), monotonically decreasing",
+      "id": "readme_intra_family_scale_effect"
     },
     {
       "label": "Paper score: 73.02/100 (paper-orchestra 6-axis rubric)",
@@ -244,9 +244,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_paper_score",
       "community": 1,
-      "norm_label": "paper score: 73.02/100 (paper-orchestra 6-axis rubric)"
+      "norm_label": "paper score: 73.02/100 (paper-orchestra 6-axis rubric)",
+      "id": "readme_paper_score"
     },
     {
       "label": "Uniform eval protocol: non-overlapping 512-token windows, full WikiText-2 test split, per-model tokenizer",
@@ -257,9 +257,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_uniform_protocol",
       "community": 1,
-      "norm_label": "uniform eval protocol: non-overlapping 512-token windows, full wikitext-2 test split, per-model tokenizer"
+      "norm_label": "uniform eval protocol: non-overlapping 512-token windows, full wikitext-2 test split, per-model tokenizer",
+      "id": "readme_uniform_protocol"
     },
     {
       "label": "Qwen2.5-1.5B: BF16 PPL 12.70 \u2192 q4 PPL 14.60, \u0394PPL +15.0%",
@@ -270,9 +270,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_qwen15b_result",
       "community": 1,
-      "norm_label": "qwen2.5-1.5b: bf16 ppl 12.70 \u2192 q4 ppl 14.60, \u03b4ppl +15.0%"
+      "norm_label": "qwen2.5-1.5b: bf16 ppl 12.70 \u2192 q4 ppl 14.60, \u03b4ppl +15.0%",
+      "id": "readme_qwen15b_result"
     },
     {
       "label": "Qwen2.5-3B: BF16 PPL 11.45 \u2192 q4 PPL 12.79, \u0394PPL +11.7%",
@@ -283,9 +283,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_qwen3b_result",
       "community": 1,
-      "norm_label": "qwen2.5-3b: bf16 ppl 11.45 \u2192 q4 ppl 12.79, \u03b4ppl +11.7%"
+      "norm_label": "qwen2.5-3b: bf16 ppl 11.45 \u2192 q4 ppl 12.79, \u03b4ppl +11.7%",
+      "id": "readme_qwen3b_result"
     },
     {
       "label": "Qwen2.5-7B: BF16 PPL 10.14 \u2192 q4 PPL 11.01, \u0394PPL +8.5%",
@@ -296,9 +296,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_qwen7b_result",
       "community": 1,
-      "norm_label": "qwen2.5-7b: bf16 ppl 10.14 \u2192 q4 ppl 11.01, \u03b4ppl +8.5%"
+      "norm_label": "qwen2.5-7b: bf16 ppl 10.14 \u2192 q4 ppl 11.01, \u03b4ppl +8.5%",
+      "id": "readme_qwen7b_result"
     },
     {
       "label": "Mistral-7B: BF16 PPL 7.24 \u2192 q4 PPL 7.56, \u0394PPL +4.4%",
@@ -309,9 +309,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_mistral7b_result",
       "community": 1,
-      "norm_label": "mistral-7b: bf16 ppl 7.24 \u2192 q4 ppl 7.56, \u03b4ppl +4.4%"
+      "norm_label": "mistral-7b: bf16 ppl 7.24 \u2192 q4 ppl 7.56, \u03b4ppl +4.4%",
+      "id": "readme_mistral7b_result"
     },
     {
       "label": "HANDOFF \u2014 paper.tex compiles clean, 9 pages, 15 cite keys, 4 figures",
@@ -322,9 +322,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "handoff_paper_state",
-      "community": 7,
-      "norm_label": "handoff \u2014 paper.tex compiles clean, 9 pages, 15 cite keys, 4 figures"
+      "community": 8,
+      "norm_label": "handoff \u2014 paper.tex compiles clean, 9 pages, 15 cite keys, 4 figures",
+      "id": "handoff_paper_state"
     },
     {
       "label": "Peer-review score 65.5/100 (two independent raters, 6-axis rubric)",
@@ -335,9 +335,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "handoff_peer_review_score",
-      "community": 5,
-      "norm_label": "peer-review score 65.5/100 (two independent raters, 6-axis rubric)"
+      "community": 3,
+      "norm_label": "peer-review score 65.5/100 (two independent raters, 6-axis rubric)",
+      "id": "handoff_peer_review_score"
     },
     {
       "label": "Axis: scientific_depth \u2014 weight 0.20, avg 58.0",
@@ -348,9 +348,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "handoff_score_scientific_depth",
-      "community": 5,
-      "norm_label": "axis: scientific_depth \u2014 weight 0.20, avg 58.0"
+      "community": 3,
+      "norm_label": "axis: scientific_depth \u2014 weight 0.20, avg 58.0",
+      "id": "handoff_score_scientific_depth"
     },
     {
       "label": "Axis: technical_execution \u2014 weight 0.20, avg 56.0",
@@ -361,9 +361,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "handoff_score_technical_execution",
-      "community": 5,
-      "norm_label": "axis: technical_execution \u2014 weight 0.20, avg 56.0"
+      "community": 3,
+      "norm_label": "axis: technical_execution \u2014 weight 0.20, avg 56.0",
+      "id": "handoff_score_technical_execution"
     },
     {
       "label": "Axis: logical_flow \u2014 weight 0.15, avg 71.0",
@@ -374,9 +374,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "handoff_score_logical_flow",
-      "community": 5,
-      "norm_label": "axis: logical_flow \u2014 weight 0.15, avg 71.0"
+      "community": 3,
+      "norm_label": "axis: logical_flow \u2014 weight 0.15, avg 71.0",
+      "id": "handoff_score_logical_flow"
     },
     {
       "label": "Axis: writing_clarity \u2014 weight 0.15, avg 77.0",
@@ -387,9 +387,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "handoff_score_writing_clarity",
-      "community": 5,
-      "norm_label": "axis: writing_clarity \u2014 weight 0.15, avg 77.0"
+      "community": 3,
+      "norm_label": "axis: writing_clarity \u2014 weight 0.15, avg 77.0",
+      "id": "handoff_score_writing_clarity"
     },
     {
       "label": "Axis: evidence_presentation \u2014 weight 0.20, avg 65.5",
@@ -400,9 +400,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "handoff_score_evidence_presentation",
-      "community": 5,
-      "norm_label": "axis: evidence_presentation \u2014 weight 0.20, avg 65.5"
+      "community": 3,
+      "norm_label": "axis: evidence_presentation \u2014 weight 0.20, avg 65.5",
+      "id": "handoff_score_evidence_presentation"
     },
     {
       "label": "Axis: academic_style \u2014 weight 0.10, avg 74.0",
@@ -413,9 +413,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "handoff_score_academic_style",
-      "community": 5,
-      "norm_label": "axis: academic_style \u2014 weight 0.10, avg 74.0"
+      "community": 3,
+      "norm_label": "axis: academic_style \u2014 weight 0.10, avg 74.0",
+      "id": "handoff_score_academic_style"
     },
     {
       "label": "Rationale: TWO perplexity protocols \u2014 WikiText-2 (standard) vs fixed short-text screening (not comparable)",
@@ -426,9 +426,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "handoff_two_ppl_protocols",
       "community": 1,
-      "norm_label": "rationale: two perplexity protocols \u2014 wikitext-2 (standard) vs fixed short-text screening (not comparable)"
+      "norm_label": "rationale: two perplexity protocols \u2014 wikitext-2 (standard) vs fixed short-text screening (not comparable)",
+      "id": "handoff_two_ppl_protocols"
     },
     {
       "label": "WikiText-2 protocol (primary): Qwen-1.5B q4=16.75, Mistral-7B q4=9.27 \u2014 for tab:scale, tab:mistral, fig:scale_ppl",
@@ -439,9 +439,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "handoff_wikitext2_protocol",
       "community": 1,
-      "norm_label": "wikitext-2 protocol (primary): qwen-1.5b q4=16.75, mistral-7b q4=9.27 \u2014 for tab:scale, tab:mistral, fig:scale_ppl"
+      "norm_label": "wikitext-2 protocol (primary): qwen-1.5b q4=16.75, mistral-7b q4=9.27 \u2014 for tab:scale, tab:mistral, fig:scale_ppl",
+      "id": "handoff_wikitext2_protocol"
     },
     {
       "label": "Fixed short-text screening protocol: Qwen-1.5B q4=59.96 \u2014 for tab:qwen_5way only, NOT comparable to WikiText-2",
@@ -452,9 +452,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "handoff_shorttext_protocol",
       "community": 1,
-      "norm_label": "fixed short-text screening protocol: qwen-1.5b q4=59.96 \u2014 for tab:qwen_5way only, not comparable to wikitext-2"
+      "norm_label": "fixed short-text screening protocol: qwen-1.5b q4=59.96 \u2014 for tab:qwen_5way only, not comparable to wikitext-2",
+      "id": "handoff_shorttext_protocol"
     },
     {
       "label": "Path A \u2014 Re-run experiments to fix confounded cross-arch claim and add CIs",
@@ -465,9 +465,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "handoff_path_a",
-      "community": 5,
-      "norm_label": "path a \u2014 re-run experiments to fix confounded cross-arch claim and add cis"
+      "community": 3,
+      "norm_label": "path a \u2014 re-run experiments to fix confounded cross-arch claim and add cis",
+      "id": "handoff_path_a"
     },
     {
       "label": "Path B \u2014 Re-scope thesis: demote AX OS co-design narrative to quantization finding + appendices",
@@ -478,9 +478,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "handoff_path_b",
-      "community": 11,
-      "norm_label": "path b \u2014 re-scope thesis: demote ax os co-design narrative to quantization finding + appendices"
+      "community": 15,
+      "norm_label": "path b \u2014 re-scope thesis: demote ax os co-design narrative to quantization finding + appendices",
+      "id": "handoff_path_b"
     },
     {
       "label": "Confound: Qwen q4 from mlx-community (group size unspecified) vs Mistral q4 from local mlx_lm.convert (group size 64)",
@@ -491,9 +491,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "handoff_confound_issue",
-      "community": 5,
-      "norm_label": "confound: qwen q4 from mlx-community (group size unspecified) vs mistral q4 from local mlx_lm.convert (group size 64)"
+      "community": 3,
+      "norm_label": "confound: qwen q4 from mlx-community (group size unspecified) vs mistral q4 from local mlx_lm.convert (group size 64)",
+      "id": "handoff_confound_issue"
     },
     {
       "label": "Commit bd17d64 \u2014 Corrected stale '15\u00d7 gap' \u2192 '3.7\u00d7' in intro",
@@ -504,9 +504,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "handoff_commit_bd17d64",
-      "community": 5,
-      "norm_label": "commit bd17d64 \u2014 corrected stale '15\u00d7 gap' \u2192 '3.7\u00d7' in intro"
+      "community": 3,
+      "norm_label": "commit bd17d64 \u2014 corrected stale '15\u00d7 gap' \u2192 '3.7\u00d7' in intro",
+      "id": "handoff_commit_bd17d64"
     },
     {
       "label": "Figure: fig_harness_architecture",
@@ -517,9 +517,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "handoff_fig_harness_architecture",
-      "community": 7,
-      "norm_label": "figure: fig_harness_architecture"
+      "community": 8,
+      "norm_label": "figure: fig_harness_architecture",
+      "id": "handoff_fig_harness_architecture"
     },
     {
       "label": "Figure: fig_quantization_pareto",
@@ -530,9 +530,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "handoff_fig_quantization_pareto",
-      "community": 7,
-      "norm_label": "figure: fig_quantization_pareto"
+      "community": 8,
+      "norm_label": "figure: fig_quantization_pareto",
+      "id": "handoff_fig_quantization_pareto"
     },
     {
       "label": "Figure: fig_q4_scale_ppl (4-point: Qwen 1.5B/3B/7B + Mistral cross)",
@@ -543,9 +543,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "handoff_fig_q4_scale_ppl",
-      "community": 7,
-      "norm_label": "figure: fig_q4_scale_ppl (4-point: qwen 1.5b/3b/7b + mistral cross)"
+      "community": 8,
+      "norm_label": "figure: fig_q4_scale_ppl (4-point: qwen 1.5b/3b/7b + mistral cross)",
+      "id": "handoff_fig_q4_scale_ppl"
     },
     {
       "label": "Figure: fig_system_overview",
@@ -556,9 +556,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "handoff_fig_system_overview",
-      "community": 7,
-      "norm_label": "figure: fig_system_overview"
+      "community": 8,
+      "norm_label": "figure: fig_system_overview",
+      "id": "handoff_fig_system_overview"
     },
     {
       "label": "Qwen2.5-1.5B q4 local artifact (MLX, base: mlx-community/Qwen2.5-1.5B-Instruct-bf16)",
@@ -569,9 +569,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "qwen15b_artifact",
       "community": 1,
-      "norm_label": "qwen2.5-1.5b q4 local artifact (mlx, base: mlx-community/qwen2.5-1.5b-instruct-bf16)"
+      "norm_label": "qwen2.5-1.5b q4 local artifact (mlx, base: mlx-community/qwen2.5-1.5b-instruct-bf16)",
+      "id": "qwen15b_artifact"
     },
     {
       "label": "Qwen2.5-3B q4 local artifact (MLX, base: mlx-community/Qwen2.5-3B-Instruct-bf16)",
@@ -582,9 +582,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "qwen3b_artifact",
       "community": 1,
-      "norm_label": "qwen2.5-3b q4 local artifact (mlx, base: mlx-community/qwen2.5-3b-instruct-bf16)"
+      "norm_label": "qwen2.5-3b q4 local artifact (mlx, base: mlx-community/qwen2.5-3b-instruct-bf16)",
+      "id": "qwen3b_artifact"
     },
     {
       "label": "Qwen2.5-7B q4 local artifact (MLX, base: mlx-community/Qwen2.5-7B-Instruct-bf16)",
@@ -595,9 +595,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "qwen7b_artifact",
       "community": 1,
-      "norm_label": "qwen2.5-7b q4 local artifact (mlx, base: mlx-community/qwen2.5-7b-instruct-bf16)"
+      "norm_label": "qwen2.5-7b q4 local artifact (mlx, base: mlx-community/qwen2.5-7b-instruct-bf16)",
+      "id": "qwen7b_artifact"
     },
     {
       "label": "Mistral-7B q4 local artifact (MLX, base: mistralai/Mistral-7B-Instruct-v0.3)",
@@ -608,9 +608,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "mistral7b_q4_artifact",
       "community": 1,
-      "norm_label": "mistral-7b q4 local artifact (mlx, base: mistralai/mistral-7b-instruct-v0.3)"
+      "norm_label": "mistral-7b q4 local artifact (mlx, base: mistralai/mistral-7b-instruct-v0.3)",
+      "id": "mistral7b_q4_artifact"
     },
     {
       "label": "Mistral-7B BF16 local artifact (MLX, base: mistralai/Mistral-7B-Instruct-v0.3)",
@@ -621,9 +621,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "mistral7b_bf16_artifact",
       "community": 1,
-      "norm_label": "mistral-7b bf16 local artifact (mlx, base: mistralai/mistral-7b-instruct-v0.3)"
+      "norm_label": "mistral-7b bf16 local artifact (mlx, base: mistralai/mistral-7b-instruct-v0.3)",
+      "id": "mistral7b_bf16_artifact"
     },
     {
       "label": "Graph Report \u2014 96 nodes, 118 edges, 13 communities (2026-06-04)",
@@ -634,9 +634,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "graph_report_2026",
-      "community": 6,
-      "norm_label": "graph report \u2014 96 nodes, 118 edges, 13 communities (2026-06-04)"
+      "community": 3,
+      "norm_label": "graph report \u2014 96 nodes, 118 edges, 13 communities (2026-06-04)",
+      "id": "graph_report_2026"
     },
     {
       "label": "Community 0: _harness.mjs \u2014 40-line ES module, 11 matchers hub",
@@ -647,9 +647,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "graph_report_community_harness",
-      "community": 6,
-      "norm_label": "community 0: _harness.mjs \u2014 40-line es module, 11 matchers hub"
+      "community": 3,
+      "norm_label": "community 0: _harness.mjs \u2014 40-line es module, 11 matchers hub",
+      "id": "graph_report_community_harness"
     },
     {
       "label": "Community 1: AX OS TypeScript Multi-Agent OS Library hub",
@@ -660,9 +660,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "graph_report_community_ax_os",
-      "community": 6,
-      "norm_label": "community 1: ax os typescript multi-agent os library hub"
+      "community": 3,
+      "norm_label": "community 1: ax os typescript multi-agent os library hub",
+      "id": "graph_report_community_ax_os"
     },
     {
       "label": "Community 2: Size-Perplexity Pareto for Qwen2.5-1.5B hub",
@@ -673,9 +673,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "graph_report_community_pareto",
-      "community": 6,
-      "norm_label": "community 2: size-perplexity pareto for qwen2.5-1.5b hub"
+      "community": 3,
+      "norm_label": "community 2: size-perplexity pareto for qwen2.5-1.5b hub",
+      "id": "graph_report_community_pareto"
     },
     {
       "label": "Community 4: Metric \u0394PPL under uniform q4 (%) hub",
@@ -686,9 +686,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "graph_report_community_dppl_metric",
-      "community": 6,
-      "norm_label": "community 4: metric \u03b4ppl under uniform q4 (%) hub"
+      "community": 3,
+      "norm_label": "community 4: metric \u03b4ppl under uniform q4 (%) hub",
+      "id": "graph_report_community_dppl_metric"
     },
     {
       "label": "Community 9: Claim architecture dominates scale as predictor of q4 robustness (3.7\u00d7 gap)",
@@ -699,9 +699,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "graph_report_community_arch_claim",
-      "community": 6,
-      "norm_label": "community 9: claim architecture dominates scale as predictor of q4 robustness (3.7\u00d7 gap)"
+      "community": 3,
+      "norm_label": "community 9: claim architecture dominates scale as predictor of q4 robustness (3.7\u00d7 gap)",
+      "id": "graph_report_community_arch_claim"
     },
     {
       "label": "God node: Contribution 3 \u2014 scale-stratified 4-bit quantization measurements (8 edges)",
@@ -712,9 +712,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "graph_report_god_node_contrib3",
-      "community": 6,
-      "norm_label": "god node: contribution 3 \u2014 scale-stratified 4-bit quantization measurements (8 edges)"
+      "community": 3,
+      "norm_label": "god node: contribution 3 \u2014 scale-stratified 4-bit quantization measurements (8 edges)",
+      "id": "graph_report_god_node_contrib3"
     },
     {
       "label": "God node: AX OS TypeScript Multi-Agent OS Library (6 edges)",
@@ -725,9 +725,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "graph_report_god_node_ax_os",
-      "community": 6,
-      "norm_label": "god node: ax os typescript multi-agent os library (6 edges)"
+      "community": 3,
+      "norm_label": "god node: ax os typescript multi-agent os library (6 edges)",
+      "id": "graph_report_god_node_ax_os"
     },
     {
       "label": "God node: mlx_lm.convert (q_bits=4, q_group_size=64) uniform q4 pipeline (5 edges)",
@@ -738,9 +738,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "graph_report_god_node_mlx_pipeline",
-      "community": 6,
-      "norm_label": "god node: mlx_lm.convert (q_bits=4, q_group_size=64) uniform q4 pipeline (5 edges)"
+      "community": 3,
+      "norm_label": "god node: mlx_lm.convert (q_bits=4, q_group_size=64) uniform q4 pipeline (5 edges)",
+      "id": "graph_report_god_node_mlx_pipeline"
     },
     {
       "label": "PPL results log: Qwen2.5-7B q4 local WikiText-2 eval in progress",
@@ -751,9 +751,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "ppl_results_qwen7b",
       "community": 1,
-      "norm_label": "ppl results log: qwen2.5-7b q4 local wikitext-2 eval in progress"
+      "norm_label": "ppl results log: qwen2.5-7b q4 local wikitext-2 eval in progress",
+      "id": "ppl_results_qwen7b"
     },
     {
       "label": "PPL results log: Mistral-7B BF16 WikiText-2 eval in progress",
@@ -764,9 +764,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "ppl_results_mistral7b_bf16",
       "community": 1,
-      "norm_label": "ppl results log: mistral-7b bf16 wikitext-2 eval in progress"
+      "norm_label": "ppl results log: mistral-7b bf16 wikitext-2 eval in progress",
+      "id": "ppl_results_mistral7b_bf16"
     },
     {
       "label": "Rationale: Data-First rule \u2014 no measured values changed or fabricated during refinement",
@@ -777,9 +777,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "rationale_data_first_rule",
-      "community": 7,
-      "norm_label": "rationale: data-first rule \u2014 no measured values changed or fabricated during refinement"
+      "community": 8,
+      "norm_label": "rationale: data-first rule \u2014 no measured values changed or fabricated during refinement",
+      "id": "rationale_data_first_rule"
     },
     {
       "label": "Rationale: uniform q4 pipeline (same mlx_lm.convert, group_size=64) required to eliminate confound between architectures",
@@ -790,9 +790,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "rationale_uniform_pipeline",
-      "community": 5,
-      "norm_label": "rationale: uniform q4 pipeline (same mlx_lm.convert, group_size=64) required to eliminate confound between architectures"
+      "community": 3,
+      "norm_label": "rationale: uniform q4 pipeline (same mlx_lm.convert, group_size=64) required to eliminate confound between architectures",
+      "id": "rationale_uniform_pipeline"
     },
     {
       "label": "Rationale: two PPL protocols must not be conflated \u2014 \u00a73.3 now explicitly states WikiText-2 vs short-text are incomparable",
@@ -803,9 +803,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "rationale_protocol_separation",
       "community": 1,
-      "norm_label": "rationale: two ppl protocols must not be conflated \u2014 \u00a73.3 now explicitly states wikitext-2 vs short-text are incomparable"
+      "norm_label": "rationale: two ppl protocols must not be conflated \u2014 \u00a73.3 now explicitly states wikitext-2 vs short-text are incomparable",
+      "id": "rationale_protocol_separation"
     },
     {
       "label": "Size-Perplexity Pareto Figure (Qwen2.5-1.5B, Five Quantization Schemes)",
@@ -816,9 +816,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "fig_quantization_pareto",
-      "community": 3,
-      "norm_label": "size-perplexity pareto figure (qwen2.5-1.5b, five quantization schemes)"
+      "community": 6,
+      "norm_label": "size-perplexity pareto figure (qwen2.5-1.5b, five quantization schemes)",
+      "id": "fig_quantization_pareto"
     },
     {
       "label": "Qwen2.5-1.5B Model",
@@ -829,9 +829,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "model_qwen25_1b5",
-      "community": 3,
-      "norm_label": "qwen2.5-1.5b model"
+      "community": 6,
+      "norm_label": "qwen2.5-1.5b model",
+      "id": "model_qwen25_1b5"
     },
     {
       "label": "BF16 Baseline Quantization (~3100 MB, ~50 PPL)",
@@ -842,9 +842,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "quant_bf16_baseline",
-      "community": 3,
-      "norm_label": "bf16 baseline quantization (~3100 mb, ~50 ppl)"
+      "community": 6,
+      "norm_label": "bf16 baseline quantization (~3100 mb, ~50 ppl)",
+      "id": "quant_bf16_baseline"
     },
     {
       "label": "q8 Uniform Quantization (~1550 MB, ~45 PPL)",
@@ -855,9 +855,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "quant_q8_uniform",
-      "community": 3,
-      "norm_label": "q8 uniform quantization (~1550 mb, ~45 ppl)"
+      "community": 6,
+      "norm_label": "q8 uniform quantization (~1550 mb, ~45 ppl)",
+      "id": "quant_q8_uniform"
     },
     {
       "label": "q4 Uniform Quantization (~800 MB, ~70 PPL) \u2014 Pareto Dominant",
@@ -868,9 +868,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "quant_q4_uniform",
-      "community": 3,
-      "norm_label": "q4 uniform quantization (~800 mb, ~70 ppl) \u2014 pareto dominant"
+      "community": 6,
+      "norm_label": "q4 uniform quantization (~800 mb, ~70 ppl) \u2014 pareto dominant",
+      "id": "quant_q4_uniform"
     },
     {
       "label": "AEQ Mixed (3+6 bit) Quantization (~750 MB, ~130 PPL)",
@@ -881,9 +881,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "quant_aeq_mixed_3p6",
-      "community": 3,
-      "norm_label": "aeq mixed (3+6 bit) quantization (~750 mb, ~130 ppl)"
+      "community": 6,
+      "norm_label": "aeq mixed (3+6 bit) quantization (~750 mb, ~130 ppl)",
+      "id": "quant_aeq_mixed_3p6"
     },
     {
       "label": "AEQ Mixed (2+6 bit) Quantization (~530 MB, ~162755 PPL \u2014 catastrophic degradation)",
@@ -894,9 +894,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "quant_aeq_mixed_2p6",
-      "community": 3,
-      "norm_label": "aeq mixed (2+6 bit) quantization (~530 mb, ~162755 ppl \u2014 catastrophic degradation)"
+      "community": 6,
+      "norm_label": "aeq mixed (2+6 bit) quantization (~530 mb, ~162755 ppl \u2014 catastrophic degradation)",
+      "id": "quant_aeq_mixed_2p6"
     },
     {
       "label": "Pareto Frontier (Size-Perplexity Trade-off)",
@@ -907,9 +907,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "concept_pareto_frontier",
-      "community": 3,
-      "norm_label": "pareto frontier (size-perplexity trade-off)"
+      "community": 6,
+      "norm_label": "pareto frontier (size-perplexity trade-off)",
+      "id": "concept_pareto_frontier"
     },
     {
       "label": "Catastrophic Degradation under Aggressive Quantization",
@@ -920,9 +920,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "concept_catastrophic_degradation",
-      "community": 3,
-      "norm_label": "catastrophic degradation under aggressive quantization"
+      "community": 6,
+      "norm_label": "catastrophic degradation under aggressive quantization",
+      "id": "concept_catastrophic_degradation"
     },
     {
       "label": "Pareto Dominance \u2014 q4 Uniform Dominates All Others",
@@ -933,9 +933,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "concept_pareto_dominance",
-      "community": 3,
-      "norm_label": "pareto dominance \u2014 q4 uniform dominates all others"
+      "community": 6,
+      "norm_label": "pareto dominance \u2014 q4 uniform dominates all others",
+      "id": "concept_pareto_dominance"
     },
     {
       "label": "Perplexity (log scale, language model quality metric)",
@@ -946,9 +946,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "metric_perplexity",
-      "community": 3,
-      "norm_label": "perplexity (log scale, language model quality metric)"
+      "community": 6,
+      "norm_label": "perplexity (log scale, language model quality metric)",
+      "id": "metric_perplexity"
     },
     {
       "label": "Model Size (MB)",
@@ -959,9 +959,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "metric_model_size_mb",
-      "community": 3,
-      "norm_label": "model size (mb)"
+      "community": 6,
+      "norm_label": "model size (mb)",
+      "id": "metric_model_size_mb"
     },
     {
       "label": "AX OS \u2014 TypeScript Multi-Agent OS Library",
@@ -972,9 +972,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "axos_system",
-      "community": 0,
-      "norm_label": "ax os \u2014 typescript multi-agent os library"
+      "community": 2,
+      "norm_label": "ax os \u2014 typescript multi-agent os library",
+      "id": "axos_system"
     },
     {
       "label": "Contribution 1: Zero-Dependency Test Harness",
@@ -985,9 +985,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "contribution1_test_harness",
-      "community": 0,
-      "norm_label": "contribution 1: zero-dependency test harness"
+      "community": 2,
+      "norm_label": "contribution 1: zero-dependency test harness",
+      "id": "contribution1_test_harness"
     },
     {
       "label": "Contribution 2: Inline BRAIN_REAL Oracle Switching",
@@ -998,9 +998,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "contribution2_oracle_switching",
-      "community": 0,
-      "norm_label": "contribution 2: inline brain_real oracle switching"
+      "community": 2,
+      "norm_label": "contribution 2: inline brain_real oracle switching",
+      "id": "contribution2_oracle_switching"
     },
     {
       "label": "Contribution 3: Scale-Stratified Uniform q4 Compression",
@@ -1011,22 +1011,22 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "contribution3_q4_compression",
-      "community": 0,
-      "norm_label": "contribution 3: scale-stratified uniform q4 compression"
+      "community": 2,
+      "norm_label": "contribution 3: scale-stratified uniform q4 compression",
+      "id": "contribution3_q4_compression"
     },
     {
-      "label": "_harness.mjs (Zero-Dependency Test Harness)",
-      "file_type": "image",
-      "source_file": "figures/fig_system_overview.png",
-      "source_location": null,
+      "label": "_harness.mjs: Zero-Dependency Node.js Test Harness (40-line, 27/27 specs)",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.1 / contribution 1",
       "source_url": null,
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "harness_mjs",
-      "community": 0,
-      "norm_label": "_harness.mjs (zero-dependency test harness)"
+      "community": 7,
+      "norm_label": "_harness.mjs: zero-dependency node.js test harness (40-line, 27/27 specs)",
+      "id": "harness_mjs"
     },
     {
       "label": "node:test (Built-in Test Runner)",
@@ -1037,9 +1037,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "node_test",
-      "community": 0,
-      "norm_label": "node:test (built-in test runner)"
+      "community": 7,
+      "norm_label": "node:test (built-in test runner)",
+      "id": "node_test"
     },
     {
       "label": "node:assert/strict (Built-in Assertion)",
@@ -1050,9 +1050,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "node_assert_strict",
-      "community": 0,
-      "norm_label": "node:assert/strict (built-in assertion)"
+      "community": 7,
+      "norm_label": "node:assert/strict (built-in assertion)",
+      "id": "node_assert_strict"
     },
     {
       "label": "npm install (Before: External Dependency)",
@@ -1063,9 +1063,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "npm_install",
-      "community": 0,
-      "norm_label": "npm install (before: external dependency)"
+      "community": 2,
+      "norm_label": "npm install (before: external dependency)",
+      "id": "npm_install"
     },
     {
       "label": "node_modules/ (Before: Dependency Directory)",
@@ -1076,9 +1076,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "node_modules",
-      "community": 0,
-      "norm_label": "node_modules/ (before: dependency directory)"
+      "community": 2,
+      "norm_label": "node_modules/ (before: dependency directory)",
+      "id": "node_modules"
     },
     {
       "label": "vitest (Before: External Test Framework)",
@@ -1089,9 +1089,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "vitest",
-      "community": 0,
-      "norm_label": "vitest (before: external test framework)"
+      "community": 2,
+      "norm_label": "vitest (before: external test framework)",
+      "id": "vitest"
     },
     {
       "label": "Test Files",
@@ -1102,9 +1102,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "test_files",
-      "community": 0,
-      "norm_label": "test files"
+      "community": 7,
+      "norm_label": "test files",
+      "id": "test_files"
     },
     {
       "label": "Agent Code (TypeScript)",
@@ -1115,9 +1115,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "agent_code_typescript",
-      "community": 0,
-      "norm_label": "agent code (typescript)"
+      "community": 2,
+      "norm_label": "agent code (typescript)",
+      "id": "agent_code_typescript"
     },
     {
       "label": "BRAIN_REAL=0 (Mock Mode)",
@@ -1128,9 +1128,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "brain_real_0_mock",
-      "community": 0,
-      "norm_label": "brain_real=0 (mock mode)"
+      "community": 2,
+      "norm_label": "brain_real=0 (mock mode)",
+      "id": "brain_real_0_mock"
     },
     {
       "label": "BRAIN_REAL=1 (Live Mode)",
@@ -1141,9 +1141,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "brain_real_1_live",
-      "community": 0,
-      "norm_label": "brain_real=1 (live mode)"
+      "community": 2,
+      "norm_label": "brain_real=1 (live mode)",
+      "id": "brain_real_1_live"
     },
     {
       "label": "Simulated BRAIN Response",
@@ -1154,9 +1154,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "simulated_brain_response",
-      "community": 0,
-      "norm_label": "simulated brain response"
+      "community": 2,
+      "norm_label": "simulated brain response",
+      "id": "simulated_brain_response"
     },
     {
       "label": "Live BRAIN API Call",
@@ -1167,9 +1167,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "live_brain_api_call",
-      "community": 0,
-      "norm_label": "live brain api call"
+      "community": 2,
+      "norm_label": "live brain api call",
+      "id": "live_brain_api_call"
     },
     {
       "label": "Same Test Suite \u2014 Zero Code Change",
@@ -1180,9 +1180,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "same_test_suite",
-      "community": 0,
-      "norm_label": "same test suite \u2014 zero code change"
+      "community": 2,
+      "norm_label": "same test suite \u2014 zero code change",
+      "id": "same_test_suite"
     },
     {
       "label": "BRAIN_REAL Environment Variable",
@@ -1193,9 +1193,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "env_var_brain_real",
-      "community": 0,
-      "norm_label": "brain_real environment variable"
+      "community": 2,
+      "norm_label": "brain_real environment variable",
+      "id": "env_var_brain_real"
     },
     {
       "label": "LLM (BF16 Weights)",
@@ -1206,9 +1206,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "llm_bf16_weights",
-      "community": 0,
-      "norm_label": "llm (bf16 weights)"
+      "community": 2,
+      "norm_label": "llm (bf16 weights)",
+      "id": "llm_bf16_weights"
     },
     {
       "label": "quantize_model_q4() [scale-per-group]",
@@ -1219,9 +1219,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "quantize_model_q4",
-      "community": 0,
-      "norm_label": "quantize_model_q4() [scale-per-group]"
+      "community": 2,
+      "norm_label": "quantize_model_q4() [scale-per-group]",
+      "id": "quantize_model_q4"
     },
     {
       "label": "Qwen2.5-1.5B (3.54\u00d7 compression, +24.5% ppl)",
@@ -1232,22 +1232,22 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "qwen_2_5_1_5b",
-      "community": 0,
-      "norm_label": "qwen2.5-1.5b (3.54\u00d7 compression, +24.5% ppl)"
+      "community": 2,
+      "norm_label": "qwen2.5-1.5b (3.54\u00d7 compression, +24.5% ppl)",
+      "id": "qwen_2_5_1_5b"
     },
     {
-      "label": "Mistral-7B (3.56\u00d7 compression, +1.6% ppl)",
-      "file_type": "image",
-      "source_file": "figures/fig_system_overview.png",
-      "source_location": null,
+      "label": "Mistral-7B-Instruct-v0.3",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "table 3/4",
       "source_url": null,
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "mistral_7b",
-      "community": 0,
-      "norm_label": "mistral-7b (3.56\u00d7 compression, +1.6% ppl)"
+      "community": 2,
+      "norm_label": "mistral-7b-instruct-v0.3",
+      "id": "mistral_7b"
     },
     {
       "label": "AEQIntegration TypeScript API (quantize/getCompressionStats/benchmark)",
@@ -1258,9 +1258,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "aeqintegration_api",
-      "community": 0,
-      "norm_label": "aeqintegration typescript api (quantize/getcompressionstats/benchmark)"
+      "community": 2,
+      "norm_label": "aeqintegration typescript api (quantize/getcompressionstats/benchmark)",
+      "id": "aeqintegration_api"
     },
     {
       "label": "Zero External Runtime Dependencies",
@@ -1271,9 +1271,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "zero_external_runtime_deps",
-      "community": 0,
-      "norm_label": "zero external runtime dependencies"
+      "community": 2,
+      "norm_label": "zero external runtime dependencies",
+      "id": "zero_external_runtime_deps"
     },
     {
       "label": "_harness.mjs (Zero-Dependency Test Harness)",
@@ -1284,9 +1284,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "harness_harness_mjs",
-      "community": 2,
-      "norm_label": "_harness.mjs (zero-dependency test harness)"
+      "community": 4,
+      "norm_label": "_harness.mjs (zero-dependency test harness)",
+      "id": "harness_harness_mjs"
     },
     {
       "label": "node:test (Built-in Node.js Test Module)",
@@ -1297,9 +1297,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "harness_node_test",
-      "community": 2,
-      "norm_label": "node:test (built-in node.js test module)"
+      "community": 4,
+      "norm_label": "node:test (built-in node.js test module)",
+      "id": "harness_node_test"
     },
     {
       "label": "node:assert/strict (Built-in Node.js Assert Module)",
@@ -1310,9 +1310,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "harness_node_assert_strict",
-      "community": 2,
-      "norm_label": "node:assert/strict (built-in node.js assert module)"
+      "community": 4,
+      "norm_label": "node:assert/strict (built-in node.js assert module)",
+      "id": "harness_node_assert_strict"
     },
     {
       "label": "agents.test.mjs (Agent Test File)",
@@ -1323,9 +1323,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "harness_agents_test_mjs",
-      "community": 2,
-      "norm_label": "agents.test.mjs (agent test file)"
+      "community": 4,
+      "norm_label": "agents.test.mjs (agent test file)",
+      "id": "harness_agents_test_mjs"
     },
     {
       "label": "aeq.test.mjs (AEQ Test File)",
@@ -1336,9 +1336,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "harness_aeq_test_mjs",
-      "community": 2,
-      "norm_label": "aeq.test.mjs (aeq test file)"
+      "community": 4,
+      "norm_label": "aeq.test.mjs (aeq test file)",
+      "id": "harness_aeq_test_mjs"
     },
     {
       "label": "brain.test.mjs (Brain Test File)",
@@ -1349,9 +1349,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "harness_brain_test_mjs",
-      "community": 2,
-      "norm_label": "brain.test.mjs (brain test file)"
+      "community": 4,
+      "norm_label": "brain.test.mjs (brain test file)",
+      "id": "harness_brain_test_mjs"
     },
     {
       "label": "node --test *.mjs (Node Test Runner Command)",
@@ -1362,9 +1362,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "harness_node_test_runner",
-      "community": 2,
-      "norm_label": "node --test *.mjs (node test runner command)"
+      "community": 4,
+      "norm_label": "node --test *.mjs (node test runner command)",
+      "id": "harness_node_test_runner"
     },
     {
       "label": "27/27 PASS (Test Result)",
@@ -1375,9 +1375,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "harness_27_27_pass",
-      "community": 2,
-      "norm_label": "27/27 pass (test result)"
+      "community": 4,
+      "norm_label": "27/27 pass (test result)",
+      "id": "harness_27_27_pass"
     },
     {
       "label": "vitest (Before: Dependency-Heavy Test Framework)",
@@ -1388,9 +1388,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "harness_vitest",
-      "community": 2,
-      "norm_label": "vitest (before: dependency-heavy test framework)"
+      "community": 4,
+      "norm_label": "vitest (before: dependency-heavy test framework)",
+      "id": "harness_vitest"
     },
     {
       "label": "npm install (Package Installation Step)",
@@ -1401,9 +1401,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "harness_npm_install",
-      "community": 2,
-      "norm_label": "npm install (package installation step)"
+      "community": 4,
+      "norm_label": "npm install (package installation step)",
+      "id": "harness_npm_install"
     },
     {
       "label": "node_modules/ (~300 MB) (Heavy Dependency Directory)",
@@ -1414,9 +1414,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "harness_node_modules",
-      "community": 2,
-      "norm_label": "node_modules/ (~300 mb) (heavy dependency directory)"
+      "community": 4,
+      "norm_label": "node_modules/ (~300 mb) (heavy dependency directory)",
+      "id": "harness_node_modules"
     },
     {
       "label": "Zero-Dependency Design Principle",
@@ -1427,9 +1427,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "harness_zero_dependency",
-      "community": 2,
-      "norm_label": "zero-dependency design principle"
+      "community": 4,
+      "norm_label": "zero-dependency design principle",
+      "id": "harness_zero_dependency"
     },
     {
       "label": "AX OS Repository",
@@ -1440,9 +1440,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "harness_ax_os_repo",
-      "community": 2,
-      "norm_label": "ax os repository"
+      "community": 4,
+      "norm_label": "ax os repository",
+      "id": "harness_ax_os_repo"
     },
     {
       "label": "expect / describe / it / beforeEach (Test API)",
@@ -1453,22 +1453,22 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "harness_expect_api",
-      "community": 2,
-      "norm_label": "expect / describe / it / beforeeach (test api)"
+      "community": 4,
+      "norm_label": "expect / describe / it / beforeeach (test api)",
+      "id": "harness_expect_api"
     },
     {
-      "label": "Figure: WikiText-2 q4 PPL Increase vs. Scale",
+      "label": "Figure: WikiText-2 q4 PPL Increase vs. Scale (scatter plot, Qwen2.5/Mistral-7B/Llama-3.1-8B)",
       "file_type": "image",
-      "source_file": "figures/fig_q4_scale_ppl.png",
-      "source_location": null,
+      "source_file": "/Users/xox/ax-os-paper/figures/fig_q4_scale_ppl.png",
+      "source_location": "figure 4",
       "source_url": null,
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "fig_q4_scale_ppl",
-      "community": 4,
-      "norm_label": "figure: wikitext-2 q4 ppl increase vs. scale"
+      "community": 5,
+      "norm_label": "figure: wikitext-2 q4 ppl increase vs. scale (scatter plot, qwen2.5/mistral-7b/llama-3.1-8b)",
+      "id": "fig_q4_scale_ppl"
     },
     {
       "label": "\u0394PPL (%) \u2014 Perplexity Increase from 4-bit Quantization",
@@ -1479,9 +1479,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "metric_delta_ppl",
-      "community": 4,
-      "norm_label": "\u03b4ppl (%) \u2014 perplexity increase from 4-bit quantization"
+      "community": 5,
+      "norm_label": "\u03b4ppl (%) \u2014 perplexity increase from 4-bit quantization",
+      "id": "metric_delta_ppl"
     },
     {
       "label": "WikiText-2 Benchmark Dataset",
@@ -1492,9 +1492,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "dataset_wikitext2",
-      "community": 4,
-      "norm_label": "wikitext-2 benchmark dataset"
+      "community": 5,
+      "norm_label": "wikitext-2 benchmark dataset",
+      "id": "dataset_wikitext2"
     },
     {
       "label": "4-bit Quantization (q4)",
@@ -1505,9 +1505,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "quant_q4",
-      "community": 4,
-      "norm_label": "4-bit quantization (q4)"
+      "community": 5,
+      "norm_label": "4-bit quantization (q4)",
+      "id": "quant_q4"
     },
     {
       "label": "Qwen2.5-3B (\u0394PPL +11.7%)",
@@ -1518,9 +1518,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "model_qwen25_3b",
-      "community": 4,
-      "norm_label": "qwen2.5-3b (\u03b4ppl +11.7%)"
+      "community": 5,
+      "norm_label": "qwen2.5-3b (\u03b4ppl +11.7%)",
+      "id": "model_qwen25_3b"
     },
     {
       "label": "Qwen2.5-7B (\u0394PPL +8.5%)",
@@ -1531,9 +1531,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "model_qwen25_7b",
-      "community": 4,
-      "norm_label": "qwen2.5-7b (\u03b4ppl +8.5%)"
+      "community": 5,
+      "norm_label": "qwen2.5-7b (\u03b4ppl +8.5%)",
+      "id": "model_qwen25_7b"
     },
     {
       "label": "Mistral-7B (\u0394PPL +4.4%)",
@@ -1544,9 +1544,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "model_mistral_7b",
-      "community": 4,
-      "norm_label": "mistral-7b (\u03b4ppl +4.4%)"
+      "community": 5,
+      "norm_label": "mistral-7b (\u03b4ppl +4.4%)",
+      "id": "model_mistral_7b"
     },
     {
       "label": "Qwen2.5 Model Family (1.5B\u20137B)",
@@ -1557,9 +1557,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "family_qwen25",
-      "community": 4,
-      "norm_label": "qwen2.5 model family (1.5b\u20137b)"
+      "community": 5,
+      "norm_label": "qwen2.5 model family (1.5b\u20137b)",
+      "id": "family_qwen25"
     },
     {
       "label": "Finding: Larger Models Less Sensitive to q4 Quantization",
@@ -1570,9 +1570,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "finding_scale_sensitivity",
-      "community": 4,
-      "norm_label": "finding: larger models less sensitive to q4 quantization"
+      "community": 5,
+      "norm_label": "finding: larger models less sensitive to q4 quantization",
+      "id": "finding_scale_sensitivity"
     },
     {
       "label": "Finding: 1.9\u00d7 Cross-Architecture Gap at 7B Scale (Qwen vs Mistral)",
@@ -1583,9 +1583,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "finding_cross_arch_gap",
-      "community": 4,
-      "norm_label": "finding: 1.9\u00d7 cross-architecture gap at 7b scale (qwen vs mistral)"
+      "community": 5,
+      "norm_label": "finding: 1.9\u00d7 cross-architecture gap at 7b scale (qwen vs mistral)",
+      "id": "finding_cross_arch_gap"
     },
     {
       "label": "Finding: Monotonic \u0394PPL Decrease with Scale (Qwen2.5: 15%\u219211.7%\u21928.5%)",
@@ -1596,9 +1596,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "finding_monotonic_decrease",
-      "community": 4,
-      "norm_label": "finding: monotonic \u03b4ppl decrease with scale (qwen2.5: 15%\u219211.7%\u21928.5%)"
+      "community": 5,
+      "norm_label": "finding: monotonic \u03b4ppl decrease with scale (qwen2.5: 15%\u219211.7%\u21928.5%)",
+      "id": "finding_monotonic_decrease"
     },
     {
       "label": "Model Scale Axis (Parameters in Billions)",
@@ -1609,9 +1609,598 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "axis_model_scale",
-      "community": 4,
-      "norm_label": "model scale axis (parameters in billions)"
+      "community": 5,
+      "norm_label": "model scale axis (parameters in billions)",
+      "id": "axis_model_scale"
+    },
+    {
+      "label": "eval_hellaswag_mlx.py",
+      "file_type": "code",
+      "source_file": "/Users/xox/ax-os-paper/eval_hellaswag_mlx.py",
+      "source_location": "L1",
+      "id": "users_xox_ax_os_paper_eval_hellaswag_mlx_py",
+      "community": 10,
+      "norm_label": "eval_hellaswag_mlx.py"
+    },
+    {
+      "label": "compute_nll_per_token()",
+      "file_type": "code",
+      "source_file": "/Users/xox/ax-os-paper/eval_hellaswag_mlx.py",
+      "source_location": "L12",
+      "id": "eval_hellaswag_mlx_compute_nll_per_token",
+      "community": 10,
+      "norm_label": "compute_nll_per_token()"
+    },
+    {
+      "label": "evaluate()",
+      "file_type": "code",
+      "source_file": "/Users/xox/ax-os-paper/eval_hellaswag_mlx.py",
+      "source_location": "L40",
+      "id": "eval_hellaswag_mlx_evaluate",
+      "community": 10,
+      "norm_label": "evaluate()"
+    },
+    {
+      "label": "HellaSwag accuracy evaluation using mlx_lm. Usage: python eval_hellaswag_mlx.py",
+      "file_type": "rationale",
+      "source_file": "/Users/xox/ax-os-paper/eval_hellaswag_mlx.py",
+      "source_location": "L1",
+      "id": "eval_hellaswag_mlx_rationale_1",
+      "community": 10,
+      "norm_label": "hellaswag accuracy evaluation using mlx_lm. usage: python eval_hellaswag_mlx.py"
+    },
+    {
+      "label": "eval_arc_e.py",
+      "file_type": "code",
+      "source_file": "/Users/xox/ax-os-paper/eval_arc_e.py",
+      "source_location": "L1",
+      "id": "users_xox_ax_os_paper_eval_arc_e_py",
+      "community": 11,
+      "norm_label": "eval_arc_e.py"
+    },
+    {
+      "label": "compute_nll_per_token()",
+      "file_type": "code",
+      "source_file": "/Users/xox/ax-os-paper/eval_arc_e.py",
+      "source_location": "L15",
+      "id": "eval_arc_e_compute_nll_per_token",
+      "community": 11,
+      "norm_label": "compute_nll_per_token()"
+    },
+    {
+      "label": "evaluate()",
+      "file_type": "code",
+      "source_file": "/Users/xox/ax-os-paper/eval_arc_e.py",
+      "source_location": "L34",
+      "id": "eval_arc_e_evaluate",
+      "community": 11,
+      "norm_label": "evaluate()"
+    },
+    {
+      "label": "hapax_ablation.py",
+      "file_type": "code",
+      "source_file": "/Users/xox/ax-os-paper/hapax_ablation.py",
+      "source_location": "L1",
+      "id": "users_xox_ax_os_paper_hapax_ablation_py",
+      "community": 9,
+      "norm_label": "hapax_ablation.py"
+    },
+    {
+      "label": "chunk_ppl()",
+      "file_type": "code",
+      "source_file": "/Users/xox/ax-os-paper/hapax_ablation.py",
+      "source_location": "L31",
+      "id": "hapax_ablation_chunk_ppl",
+      "community": 9,
+      "norm_label": "chunk_ppl()"
+    },
+    {
+      "label": "build_subsets()",
+      "file_type": "code",
+      "source_file": "/Users/xox/ax-os-paper/hapax_ablation.py",
+      "source_location": "L49",
+      "id": "hapax_ablation_build_subsets",
+      "community": 9,
+      "norm_label": "build_subsets()"
+    },
+    {
+      "label": "run_model()",
+      "file_type": "code",
+      "source_file": "/Users/xox/ax-os-paper/hapax_ablation.py",
+      "source_location": "L94",
+      "id": "hapax_ablation_run_model",
+      "community": 9,
+      "norm_label": "run_model()"
+    },
+    {
+      "label": "Compute average PPL over a list of token-ID lists (each \u22652 tokens).",
+      "file_type": "rationale",
+      "source_file": "/Users/xox/ax-os-paper/hapax_ablation.py",
+      "source_location": "L32",
+      "id": "hapax_ablation_rationale_32",
+      "community": 9,
+      "norm_label": "compute average ppl over a list of token-id lists (each \u22652 tokens)."
+    },
+    {
+      "label": "AX OS Paper: Scale-Stratified 4-bit Quantization for Edge LLM Agents",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "title/abstract",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Anonymous",
+      "contributor": null,
+      "id": "ax_os_paper",
+      "community": 0,
+      "norm_label": "ax os paper: scale-stratified 4-bit quantization for edge llm agents"
+    },
+    {
+      "label": "AX OS: TypeScript Multi-Agent Library",
+      "file_type": "document",
+      "source_file": "/Users/xox/ax-os-paper/README.md",
+      "source_location": "line 1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "ax_os_library",
+      "community": 2,
+      "norm_label": "ax os: typescript multi-agent library"
+    },
+    {
+      "label": "4-bit Post-Training Quantization (PTQ, q4)",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "abstract",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "ptq_4bit",
+      "community": 0,
+      "norm_label": "4-bit post-training quantization (ptq, q4)"
+    },
+    {
+      "label": "MLX Backend (Apple Silicon inference framework)",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "mlx_backend",
+      "community": 0,
+      "norm_label": "mlx backend (apple silicon inference framework)"
+    },
+    {
+      "label": "WikiText-2 Full-Corpus PPL Evaluation Protocol",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "wikitext2_eval",
+      "community": 0,
+      "norm_label": "wikitext-2 full-corpus ppl evaluation protocol"
+    },
+    {
+      "label": "Qwen2.5-1.5B-Instruct",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "table 3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "qwen25_1p5b",
+      "community": 0,
+      "norm_label": "qwen2.5-1.5b-instruct"
+    },
+    {
+      "label": "Qwen2.5-3B-Instruct",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "table 3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "qwen25_3b",
+      "community": 0,
+      "norm_label": "qwen2.5-3b-instruct"
+    },
+    {
+      "label": "Qwen2.5-7B-Instruct",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "table 3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "qwen25_7b",
+      "community": 0,
+      "norm_label": "qwen2.5-7b-instruct"
+    },
+    {
+      "label": "Qwen2.5-14B-Instruct",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "table 3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "qwen25_14b",
+      "community": 0,
+      "norm_label": "qwen2.5-14b-instruct"
+    },
+    {
+      "label": "Llama-3.1-8B-Instruct",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "table 3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "llama_31_8b",
+      "community": 0,
+      "norm_label": "llama-3.1-8b-instruct"
+    },
+    {
+      "label": "Qwen2.5 Model Family",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 4.3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "qwen25_family",
+      "community": 0,
+      "norm_label": "qwen2.5 model family"
+    },
+    {
+      "label": "Scale-Stratified q4 Sensitivity Finding: \u0394PPL monotonically decreasing 1.5B\u21927B (15%\u21928.5%), non-monotone at 14B (+10.3%)",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 5.1 / contribution 3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "scale_stratified_finding",
+      "community": 0,
+      "norm_label": "scale-stratified q4 sensitivity finding: \u03b4ppl monotonically decreasing 1.5b\u21927b (15%\u21928.5%), non-monotone at 14b (+10.3%)"
+    },
+    {
+      "label": "Cross-Architecture Gap at 7-8B Scale: 1.9\u00d7 (Qwen2.5-7B +8.5% vs Mistral-7B +4.4%)",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 4.3 / 5.1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "cross_arch_gap",
+      "community": 0,
+      "norm_label": "cross-architecture gap at 7-8b scale: 1.9\u00d7 (qwen2.5-7b +8.5% vs mistral-7b +4.4%)"
+    },
+    {
+      "label": "BRAIN_REAL=1 Inline Oracle Design Pattern",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.2 / contribution 2",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "brain_real_oracle",
+      "community": 0,
+      "norm_label": "brain_real=1 inline oracle design pattern"
+    },
+    {
+      "label": "AEQIntegration Registry",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "aeq_integration",
+      "community": 2,
+      "norm_label": "aeqintegration registry"
+    },
+    {
+      "label": "Mixed-Precision Quantization Failure at 1.5B Scale",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 5.1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "mixed_precision_failure",
+      "community": 0,
+      "norm_label": "mixed-precision quantization failure at 1.5b scale"
+    },
+    {
+      "label": "q4_uniform Pareto-Dominant Scheme (size vs. perplexity)",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 4.3 / table 2",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "q4_uniform_pareto",
+      "community": 0,
+      "norm_label": "q4_uniform pareto-dominant scheme (size vs. perplexity)"
+    },
+    {
+      "label": "Hapax Legomena Vocabulary Sparsity Hypothesis for Cross-Arch Gap",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 5.1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "hapax_vocabulary_hypothesis",
+      "community": 0,
+      "norm_label": "hapax legomena vocabulary sparsity hypothesis for cross-arch gap"
+    },
+    {
+      "label": "Apple M1 Max (68.7 GB unified memory, MLX backend)",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "apple_m1_max",
+      "community": 0,
+      "norm_label": "apple m1 max (68.7 gb unified memory, mlx backend)"
+    },
+    {
+      "label": "WorldQuant BRAIN API (live quantitative oracle)",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.2 / 4.2",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "worldquant_brain",
+      "community": 0,
+      "norm_label": "worldquant brain api (live quantitative oracle)"
+    },
+    {
+      "label": "GPTQ (Frantar et al., 2023): Second-Order PTQ",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.1",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Frantar et al.",
+      "contributor": null,
+      "id": "gptq_method",
+      "community": 0,
+      "norm_label": "gptq (frantar et al., 2023): second-order ptq"
+    },
+    {
+      "label": "AWQ (Lin et al., 2023): Activation-Aware Weight Quantization",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.1",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Lin et al.",
+      "contributor": null,
+      "id": "awq_method",
+      "community": 0,
+      "norm_label": "awq (lin et al., 2023): activation-aware weight quantization"
+    },
+    {
+      "label": "SqueezeLLM (Kim et al., 2024): Dense-Sparse Decomposition",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.1",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Kim et al.",
+      "contributor": null,
+      "id": "squeezellm_method",
+      "community": 0,
+      "norm_label": "squeezellm (kim et al., 2024): dense-sparse decomposition"
+    },
+    {
+      "label": "Zhao et al. 2025: Quantization Survey (LLaMA/Mixtral/DeepSeek-MoE/Mamba, 7B-70B)",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.1",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Zhao et al.",
+      "contributor": null,
+      "id": "zhao_2025_survey",
+      "community": 0,
+      "norm_label": "zhao et al. 2025: quantization survey (llama/mixtral/deepseek-moe/mamba, 7b-70b)"
+    },
+    {
+      "label": "Xu et al. 2024b: Statistical Power-Law Scaling for PTQ Quality",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.1",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Xu et al.",
+      "contributor": null,
+      "id": "xu_2024b_scaling",
+      "community": 0,
+      "norm_label": "xu et al. 2024b: statistical power-law scaling for ptq quality"
+    },
+    {
+      "label": "Ouyang et al. 2024: 1500+ Quantized Checkpoints Low-Bit Scaling Analysis",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.1",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Ouyang et al.",
+      "contributor": null,
+      "id": "ouyang_2024_scaling",
+      "community": 0,
+      "norm_label": "ouyang et al. 2024: 1500+ quantized checkpoints low-bit scaling analysis"
+    },
+    {
+      "label": "Gundersen & Kjensmo 2018: ML Reproducibility Survey (400 AAAI/IJCAI papers)",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.2",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Gundersen & Kjensmo",
+      "contributor": null,
+      "id": "gundersen_2018_repro",
+      "community": 7,
+      "norm_label": "gundersen & kjensmo 2018: ml reproducibility survey (400 aaai/ijcai papers)"
+    },
+    {
+      "label": "Pineau et al. 2021: NeurIPS 2019 Reproducibility Program",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.2",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Pineau et al.",
+      "contributor": null,
+      "id": "pineau_2021_repro",
+      "community": 7,
+      "norm_label": "pineau et al. 2021: neurips 2019 reproducibility program"
+    },
+    {
+      "label": "Rajesh et al. 2025: MLX/MLC-LLM/llama.cpp/Ollama/PyTorch MPS Comparison on Apple Silicon",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.3",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Rajesh et al.",
+      "contributor": null,
+      "id": "rajesh_2025_inference",
+      "community": 0,
+      "norm_label": "rajesh et al. 2025: mlx/mlc-llm/llama.cpp/ollama/pytorch mps comparison on apple silicon"
+    },
+    {
+      "label": "512-Token Non-Overlapping Windows Evaluation Protocol",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "512_token_windows",
+      "community": 0,
+      "norm_label": "512-token non-overlapping windows evaluation protocol"
+    },
+    {
+      "label": "Paper Quality Score: 72.7/100 (paper-orchestra 6-axis rubric)",
+      "file_type": "document",
+      "source_file": "/Users/xox/ax-os-paper/README.md",
+      "source_location": "line 19",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "paper_score_72p7",
+      "community": 0,
+      "norm_label": "paper quality score: 72.7/100 (paper-orchestra 6-axis rubric)"
+    },
+    {
+      "label": "eval_ppl_wikitext2.py: Full-Corpus PPL Evaluation Script",
+      "file_type": "document",
+      "source_file": "/Users/xox/ax-os-paper/README.md",
+      "source_location": "line 24",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "eval_ppl_wikitext2_py",
+      "community": 0,
+      "norm_label": "eval_ppl_wikitext2.py: full-corpus ppl evaluation script"
+    },
+    {
+      "label": "Node.js node:test Built-in Module (stable since Node.js 20)",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "node_test_builtin",
+      "community": 7,
+      "norm_label": "node.js node:test built-in module (stable since node.js 20)"
+    },
+    {
+      "label": "GGUF Format (llama.cpp): De Facto Standard for Distributing Quantized Models",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "gguf_format",
+      "community": 0,
+      "norm_label": "gguf format (llama.cpp): de facto standard for distributing quantized models"
+    },
+    {
+      "label": "Dependency Drift: Primary Driver of ML Reproducibility Failure",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.2",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "dependency_drift",
+      "community": 7,
+      "norm_label": "dependency drift: primary driver of ml reproducibility failure"
+    },
+    {
+      "label": "MoE Models Untested Limitation (mixed-precision conclusion applies only to dense transformers)",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 5.2",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "moe_untested",
+      "community": 0,
+      "norm_label": "moe models untested limitation (mixed-precision conclusion applies only to dense transformers)"
+    },
+    {
+      "label": "realSim() Inline Oracle Function (mirrors mock signature, spawns Python subprocess)",
+      "file_type": "paper",
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.2",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "id": "real_sim_function",
+      "community": 0,
+      "norm_label": "realsim() inline oracle function (mirrors mock signature, spawns python subprocess)"
     }
   ],
   "links": [
@@ -1623,9 +2212,9 @@
       "weight": 1.0,
       "_src": "users_xox_ax_os_paper_eval_ppl_wikitext2_py",
       "_tgt": "eval_ppl_wikitext2_eval_wikitext2_ppl",
+      "confidence_score": 1.0,
       "source": "users_xox_ax_os_paper_eval_ppl_wikitext2_py",
-      "target": "eval_ppl_wikitext2_eval_wikitext2_ppl",
-      "confidence_score": 1.0
+      "target": "eval_ppl_wikitext2_eval_wikitext2_ppl"
     },
     {
       "relation": "contains",
@@ -1635,9 +2224,9 @@
       "weight": 1.0,
       "_src": "users_xox_ax_os_paper_eval_ppl_wikitext2_py",
       "_tgt": "eval_ppl_wikitext2_main",
+      "confidence_score": 1.0,
       "source": "users_xox_ax_os_paper_eval_ppl_wikitext2_py",
-      "target": "eval_ppl_wikitext2_main",
-      "confidence_score": 1.0
+      "target": "eval_ppl_wikitext2_main"
     },
     {
       "relation": "calls",
@@ -1647,9 +2236,9 @@
       "weight": 1.0,
       "_src": "eval_ppl_wikitext2_main",
       "_tgt": "eval_ppl_wikitext2_eval_wikitext2_ppl",
+      "confidence_score": 1.0,
       "source": "eval_ppl_wikitext2_eval_wikitext2_ppl",
-      "target": "eval_ppl_wikitext2_main",
-      "confidence_score": 1.0
+      "target": "eval_ppl_wikitext2_main"
     },
     {
       "relation": "contains",
@@ -1659,9 +2248,9 @@
       "weight": 1.0,
       "_src": "users_xox_ax_os_paper_eval_ppl_quick_py",
       "_tgt": "eval_ppl_quick_eval_ppl_quick",
+      "confidence_score": 1.0,
       "source": "users_xox_ax_os_paper_eval_ppl_quick_py",
-      "target": "eval_ppl_quick_eval_ppl_quick",
-      "confidence_score": 1.0
+      "target": "eval_ppl_quick_eval_ppl_quick"
     },
     {
       "relation": "contains",
@@ -1671,9 +2260,9 @@
       "weight": 1.0,
       "_src": "users_xox_ax_os_paper_eval_ppl_quick_py",
       "_tgt": "eval_ppl_quick_main",
+      "confidence_score": 1.0,
       "source": "users_xox_ax_os_paper_eval_ppl_quick_py",
-      "target": "eval_ppl_quick_main",
-      "confidence_score": 1.0
+      "target": "eval_ppl_quick_main"
     },
     {
       "relation": "calls",
@@ -1683,9 +2272,9 @@
       "weight": 1.0,
       "_src": "eval_ppl_quick_main",
       "_tgt": "eval_ppl_quick_eval_ppl_quick",
+      "confidence_score": 1.0,
       "source": "eval_ppl_quick_eval_ppl_quick",
-      "target": "eval_ppl_quick_main",
-      "confidence_score": 1.0
+      "target": "eval_ppl_quick_main"
     },
     {
       "relation": "references",
@@ -2996,6 +3585,42 @@
       "target": "zero_external_runtime_deps"
     },
     {
+      "relation": "contributes",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.1",
+      "weight": 1.0,
+      "_src": "ax_os_paper",
+      "_tgt": "harness_mjs",
+      "source": "harness_mjs",
+      "target": "ax_os_paper"
+    },
+    {
+      "relation": "built_on",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.1",
+      "weight": 1.0,
+      "_src": "harness_mjs",
+      "_tgt": "node_test_builtin",
+      "source": "harness_mjs",
+      "target": "node_test_builtin"
+    },
+    {
+      "relation": "addresses",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.2",
+      "weight": 1.0,
+      "_src": "harness_mjs",
+      "_tgt": "dependency_drift",
+      "source": "harness_mjs",
+      "target": "dependency_drift"
+    },
+    {
       "relation": "produced_by",
       "confidence": "EXTRACTED",
       "confidence_score": 0.95,
@@ -3162,6 +3787,42 @@
       "_tgt": "aeqintegration_api",
       "source": "mistral_7b",
       "target": "aeqintegration_api"
+    },
+    {
+      "relation": "involves",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 4.3",
+      "weight": 1.0,
+      "_src": "cross_arch_gap",
+      "_tgt": "mistral_7b",
+      "source": "mistral_7b",
+      "target": "cross_arch_gap"
+    },
+    {
+      "relation": "registered_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 6",
+      "weight": 1.0,
+      "_src": "mistral_7b",
+      "_tgt": "aeq_integration",
+      "source": "mistral_7b",
+      "target": "aeq_integration"
+    },
+    {
+      "relation": "plots_reference_point",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/figures/fig_q4_scale_ppl.png",
+      "source_location": "figure 4",
+      "weight": 1.0,
+      "_src": "fig_q4_scale_ppl",
+      "_tgt": "mistral_7b",
+      "source": "mistral_7b",
+      "target": "fig_q4_scale_ppl"
     },
     {
       "relation": "provides_dependency_to",
@@ -3452,6 +4113,54 @@
       "target": "model_mistral_7b"
     },
     {
+      "relation": "plots_reference_point",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/figures/fig_q4_scale_ppl.png",
+      "source_location": "figure 4",
+      "weight": 1.0,
+      "_src": "fig_q4_scale_ppl",
+      "_tgt": "llama_31_8b",
+      "source": "fig_q4_scale_ppl",
+      "target": "llama_31_8b"
+    },
+    {
+      "relation": "plots_delta_ppl_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/figures/fig_q4_scale_ppl.png",
+      "source_location": "figure 4",
+      "weight": 1.0,
+      "_src": "fig_q4_scale_ppl",
+      "_tgt": "qwen25_family",
+      "source": "fig_q4_scale_ppl",
+      "target": "qwen25_family"
+    },
+    {
+      "relation": "visualizes",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/figures/fig_q4_scale_ppl.png",
+      "source_location": "figure 4",
+      "weight": 1.0,
+      "_src": "fig_q4_scale_ppl",
+      "_tgt": "scale_stratified_finding",
+      "source": "fig_q4_scale_ppl",
+      "target": "scale_stratified_finding"
+    },
+    {
+      "relation": "visualizes",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/figures/fig_q4_scale_ppl.png",
+      "source_location": "figure 4",
+      "weight": 1.0,
+      "_src": "fig_q4_scale_ppl",
+      "_tgt": "cross_arch_gap",
+      "source": "fig_q4_scale_ppl",
+      "target": "cross_arch_gap"
+    },
+    {
       "relation": "quantifies",
       "confidence": "EXTRACTED",
       "confidence_score": 0.98,
@@ -3630,6 +4339,690 @@
       "_tgt": "finding_scale_sensitivity",
       "source": "finding_scale_sensitivity",
       "target": "axis_model_scale"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/xox/ax-os-paper/eval_hellaswag_mlx.py",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_src": "users_xox_ax_os_paper_eval_hellaswag_mlx_py",
+      "_tgt": "eval_hellaswag_mlx_compute_nll_per_token",
+      "source": "users_xox_ax_os_paper_eval_hellaswag_mlx_py",
+      "target": "eval_hellaswag_mlx_compute_nll_per_token",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/xox/ax-os-paper/eval_hellaswag_mlx.py",
+      "source_location": "L40",
+      "weight": 1.0,
+      "_src": "users_xox_ax_os_paper_eval_hellaswag_mlx_py",
+      "_tgt": "eval_hellaswag_mlx_evaluate",
+      "source": "users_xox_ax_os_paper_eval_hellaswag_mlx_py",
+      "target": "eval_hellaswag_mlx_evaluate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/xox/ax-os-paper/eval_hellaswag_mlx.py",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_src": "eval_hellaswag_mlx_rationale_1",
+      "_tgt": "users_xox_ax_os_paper_eval_hellaswag_mlx_py",
+      "source": "users_xox_ax_os_paper_eval_hellaswag_mlx_py",
+      "target": "eval_hellaswag_mlx_rationale_1",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/xox/ax-os-paper/eval_hellaswag_mlx.py",
+      "source_location": "L58",
+      "weight": 1.0,
+      "_src": "eval_hellaswag_mlx_evaluate",
+      "_tgt": "eval_hellaswag_mlx_compute_nll_per_token",
+      "source": "eval_hellaswag_mlx_compute_nll_per_token",
+      "target": "eval_hellaswag_mlx_evaluate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/xox/ax-os-paper/eval_arc_e.py",
+      "source_location": "L15",
+      "weight": 1.0,
+      "_src": "users_xox_ax_os_paper_eval_arc_e_py",
+      "_tgt": "eval_arc_e_compute_nll_per_token",
+      "source": "users_xox_ax_os_paper_eval_arc_e_py",
+      "target": "eval_arc_e_compute_nll_per_token",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/xox/ax-os-paper/eval_arc_e.py",
+      "source_location": "L34",
+      "weight": 1.0,
+      "_src": "users_xox_ax_os_paper_eval_arc_e_py",
+      "_tgt": "eval_arc_e_evaluate",
+      "source": "users_xox_ax_os_paper_eval_arc_e_py",
+      "target": "eval_arc_e_evaluate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/xox/ax-os-paper/eval_arc_e.py",
+      "source_location": "L57",
+      "weight": 1.0,
+      "_src": "eval_arc_e_evaluate",
+      "_tgt": "eval_arc_e_compute_nll_per_token",
+      "source": "eval_arc_e_compute_nll_per_token",
+      "target": "eval_arc_e_evaluate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/xox/ax-os-paper/hapax_ablation.py",
+      "source_location": "L31",
+      "weight": 1.0,
+      "_src": "users_xox_ax_os_paper_hapax_ablation_py",
+      "_tgt": "hapax_ablation_chunk_ppl",
+      "source": "users_xox_ax_os_paper_hapax_ablation_py",
+      "target": "hapax_ablation_chunk_ppl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/xox/ax-os-paper/hapax_ablation.py",
+      "source_location": "L49",
+      "weight": 1.0,
+      "_src": "users_xox_ax_os_paper_hapax_ablation_py",
+      "_tgt": "hapax_ablation_build_subsets",
+      "source": "users_xox_ax_os_paper_hapax_ablation_py",
+      "target": "hapax_ablation_build_subsets",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/xox/ax-os-paper/hapax_ablation.py",
+      "source_location": "L94",
+      "weight": 1.0,
+      "_src": "users_xox_ax_os_paper_hapax_ablation_py",
+      "_tgt": "hapax_ablation_run_model",
+      "source": "users_xox_ax_os_paper_hapax_ablation_py",
+      "target": "hapax_ablation_run_model",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/xox/ax-os-paper/hapax_ablation.py",
+      "source_location": "L102",
+      "weight": 1.0,
+      "_src": "hapax_ablation_run_model",
+      "_tgt": "hapax_ablation_chunk_ppl",
+      "source": "hapax_ablation_chunk_ppl",
+      "target": "hapax_ablation_run_model",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/xox/ax-os-paper/hapax_ablation.py",
+      "source_location": "L32",
+      "weight": 1.0,
+      "_src": "hapax_ablation_rationale_32",
+      "_tgt": "hapax_ablation_chunk_ppl",
+      "source": "hapax_ablation_chunk_ppl",
+      "target": "hapax_ablation_rationale_32",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "describes_system",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "abstract",
+      "weight": 1.0,
+      "_src": "ax_os_paper",
+      "_tgt": "ax_os_library",
+      "source": "ax_os_paper",
+      "target": "ax_os_library"
+    },
+    {
+      "relation": "studies",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "title/abstract",
+      "weight": 1.0,
+      "_src": "ax_os_paper",
+      "_tgt": "ptq_4bit",
+      "source": "ax_os_paper",
+      "target": "ptq_4bit"
+    },
+    {
+      "relation": "reports_primary_finding",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "abstract/section 5.1",
+      "weight": 1.0,
+      "_src": "ax_os_paper",
+      "_tgt": "scale_stratified_finding",
+      "source": "ax_os_paper",
+      "target": "scale_stratified_finding"
+    },
+    {
+      "relation": "reports_finding",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 4.3",
+      "weight": 1.0,
+      "_src": "ax_os_paper",
+      "_tgt": "cross_arch_gap",
+      "source": "ax_os_paper",
+      "target": "cross_arch_gap"
+    },
+    {
+      "relation": "contributes",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.2",
+      "weight": 1.0,
+      "_src": "ax_os_paper",
+      "_tgt": "brain_real_oracle",
+      "source": "ax_os_paper",
+      "target": "brain_real_oracle"
+    },
+    {
+      "relation": "uses_benchmark",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.3",
+      "weight": 1.0,
+      "_src": "ax_os_paper",
+      "_tgt": "wikitext2_eval",
+      "source": "ax_os_paper",
+      "target": "wikitext2_eval"
+    },
+    {
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.1",
+      "weight": 0.8,
+      "_src": "ax_os_paper",
+      "_tgt": "gptq_method",
+      "source": "ax_os_paper",
+      "target": "gptq_method"
+    },
+    {
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.1",
+      "weight": 0.8,
+      "_src": "ax_os_paper",
+      "_tgt": "awq_method",
+      "source": "ax_os_paper",
+      "target": "awq_method"
+    },
+    {
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.1",
+      "weight": 0.8,
+      "_src": "ax_os_paper",
+      "_tgt": "squeezellm_method",
+      "source": "ax_os_paper",
+      "target": "squeezellm_method"
+    },
+    {
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.1",
+      "weight": 0.8,
+      "_src": "ax_os_paper",
+      "_tgt": "zhao_2025_survey",
+      "source": "ax_os_paper",
+      "target": "zhao_2025_survey"
+    },
+    {
+      "relation": "extends_below_7b",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.1",
+      "weight": 1.0,
+      "_src": "ax_os_paper",
+      "_tgt": "xu_2024b_scaling",
+      "source": "ax_os_paper",
+      "target": "xu_2024b_scaling"
+    },
+    {
+      "relation": "extends_below_7b",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.1",
+      "weight": 1.0,
+      "_src": "ax_os_paper",
+      "_tgt": "ouyang_2024_scaling",
+      "source": "ax_os_paper",
+      "target": "ouyang_2024_scaling"
+    },
+    {
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.3",
+      "weight": 0.7,
+      "_src": "ax_os_paper",
+      "_tgt": "rajesh_2025_inference",
+      "source": "ax_os_paper",
+      "target": "rajesh_2025_inference"
+    },
+    {
+      "relation": "evaluated_on",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.3",
+      "weight": 1.0,
+      "_src": "ax_os_paper",
+      "_tgt": "apple_m1_max",
+      "source": "ax_os_paper",
+      "target": "apple_m1_max"
+    },
+    {
+      "relation": "scored",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/README.md",
+      "source_location": "line 19",
+      "weight": 1.0,
+      "_src": "ax_os_paper",
+      "_tgt": "paper_score_72p7",
+      "source": "ax_os_paper",
+      "target": "paper_score_72p7"
+    },
+    {
+      "relation": "cites_as_context",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.3",
+      "weight": 0.7,
+      "_src": "ax_os_paper",
+      "_tgt": "gguf_format",
+      "source": "ax_os_paper",
+      "target": "gguf_format"
+    },
+    {
+      "relation": "subsystem_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.3 footnote",
+      "weight": 1.0,
+      "_src": "aeq_integration",
+      "_tgt": "ax_os_library",
+      "source": "ax_os_library",
+      "target": "aeq_integration"
+    },
+    {
+      "relation": "implemented_via",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.3",
+      "weight": 1.0,
+      "_src": "ptq_4bit",
+      "_tgt": "mlx_backend",
+      "source": "ptq_4bit",
+      "target": "mlx_backend"
+    },
+    {
+      "relation": "is_specific_scheme_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 4.3",
+      "weight": 1.0,
+      "_src": "q4_uniform_pareto",
+      "_tgt": "ptq_4bit",
+      "source": "ptq_4bit",
+      "target": "q4_uniform_pareto"
+    },
+    {
+      "relation": "runs",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.3",
+      "weight": 1.0,
+      "_src": "apple_m1_max",
+      "_tgt": "mlx_backend",
+      "source": "mlx_backend",
+      "target": "apple_m1_max"
+    },
+    {
+      "relation": "alternative_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.7,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.3",
+      "weight": 0.7,
+      "_src": "gguf_format",
+      "_tgt": "mlx_backend",
+      "source": "mlx_backend",
+      "target": "gguf_format"
+    },
+    {
+      "relation": "uses_protocol",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.3",
+      "weight": 1.0,
+      "_src": "wikitext2_eval",
+      "_tgt": "512_token_windows",
+      "source": "wikitext2_eval",
+      "target": "512_token_windows"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/README.md",
+      "source_location": "line 24",
+      "weight": 1.0,
+      "_src": "eval_ppl_wikitext2_py",
+      "_tgt": "wikitext2_eval",
+      "source": "wikitext2_eval",
+      "target": "eval_ppl_wikitext2_py"
+    },
+    {
+      "relation": "measured_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.3",
+      "weight": 1.0,
+      "_src": "scale_stratified_finding",
+      "_tgt": "wikitext2_eval",
+      "source": "wikitext2_eval",
+      "target": "scale_stratified_finding"
+    },
+    {
+      "relation": "member_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "table 3",
+      "weight": 1.0,
+      "_src": "qwen25_1p5b",
+      "_tgt": "qwen25_family",
+      "source": "qwen25_1p5b",
+      "target": "qwen25_family"
+    },
+    {
+      "relation": "measures_delta_ppl",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "table 3",
+      "weight": 1.0,
+      "_src": "scale_stratified_finding",
+      "_tgt": "qwen25_1p5b",
+      "source": "qwen25_1p5b",
+      "target": "scale_stratified_finding"
+    },
+    {
+      "relation": "observed_at_scale",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 5.1",
+      "weight": 1.0,
+      "_src": "mixed_precision_failure",
+      "_tgt": "qwen25_1p5b",
+      "source": "qwen25_1p5b",
+      "target": "mixed_precision_failure"
+    },
+    {
+      "relation": "member_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "table 3",
+      "weight": 1.0,
+      "_src": "qwen25_3b",
+      "_tgt": "qwen25_family",
+      "source": "qwen25_3b",
+      "target": "qwen25_family"
+    },
+    {
+      "relation": "member_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "table 3",
+      "weight": 1.0,
+      "_src": "qwen25_7b",
+      "_tgt": "qwen25_family",
+      "source": "qwen25_7b",
+      "target": "qwen25_family"
+    },
+    {
+      "relation": "measures_delta_ppl",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "table 3",
+      "weight": 1.0,
+      "_src": "scale_stratified_finding",
+      "_tgt": "qwen25_7b",
+      "source": "qwen25_7b",
+      "target": "scale_stratified_finding"
+    },
+    {
+      "relation": "involves",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 4.3",
+      "weight": 1.0,
+      "_src": "cross_arch_gap",
+      "_tgt": "qwen25_7b",
+      "source": "qwen25_7b",
+      "target": "cross_arch_gap"
+    },
+    {
+      "relation": "observed_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 5.1",
+      "weight": 1.0,
+      "_src": "hapax_vocabulary_hypothesis",
+      "_tgt": "qwen25_7b",
+      "source": "qwen25_7b",
+      "target": "hapax_vocabulary_hypothesis"
+    },
+    {
+      "relation": "member_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "table 3",
+      "weight": 1.0,
+      "_src": "qwen25_14b",
+      "_tgt": "qwen25_family",
+      "source": "qwen25_14b",
+      "target": "qwen25_family"
+    },
+    {
+      "relation": "shows_non_monotone_uptick",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 4.3",
+      "weight": 1.0,
+      "_src": "scale_stratified_finding",
+      "_tgt": "qwen25_14b",
+      "source": "qwen25_14b",
+      "target": "scale_stratified_finding"
+    },
+    {
+      "relation": "involves",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 4.3",
+      "weight": 1.0,
+      "_src": "cross_arch_gap",
+      "_tgt": "llama_31_8b",
+      "source": "llama_31_8b",
+      "target": "cross_arch_gap"
+    },
+    {
+      "relation": "observed_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 4.3",
+      "weight": 1.0,
+      "_src": "scale_stratified_finding",
+      "_tgt": "qwen25_family",
+      "source": "qwen25_family",
+      "target": "scale_stratified_finding"
+    },
+    {
+      "relation": "consistent_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 5.1",
+      "weight": 0.8,
+      "_src": "xu_2024b_scaling",
+      "_tgt": "scale_stratified_finding",
+      "source": "scale_stratified_finding",
+      "target": "xu_2024b_scaling"
+    },
+    {
+      "relation": "consistent_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 5.1",
+      "weight": 0.8,
+      "_src": "ouyang_2024_scaling",
+      "_tgt": "scale_stratified_finding",
+      "source": "scale_stratified_finding",
+      "target": "ouyang_2024_scaling"
+    },
+    {
+      "relation": "hypothesized_cause_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 5.1",
+      "weight": 1.0,
+      "_src": "hapax_vocabulary_hypothesis",
+      "_tgt": "cross_arch_gap",
+      "source": "cross_arch_gap",
+      "target": "hapax_vocabulary_hypothesis"
+    },
+    {
+      "relation": "couples_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.2/4.2",
+      "weight": 1.0,
+      "_src": "brain_real_oracle",
+      "_tgt": "worldquant_brain",
+      "source": "brain_real_oracle",
+      "target": "worldquant_brain"
+    },
+    {
+      "relation": "implements_via",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 3.2",
+      "weight": 1.0,
+      "_src": "brain_real_oracle",
+      "_tgt": "real_sim_function",
+      "source": "brain_real_oracle",
+      "target": "real_sim_function"
+    },
+    {
+      "relation": "dominated_by",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 4.3/5.1",
+      "weight": 1.0,
+      "_src": "mixed_precision_failure",
+      "_tgt": "q4_uniform_pareto",
+      "source": "mixed_precision_failure",
+      "target": "q4_uniform_pareto"
+    },
+    {
+      "relation": "limits_conclusion_of",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 5.2",
+      "weight": 1.0,
+      "_src": "moe_untested",
+      "_tgt": "mixed_precision_failure",
+      "source": "mixed_precision_failure",
+      "target": "moe_untested"
+    },
+    {
+      "relation": "identified_by",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.2",
+      "weight": 1.0,
+      "_src": "dependency_drift",
+      "_tgt": "gundersen_2018_repro",
+      "source": "gundersen_2018_repro",
+      "target": "dependency_drift"
+    },
+    {
+      "relation": "addressed_by",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/Users/xox/ax-os-paper/paper.pdf",
+      "source_location": "section 2.2",
+      "weight": 1.0,
+      "_src": "dependency_drift",
+      "_tgt": "pineau_2021_repro",
+      "source": "pineau_2021_repro",
+      "target": "dependency_drift"
     }
   ],
   "hyperedges": [
