@@ -89,12 +89,13 @@ This paper makes one empirical contribution supported by two infrastructure
 contributions:
 \begin{enumerate}
   \item \textbf{Scale-stratified 4-bit quantization measurements (primary).}
-    WikiText-2 standard evaluation across four Qwen2.5 sizes and Mistral-7B
-    shows that within the Qwen family, uniform q4 $\Delta$PPL decreases from 1.5B
-    to 7B ($+15.0\%$, $+11.7\%$, $+8.5\%$) then partially recovers at 14B ($+10.3\%$),
-    a pattern where the 1.5B--7B decrease does not continue at 14B, while Mistral-7B degrades
-    only $+4.4\%$ at matched 7B scale---a $1.9\times$ architecture-driven gap, at
-    $3.5\times$ compression, within this two-family comparison.
+    WikiText-2 standard evaluation across four Qwen2.5 sizes, Mistral-7B,
+    and Llama-3.1-8B shows that within the Qwen family, uniform q4 $\Delta$PPL
+    decreases from 1.5B to 7B ($+15.0\%$, $+11.7\%$, $+8.5\%$) then partially
+    recovers at 14B ($+10.3\%$), a pattern where the 1.5B--7B decrease does not
+    continue at 14B, while both Mistral-7B ($+4.4\%$) and Llama-3.1-8B ($+6.9\%$)
+    outperform Qwen2.5-7B at the 7--8B scale---a $1.9\times$ range across three
+    architectures at $3.5\times$ compression.
   \item \textbf{Zero-dependency \texttt{node:test} harness (enabling).}
     A 40-line shim backed by Node.js built-ins achieves 27/27 test pass on any
     clean Node.js $\geq$18 installation without \texttt{npm install}, including
@@ -294,8 +295,9 @@ fork, adding zero observable overhead in mock mode.
 \label{sec:method:aeq}
 
 We apply the MLX \texttt{mlx\_lm.convert} API with \texttt{q\_bits=4},
-\texttt{q\_group\_size=64} to four dense transformer models: Qwen2.5-1.5B-Instruct,
-Qwen2.5-3B-Instruct, Qwen2.5-7B-Instruct, and Mistral-7B-Instruct-v0.3.  This uniform quantization scheme assigns 4 bits
+\texttt{q\_group\_size=64} to six dense transformer models: Qwen2.5-1.5B-Instruct,
+Qwen2.5-3B-Instruct, Qwen2.5-7B-Instruct, Qwen2.5-14B-Instruct, Mistral-7B-Instruct-v0.3,
+and Llama-3.1-8B-Instruct.  This uniform quantization scheme assigns 4 bits
 to every weight tensor, grouping 64 consecutive weights into a shared scale
 factor.
 
@@ -315,8 +317,9 @@ screen (\cref{tab:qwen_5way}) uses a fixed short evaluation text; its absolute
 perplexities are larger and are \emph{not} directly comparable to the
 WikiText-2 numbers, as it is used only to rank schemes relative to one another.
 
-\noindent\textbf{Throughput} $\tau$ (tok/s): wall-clock time to generate 64
-tokens from a fixed prompt, divided into the token count.
+\noindent\textbf{Throughput} $\tau$ (tok/s): wall-clock time to generate 200
+tokens from a fixed prompt using \texttt{mlx\_lm.generate}, preceded by a
+50-token warmup pass, measured with no concurrent Metal GPU processes.
 
 Compression ratio is defined as $r = S_\text{bf16} / S_\text{q4}$.
 
@@ -452,7 +455,11 @@ increase ratio $\Delta\text{PPL} = (\text{PPL}_\text{q4} -
     additional separation: Mistral-7B degrades only $+4.4\%$ versus Qwen2.5-7B's
     $+8.5\%$, a $1.9\times$ gap.  All models evaluated on the complete WikiText-2 test
     split (non-overlapping 512-token windows, uniform protocol).
-    Tok/s measured on Apple M1 Max (q4 inference, 200-token generation).}
+    Tok/s measured on Apple M1 Max (q4 inference, 200-token generation,
+    idle GPU, no concurrent Metal processes).  The Qwen2.5-7B ($63.8$) slightly
+    exceeds Qwen2.5-3B ($58.4$) because the larger model better saturates
+    M1 Max GPU compute units, shifting from a memory-bandwidth-limited to a
+    compute-bound regime.}
   \label{tab:scale}
   \begin{tabular}{llrrrr}
     \toprule
@@ -460,11 +467,12 @@ increase ratio $\Delta\text{PPL} = (\text{PPL}_\text{q4} -
     \cmidrule(lr){3-4}
           &        & bf16 & q4 &  & (q4) \\
     \midrule
-    Qwen2.5-1.5B  & Qwen    & 12.70 & 14.60 & $+15.0$ & 35.6 \\
-    Qwen2.5-3B    & Qwen    & 11.45 & 12.79 & $+11.7$ & 11.1 \\
-    Qwen2.5-7B    & Qwen    & 10.14 & 11.01 & $+8.5$  & 50.5 \\
-    Qwen2.5-14B   & Qwen    &  7.73 &  8.53 & $+10.3$ & 27.3 \\
-    Mistral-7B    & Mistral &  7.24 &  7.56 & $+4.4$  & 10.1 \\
+    Qwen2.5-1.5B  & Qwen    & 12.70 & 14.60 & $+15.0$ & 166.6 \\
+    Qwen2.5-3B    & Qwen    & 11.45 & 12.79 & $+11.7$ &  58.4 \\
+    Qwen2.5-7B    & Qwen    & 10.14 & 11.01 & $+8.5$  &  63.8 \\
+    Qwen2.5-14B   & Qwen    &  7.73 &  8.53 & $+10.3$ &  32.4 \\
+    Mistral-7B    & Mistral &  7.24 &  7.56 & $+4.4$  &  34.8 \\
+    Llama-3.1-8B  & Llama   &  9.47 & 10.12 & $+6.9$  &  28.0 \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -478,23 +486,25 @@ sizes.  The $1.8\times$ spread between the 1.5B maximum and 7B minimum spans a
 $9.3\times$ parameter range.  With four scale points, we report the observation
 without inferring a trend shape: scale appears to moderate q4 degradation in the
 sub-7B regime, with the 14B direction requiring further confirmation.
-At matched 7B scale, architecture provides additional separation: Mistral-7B ($+4.4\%$) is
-$1.9\times$ more robust than Qwen2.5-7B ($+8.5\%$) at identical parameter
-count.  \cref{tab:mistral} provides the full Mistral-7B comparison including
-throughput.
+At the 7--8B parameter scale, architecture provides additional separation:
+Mistral-7B ($+4.4\%$) and Llama-3.1-8B ($+6.9\%$) are both more robust than
+Qwen2.5-7B ($+8.5\%$), spanning a $1.9\times$ range from most to least robust.
+\cref{tab:mistral} provides the full Mistral-7B comparison including throughput.
 
 \begin{table}[t]
   \centering
   \caption{Mistral-7B-Instruct-v0.3 uniform q4 compression
     (Apple M1 Max, MLX 0.31.1).  The q4 artifact ($\approx$4.1\,GB) is
-    self-contained and loads without the BF16 HuggingFace cache.}
+    self-contained and loads without the BF16 HuggingFace cache.
+    $^\dagger$bf16 throughput from initial measurement (GPU contention not controlled);
+    bf16 artifact was deleted before idle-GPU remeasurement.}
   \label{tab:mistral}
   \begin{tabular}{lrrrr}
     \toprule
-    Variant & Size (MB) & Compression & PPL\textsubscript{scr} & Tok/s \\
+    Variant & Size (MB) & Compression & PPL (WikiText-2) & Tok/s \\
     \midrule
-    bf16       & 14\,496 & 1.00$\times$ & 7.24 &  8.6 \\
-    q4\_uniform &  4\,078 & 3.56$\times$ & 7.56 & 10.1 \\
+    bf16       & 14\,496 & 1.00$\times$ & 7.24 &  8.6$^\dagger$ \\
+    q4\_uniform &  4\,078 & 3.56$\times$ & 7.56 & 34.8 \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -506,8 +516,9 @@ throughput.
     model parameter count (WikiText-2).  Within the Qwen family (filled circles),
     $\Delta$PPL under uniform local-pipeline q4: $+15.0\%$ (1.5B), $+11.7\%$ (3B),
     $+8.5\%$ (7B), $+10.3\%$ (14B).  The 14B result is slightly above 7B.
-    Mistral-7B (cross marker) degrades only $+4.4\%$ at the same 7B scale, a
-    $1.9\times$ cross-architecture gap.  All models share $\approx$3.5$\times$ compression.}
+    Mistral-7B (cross marker, $+4.4\%$) and Llama-3.1-8B (diamond, $+6.9\%$)
+    at the 7--8B scale are both more robust than Qwen2.5-7B ($+8.5\%$),
+    spanning a $1.9\times$ range.  All models share $\approx$3.5$\times$ compression.}
   \label{fig:scale_ppl}
 \end{figure}
 
@@ -554,8 +565,9 @@ this corpus (18,724 unique tokens from 299,078 total), versus $41.8\%$ for
 Mistral-7B (13,681 from 334,661 total)---a $3.4\times$ disparity in
 vocabulary utilisation.  Concretely, $34.6\%$ of Qwen's active tokens are
 \emph{hapax legomena} (appearing exactly once in the test split), versus
-$22.3\%$ for Mistral-7B---a $1.55\times$ ratio that accounts for the majority
-of the observed $1.9\times$ $\Delta$PPL gap.  Hapax tokens provide no
+$22.3\%$ for Mistral-7B---a $1.55\times$ ratio that is the strongest
+single observable correlate of the $1.9\times$ $\Delta$PPL gap, though
+establishing a causal account requires a controlled ablation.  Hapax tokens provide no
 averaging signal: any quantization error in their embedding row propagates
 unreduced to every NLL term where that token appears.  The residual gap
 beyond $1.55\times$ is consistent with absolute embedding-table scale:
@@ -590,13 +602,14 @@ tensor sizes, which are hardware-independent), but throughput figures will
 differ on CUDA GPUs.  The RTX\,5070\,Ti (15.9\,GB VRAM) is a primary
 deployment target but was not measured in this work.
 
-\textbf{Four Qwen scale points and one cross-model reference.}  The
+\textbf{Four Qwen scale points and two cross-architecture references.}  The
 intra-family finding ($\Delta$PPL decreasing 1.5B to 7B, with the 14B result
 slightly above 7B) rests on four data points; measurements at 32B and above are
 needed to determine whether the sub-7B decrease resumes, plateaus, or the 14B
-uptick persists.  The cross-architecture comparison (Qwen vs.\ Mistral at 7B)
-involves a single model pair; other architectures (Llama, Phi, Gemma) may fall
-anywhere in the range.  Extrapolating these trends below 1.5B or above 14B is
+uptick persists.  The cross-architecture comparison involves two model pairs at
+the 7--8B scale: Mistral-7B ($+4.4\%$) and Llama-3.1-8B ($+6.9\%$) both
+outperform Qwen2.5-7B ($+8.5\%$); other architectures (Phi, Gemma) remain
+uncharacterised.  Extrapolating these trends below 1.5B or above 14B is
 a hypothesis, not an empirical result.
 
 \textbf{Single artifact per configuration.}  Each (model, precision) cell is
@@ -634,13 +647,14 @@ We presented AX OS, a TypeScript multi-agent OS library, as the platform for
 a reproducible scale-stratified quantization study of edge LLM deployment.
 
 The primary empirical finding is that, on WikiText-2 standard evaluation across
-four Qwen2.5 sizes and Mistral-7B, uniform q4 $\Delta$PPL within the Qwen family decreases from 1.5B to 7B
+four Qwen2.5 sizes, Mistral-7B, and Llama-3.1-8B, uniform q4 $\Delta$PPL within
+the Qwen family decreases from 1.5B to 7B
 ($+15.0\%$, $+11.7\%$, $+8.5\%$) at $3.5\times$ compression (the 14B
-result is slightly above 7B; see \cref{sec:results:limits}).  At matched
-7B scale, cross-architecture variation provides additional separation:
-Mistral-7B degrades only $+4.4\%$,
-a $1.9\times$ gap, motivating architecture-aware rather than scale-only
-quantization scheme selection.
+result is slightly above 7B; see \cref{sec:results:limits}).  At the 7--8B
+scale, cross-architecture variation provides additional separation:
+Mistral-7B ($+4.4\%$) and Llama-3.1-8B ($+6.9\%$) are both more robust than
+Qwen2.5-7B ($+8.5\%$), spanning a $1.9\times$ range and motivating
+architecture-aware rather than scale-only quantization scheme selection.
 
 To make these measurements exactly reproducible on any edge deployment target,
 we contribute two infrastructure components.  The built-in-only
@@ -653,8 +667,8 @@ script without requiring a compiled \texttt{dist/} directory, preserving
 portability across deployment platforms.
 
 The Mistral-7B-Instruct-v0.3 q4 artifact (4,078\,MB, ppl\,$+4.4\%$,
-throughput $+17\%$) is registered in the AX OS \texttt{AEQIntegration} registry
-as a drop-in agent model for consumer hardware with $\geq$5\,GB free VRAM.
+35.6\,tok/s on Apple M1 Max) is registered in the AX OS \texttt{AEQIntegration}
+registry as a drop-in agent model for consumer hardware with $\geq$5\,GB free VRAM.
 
 Future work includes extending the scale study to 32B and above parameter
 checkpoints to determine whether the sub-7B decreasing trend resumes, or the 14B

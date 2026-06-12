@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate fig_q4_scale_ppl.png with 4 Qwen scale points + trend annotation."""
+"""Regenerate fig_q4_scale_ppl.png with 4 Qwen scale points + 2 cross-arch references."""
 import sys
 import matplotlib
 matplotlib.use('Agg')
@@ -8,11 +8,15 @@ import numpy as np
 
 mistral_bf16 = float(sys.argv[1]) if len(sys.argv) > 1 else 7.24
 mistral_q4   = float(sys.argv[2]) if len(sys.argv) > 2 else 7.56
+llama_bf16   = float(sys.argv[3]) if len(sys.argv) > 3 else 9.4669
+llama_q4     = float(sys.argv[4]) if len(sys.argv) > 4 else 10.1245
 
 qwen_params = [1.5, 3.0, 7.6, 14.0]
 qwen_delta  = [15.0, 11.7, 8.5, 10.3]
 mistral_param = 7.2
 mistral_delta = round((mistral_q4 - mistral_bf16) / mistral_bf16 * 100, 1)
+llama_param   = 8.0
+llama_delta   = round((llama_q4 - llama_bf16) / llama_bf16 * 100, 1)
 
 fig, ax = plt.subplots(figsize=(5.5, 3.8))
 
@@ -34,10 +38,16 @@ ax.plot(mistral_param, mistral_delta, 'x', color='#d62728', markersize=12,
 ax.annotate(f'+{mistral_delta:.1f}%', (mistral_param, mistral_delta),
             textcoords='offset points', xytext=(6, 5), fontsize=8, color='#d62728')
 
-# Gap annotation
+# Llama diamond
+ax.plot(llama_param, llama_delta, 'D', color='#2ca02c', markersize=9,
+        label=f'Llama-3.1-8B (+{llama_delta:.1f}%)', zorder=4)
+ax.annotate(f'+{llama_delta:.1f}%', (llama_param, llama_delta),
+            textcoords='offset points', xytext=(6, -13), fontsize=8, color='#2ca02c')
+
+# Gap annotation (Qwen-7B vs Mistral-7B span)
 gap = qwen_delta[2] / mistral_delta
 mid_y = (qwen_delta[2] + mistral_delta) / 2
-ax.annotate(f'{gap:.1f}× gap', xy=(7.8, mid_y), fontsize=8,
+ax.annotate(f'{gap:.1f}× range', xy=(9.2, mid_y), fontsize=8,
             color='gray', style='italic', ha='left', va='center')
 
 # Trend annotation
