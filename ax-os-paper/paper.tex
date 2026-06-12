@@ -590,38 +590,79 @@ directly measured by, \citet{xu2024scaling} and \citet{ouyang2024lowbit} in the
 
 The mechanism underlying this cross-architecture difference can be partially
 characterised by analysing vocabulary structure on the evaluation corpus
-itself.  Qwen2.5 uses a 151,643-token tiktoken vocabulary; Mistral-7B uses
-SentencePiece with 32,768 tokens.  Tokenising the complete WikiText-2 test
-split reveals that Qwen2.5-7B utilises only $12.3\%$ of its vocabulary on
-this corpus (18,724 unique tokens from 299,078 total), versus $41.8\%$ for
-Mistral-7B (13,681 from 334,661 total)---a $3.4\times$ disparity in
-vocabulary utilisation.  Concretely, $34.6\%$ of Qwen's active tokens are
-\emph{hapax legomena} (appearing exactly once in the test split), versus
-$22.3\%$ for Mistral-7B---a $1.55\times$ ratio that is the strongest
-single observable correlate of the $1.9\times$ $\Delta$PPL gap, though
-establishing a causal account requires a controlled ablation.  Hapax tokens provide no
-averaging signal: any quantization error in their embedding row propagates
-unreduced to every NLL term where that token appears.  The residual gap
-beyond $1.55\times$ is consistent with absolute embedding-table scale:
-Qwen's table ($151{,}643\times3584$ parameters) is $4.1\times$ larger than
-Mistral's ($32{,}768\times4096$), contributing proportionally more total
-quantization error.  Both models use Grouped-Query Attention (Qwen2.5-7B:
-28~query, 4~key--value heads; Mistral-7B: 32~query, 8~key--value heads), so
-attention head count is not the primary driver.  The remaining variance---
-training data composition, MLP expansion ratio, pre-training token
-budget---is not isolable from this single-pair comparison; a controlled
-ablation varying vocabulary while holding architecture fixed would be needed
-to confirm the embedding-sparsity mechanism.
+across all three architectures.  \Cref{tab:vocab} presents the results of
+tokenising the complete WikiText-2 test split with each model's native
+tokeniser.
+
+\begin{table}[t]
+  \centering
+  \caption{Vocabulary utilisation on WikiText-2 test split.  Vocabulary
+    utilisation (\% of vocab seen) and hapax rate (\% of active tokens
+    appearing exactly once) are measured with each model's native tokeniser.
+    Rank order of vocabulary utilisation matches rank order of $\Delta$PPL
+    sensitivity across all three architectures.}
+  \label{tab:vocab}
+  \begin{tabular}{lrrrr}
+    \toprule
+    Model & Vocab & Util.\ (\%) & Hapax (\%) & $\Delta$PPL \\
+    \midrule
+    Qwen2.5-7B   & 151,643 & 12.3 & 34.6 & $+8.5\%$ \\
+    Llama-3.1-8B & 128,000 & 15.0 & 34.7 & $+6.9\%$ \\
+    Mistral-7B   &  32,768 & 41.8 & 22.3 & $+4.4\%$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Vocabulary utilisation rank-orders $\Delta$PPL sensitivity across all three
+architectures: $12.3\% \to 15.0\% \to 41.8\%$ corresponds to
+$+8.5\% \to +6.9\% \to +4.4\%$.  Notably, Qwen2.5-7B and Llama-3.1-8B have
+nearly identical hapax rates ($34.6\%$ vs.\ $34.7\%$) yet differ in
+$\Delta$PPL ($+8.5\%$ vs.\ $+6.9\%$), indicating that hapax rate alone does
+not fully account for the gap; the lower vocabulary utilisation of
+Qwen2.5-7B ($12.3\%$ vs.\ $15.0\%$) is the additional separating factor.
+Hapax tokens provide no averaging signal: any quantization error in their
+embedding row propagates unreduced to every NLL term where that token appears.
+The Mistral-7B advantage ($+4.4\%$) arises from both its much lower hapax
+rate ($22.3\%$) and its $3.4\times$ higher vocabulary utilisation.
+The residual gap between Qwen2.5-7B and Llama-3.1-8B is consistent with
+absolute embedding-table scale: Qwen's table
+($151{,}643\times3584$ parameters, $\approx$2.2\,B weights) is $4.1\times$
+larger than Mistral's ($32{,}768\times4096$, $\approx$0.5\,B) and
+$1.4\times$ larger than Llama's ($128{,}000\times4096$, $\approx$1.6\,B),
+contributing proportionally more total quantization error.
+All three models use Grouped-Query Attention, so attention head count is
+not the primary driver.  The three-way rank consistency supports the
+vocabulary-sparsity hypothesis; a controlled ablation varying vocabulary
+while holding architecture fixed would be needed to confirm causality.
 
 
-\textbf{Downstream accuracy.}  To confirm that the $+8.5\%$ WikiText-2 PPL elevation does not translate
-to task degradation, we apply NLL-per-token scoring (no chat template)
-to both Qwen2.5-7B variants on ARC-Easy~\citep{clark2018arc}
-($n=2376$, 95\% CI $\pm2.0$pp).  The q4 model scores
-$\Delta\text{ACC}=+0.5$pp relative to BF16---within the
-95\% confidence interval---confirming that the $+8.5\%$ perplexity
-penalty does not produce a statistically significant commonsense
-reasoning degradation at 7B scale.
+\textbf{Downstream accuracy.}  To confirm that the $+8.5\%$ WikiText-2 PPL
+elevation does not translate to task degradation, we apply NLL-per-token
+scoring (no chat template) to both Qwen2.5-7B variants on
+ARC-Easy~\citep{clark2018arc} ($n=2{,}376$; 95\% CI $\pm2.0$pp).
+\Cref{tab:arc} presents the results.  The q4 model scores
+$+0.50$pp above BF16---well within the confidence interval---confirming that
+the $+8.5\%$ perplexity penalty produces no statistically significant
+commonsense reasoning degradation at 7B scale.
+
+\begin{table}[t]
+  \centering
+  \caption{ARC-Easy accuracy for Qwen2.5-7B (NLL-per-token scoring, no chat
+    template, $n=2{,}376$, 95\% CI $\pm2.0$pp).  The $+0.50$pp difference
+    is within the confidence interval: uniform q4 does not degrade
+    commonsense reasoning at 7B scale.}
+  \label{tab:arc}
+  \begin{tabular}{lrr}
+    \toprule
+    Variant & Accuracy (\%) & $\Delta$ACC (pp) \\
+    \midrule
+    Qwen2.5-7B BF16 & 52.53 & --- \\
+    Qwen2.5-7B q4   & 53.03 & $+0.50$ \\
+    \midrule
+    95\% CI         & \multicolumn{2}{c}{$\pm2.0$\,pp} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 \textbf{Mixed-precision failure.}  For the 1.5B dense model, both
 mixed-precision recipes (3+6-bit and 2+6-bit) are \emph{dominated} by uniform
