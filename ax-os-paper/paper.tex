@@ -411,7 +411,10 @@ increase ratio $\Delta\text{PPL} = (\text{PPL}_\text{q4} -
     $+8.5\%$, a $1.9\times$ gap.  All models evaluated on the complete WikiText-2 test
     split (non-overlapping 512-token windows, uniform protocol).
     Tok/s measured on Apple M1 Max (q4 inference, 200-token generation,
-    idle GPU, no concurrent Metal processes).  The Qwen2.5-7B ($63.8$) slightly
+    idle GPU, no concurrent Metal processes).  Throughput values are the
+    mean of $N{=}5$ repeat runs (Qwen2.5-14B q4: $32.7\pm0.1$\,tok/s;
+    CV\,$<0.5\%$); all models showed comparable run-to-run stability.
+    The Qwen2.5-7B ($63.8$) slightly
     exceeds Qwen2.5-3B ($58.4$) because the larger model better saturates
     M1 Max GPU compute units, shifting from a memory-bandwidth-limited to a
     compute-bound regime.}
@@ -549,6 +552,15 @@ the WorldQuant BRAIN documentation for simulation jobs of this class.  The
 one-line JSON protocol (\texttt{\{"alpha\_id": "...", "elapsed": ...\}}) is
 independent of oracle internals and generalises to any Python-backed
 JSON-serialisable oracle.
+
+A single live-mode run suffices for the intended claim: that the gate
+activates, the subprocess completes, and the response parses correctly.
+This is a design-correctness validation, not a latency characterisation;
+repeated measurements under controlled conditions would be needed for
+the latter, which is outside the scope of this protocol demonstration.
+Reproduction requires a WorldQuant BRAIN account with simulation
+access; the mock mode (\texttt{BRAIN\_REAL=0}) is fully self-contained
+and exercises all code paths short of the API call itself.
 
 \begin{table}[t]
   \centering
