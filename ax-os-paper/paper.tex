@@ -43,7 +43,8 @@ Node.js built-ins (\texttt{node:test}, \texttt{node:assert/strict}), achieving
 27/27 test pass without \texttt{npm install}; and \textbf{(2) inline oracle
 switching} via a single \texttt{BRAIN\_REAL=1} environment variable that
 activates a live Python subprocess oracle without a compiled build artifact.
-The compressed Mistral-7B artifact is registered in the \texttt{AEQIntegration}
+The compressed Mistral-7B artifact is registered in the \texttt{AEQIntegration}%
+% (AEQ: Adaptive Expert Quantization, the model-registry subsystem of AX OS)
 model registry and validated by the installation-free harness, making it
 directly loadable as a drop-in agent model.
 
@@ -279,7 +280,7 @@ signature of the existing mock: $\texttt{realSim}(\textit{expr}) \to \{
 command-line argument.  The subprocess prints a single-line JSON object;
 \texttt{realSim} parses it with \texttt{JSON.parse} and maps fields to the
 \texttt{SimResult} type.  A timeout of 1,800,000\,ms accommodates the observed
-$\sim$140\,s WorldQuant API response time.
+$\sim$140\,s WorldQuant BRAIN API response time.
 
 Activation is controlled by a single environment variable:
 \begin{verbatim}
@@ -325,7 +326,7 @@ mixed-precision recipes (3-bit low layers / 6-bit high layers;
 2-bit low layers / 6-bit high layers).  The results are presented in
 \cref{sec:exp:aeq}.
 
-Compressed artifacts are registered in the \texttt{AEQIntegration} registry
+Compressed artifacts are registered in the \texttt{AEQIntegration}\footnote{AEQ (Adaptive Expert Quantization) is the model-registry subsystem of AX OS that stores compressed model artifacts with metadata.} registry
 as \texttt{AEQModelConfig} entries with \texttt{status=available},
 \texttt{expectedVRAM\_GB} set to the measured value, and
 \texttt{expectedSpeedup} set to the measured ratio $\tau_\text{q4} /
@@ -389,7 +390,9 @@ activation is controlled by a single environment variable
 (\texttt{BRAIN\_REAL=1}), with zero overhead in mock mode (one string
 equality check before any subprocess fork).  The live path spawns a Python
 subprocess with a 1,800,000\,ms timeout matching the observed
-$\sim$140\,s WorldQuant API round-trip; the one-line JSON protocol is
+$\sim$140\,s WorldQuant BRAIN API round-trip%
+\footnote{WorldQuant BRAIN is a quantitative investment simulation platform (\url{https://platform.worldquant.com}); the live oracle submits a trading strategy and waits for a backtested performance score.}%
+; the one-line JSON protocol is
 independent of oracle internals, generalising to any Python-backed
 JSON-serialisable oracle.
 
@@ -413,7 +416,7 @@ ppl\,$=$\,162\,755 respectively).
   \label{tab:qwen_5way}
   \begin{tabular}{lrrrr}
     \toprule
-    Variant & Size (MB) & Compression & PPL & Tok/s \\
+    Variant & Size (MB) & Compression & PPL\textsubscript{scr} & Tok/s \\
     \midrule
     bf16            & 2970 & 1.00$\times$ &  48.18 &  23.0 \\
     q8\_uniform     & 1577 & 1.88$\times$ &  46.70 &  22.7 \\
@@ -448,19 +451,20 @@ increase ratio $\Delta\text{PPL} = (\text{PPL}_\text{q4} -
     the decrease does not continue at 14B.  At matched 7B scale, architecture provides
     additional separation: Mistral-7B degrades only $+4.4\%$ versus Qwen2.5-7B's
     $+8.5\%$, a $1.9\times$ gap.  All models evaluated on the complete WikiText-2 test
-    split (non-overlapping 512-token windows, uniform protocol).}
+    split (non-overlapping 512-token windows, uniform protocol).
+    Tok/s measured on Apple M1 Max (q4 inference, 200-token generation).}
   \label{tab:scale}
-  \begin{tabular}{llrrr}
+  \begin{tabular}{llrrrr}
     \toprule
-    Model & Family & \multicolumn{2}{c}{PPL (WikiText-2)} & $\Delta$PPL (\%) \\
+    Model & Family & \multicolumn{2}{c}{PPL (WikiText-2)} & $\Delta$PPL (\%) & Tok/s \\
     \cmidrule(lr){3-4}
-          &        & bf16 & q4 & \\
+          &        & bf16 & q4 &  & (q4) \\
     \midrule
-    Qwen2.5-1.5B  & Qwen    & 12.70 & 14.60 & $+15.0$ \\
-    Qwen2.5-3B    & Qwen    & 11.45 & 12.79 & $+11.7$ \\
-    Qwen2.5-7B    & Qwen    & 10.14 & 11.01 & $+8.5$ \\
-    Qwen2.5-14B   & Qwen    &  7.73 &  8.53 & $+10.3$ \\
-    Mistral-7B    & Mistral &  7.24 &  7.56 & $+4.4$  \\
+    Qwen2.5-1.5B  & Qwen    & 12.70 & 14.60 & $+15.0$ & 35.6 \\
+    Qwen2.5-3B    & Qwen    & 11.45 & 12.79 & $+11.7$ & 11.1 \\
+    Qwen2.5-7B    & Qwen    & 10.14 & 11.01 & $+8.5$  & 50.5 \\
+    Qwen2.5-14B   & Qwen    &  7.73 &  8.53 & $+10.3$ & 27.3 \\
+    Mistral-7B    & Mistral &  7.24 &  7.56 & $+4.4$  & 10.1 \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -487,7 +491,7 @@ throughput.
   \label{tab:mistral}
   \begin{tabular}{lrrrr}
     \toprule
-    Variant & Size (MB) & Compression & PPL & Tok/s \\
+    Variant & Size (MB) & Compression & PPL\textsubscript{scr} & Tok/s \\
     \midrule
     bf16       & 14\,496 & 1.00$\times$ & 7.24 &  8.6 \\
     q4\_uniform &  4\,078 & 3.56$\times$ & 7.56 & 10.1 \\
@@ -521,11 +525,10 @@ and no test-body modifications.  The migration cost is one import line per test
 file.  This result confirms that Node.js~$\geq$18 built-ins are sufficient for
 the full describe/it/expect test grammar used in the AX OS test suite.
 
-\textbf{Oracle switching (Contribution 2).}  The inline \texttt{realSim()} design
-adds no measurable overhead in mock mode and decouples the demo from the build
-pipeline.  The pattern generalises to any Python-backed oracle with a
-JSON-serialisable output: the subprocess protocol (one-line JSON, \texttt{stdout})
-is independent of the oracle's internal implementation.
+\textbf{Oracle switching (Contribution 2).}  The \texttt{BRAIN\_REAL=1}
+gate adds zero overhead in mock mode and generalises to any Python-backed
+JSON-serialisable oracle.  The live path was structurally verified but not
+executed in this work (see \cref{sec:results:limits}).
 
 \textbf{Scale-dependent q4 tolerance (Contribution 3).}  WikiText-2 standard
 evaluation reveals two distinct effects.  First, within the Qwen2.5 model
@@ -621,13 +624,11 @@ We presented AX OS, a TypeScript multi-agent OS library, as the platform for
 a reproducible scale-stratified quantization study of edge LLM deployment.
 
 The primary empirical finding is that, on WikiText-2 standard evaluation across
-four Qwen2.5 sizes and Mistral-7B, uniform q4 $\Delta$PPL within the Qwen
-family decreases from 1.5B to 7B ($+15.0\%$, $+11.7\%$, $+8.5\%$) at $3.5\times$
-compression; the 14B result ($+10.3\%$) is slightly above 7B, indicating the
-decrease does not continue across all tested sizes.  The $1.8\times$ spread between
-the 1.5B maximum and 7B minimum indicates scale moderates q4 degradation in the
-sub-7B regime, though the 14B direction warrants further study.  At matched 7B scale, cross-architecture
-variation provides additional separation: Mistral-7B degrades only $+4.4\%$,
+four Qwen2.5 sizes and Mistral-7B, uniform q4 $\Delta$PPL within the Qwen family decreases from 1.5B to 7B
+($+15.0\%$, $+11.7\%$, $+8.5\%$) at $3.5\times$ compression (the 14B
+result is slightly above 7B; see \cref{sec:results:limits}).  At matched
+7B scale, cross-architecture variation provides additional separation:
+Mistral-7B degrades only $+4.4\%$,
 a $1.9\times$ gap, motivating architecture-aware rather than scale-only
 quantization scheme selection.
 
@@ -655,6 +656,11 @@ intra-family scale trend and the cross-architecture gap now rest on a
 uniform full-corpus comparison.
 
 \clearpage
+\section*{Acknowledgements}
+The authors thank the MLX open-source community for the Apple Silicon
+inference and quantization tooling used in this work.
+No competing interests to declare.
+
 \bibliographystyle{plainnat}
 \bibliography{refs}
 
