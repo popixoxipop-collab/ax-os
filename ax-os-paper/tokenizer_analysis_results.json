@@ -1,0 +1,32 @@
+{
+  "Qwen2.5-7B": {
+    "name": "Qwen2.5-7B",
+    "vocab_size": 151643,
+    "n_tokens": 299078,
+    "chars_per_token": 4.327753963848895,
+    "n_unique": 18724,
+    "top100_coverage": 0.51046549729502,
+    "top1000_coverage": 0.7228783126809729,
+    "top10k_coverage": 0.9633038872802413,
+    "avg_token_length": 6.700117496261482,
+    "single_char_ratio": 0.009987182226020082,
+    "entropy": 10.107186592947798,
+    "hapax_count": 6473,
+    "hapax_ratio": 0.3457060457167272
+  },
+  "Mistral-7B": {
+    "name": "Mistral-7B",
+    "vocab_size": 32768,
+    "n_tokens": 334661,
+    "chars_per_token": 3.867603335913058,
+    "n_unique": 13681,
+    "top100_coverage": 0.507283489859888,
+    "top1000_coverage": 0.7387923899109845,
+    "top10k_coverage": 0.9871003791896875,
+    "avg_token_length": 5.240040932680359,
+    "single_char_ratio": 0.023755573422995394,
+    "entropy": 9.940037461674422,
+    "hapax_count": 3045,
+    "hapax_ratio": 0.22257144945544916
+  }
+}

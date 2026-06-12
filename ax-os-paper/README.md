@@ -11,6 +11,7 @@ Uniform protocol: non-overlapping 512-token windows, full WikiText-2 test split,
 | Qwen2.5-1.5B | 12.70 | 14.60 | +15.0% |
 | Qwen2.5-3B | 11.45 | 12.79 | +11.7% |
 | Qwen2.5-7B | 10.14 | 11.01 | +8.5% |
+| Qwen2.5-14B | 7.73 | 8.53 | +10.3% |
 | Mistral-7B | 7.24 | 7.56 | +4.4% |
 
 - **Cross-architecture gap at 7B**: 1.9× (Qwen more sensitive than Mistral)
