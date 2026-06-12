@@ -613,6 +613,16 @@ budget---is not isolable from this single-pair comparison; a controlled
 ablation varying vocabulary while holding architecture fixed would be needed
 to confirm the embedding-sparsity mechanism.
 
+
+\textbf{Downstream accuracy.}  To confirm that the $+8.5\%$ WikiText-2 PPL elevation does not translate
+to task degradation, we apply NLL-per-token scoring (no chat template)
+to both Qwen2.5-7B variants on ARC-Easy~\citep{clark2018arc}
+($n=2376$, 95\% CI $\pm2.0$pp).  The q4 model scores
+$\Delta\text{ACC}=+0.5$pp relative to BF16---within the
+95\% confidence interval---confirming that the $+8.5\%$ perplexity
+penalty does not produce a statistically significant commonsense
+reasoning degradation at 7B scale.
+
 \textbf{Mixed-precision failure.}  For the 1.5B dense model, both
 mixed-precision recipes (3+6-bit and 2+6-bit) are \emph{dominated} by uniform
 q4 on both size and quality axes.  This result challenges the intuition that
