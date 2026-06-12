@@ -26,6 +26,9 @@ MODELS = [
     # 7B — Qwen2.5-7B for family consistency (Mistral-7B used as cross-model validation)
     ("qwen7b_bf16",   "mlx-community/Qwen2.5-7B-Instruct-bf16",             7.0, "bf16"),
     ("qwen7b_q4",     "mlx-community/Qwen2.5-7B-Instruct-4bit",             7.0, "q4"),
+    # 14B — extends intra-family scale curve
+    ("qwen14b_bf16",  "mlx-community/Qwen2.5-14B-Instruct-bf16",           14.0, "bf16"),
+    ("qwen14b_q4",    "mlx-community/Qwen2.5-14B-Instruct-4bit",           14.0, "q4"),
     # Cross-model: Mistral-7B (v0.2 bf16 ≈ v0.3 bf16 on WikiText-2)
     ("mistral7b_bf16", "mistralai/Mistral-7B-Instruct-v0.3",                 7.0, "bf16"),
     ("mistral7b_q4",  "/Users/xox/Desktop/AEQ/models/mistral-7b-v0.3-q4",  7.0, "q4"),
@@ -137,10 +140,11 @@ def main():
     print("-"*52)
     # Explicit same-family pairs: bf_label, q4_label, scale, family
     PAIRS = [
-        ("qwen1.5b_bf16", "qwen1.5b_q4",  1.5, "Qwen"),
-        ("qwen3b_bf16",   "qwen3b_q4",    3.0, "Qwen"),
-        ("qwen7b_bf16",   "qwen7b_q4",    7.0, "Qwen"),
-        ("mistral7b_bf16","mistral7b_q4", 7.0, "Mistral"),
+        ("qwen1.5b_bf16", "qwen1.5b_q4",   1.5,  "Qwen"),
+        ("qwen3b_bf16",   "qwen3b_q4",     3.0,  "Qwen"),
+        ("qwen7b_bf16",   "qwen7b_q4",     7.0,  "Qwen"),
+        ("qwen14b_bf16",  "qwen14b_q4",   14.0,  "Qwen"),
+        ("mistral7b_bf16","mistral7b_q4",  7.0,  "Mistral"),
     ]
     for bk, qk, scale, family in PAIRS:
         if bk in results and qk in results:

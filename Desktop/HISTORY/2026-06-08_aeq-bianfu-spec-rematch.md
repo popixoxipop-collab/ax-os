@@ -63,3 +63,46 @@ hook 고정 / 메모리 readme 히스토리 graphify 정리 / 커밋 푸쉬 / �
 - 학습 후 convert_mlx_to_peft_v2.py 변환 (lm_head transpose 검증)
 - bianfu와 shape 정합 확인 후 제출
 - iter4000/5000 채점 결과 확인 (bianfu 0.83 대비)
+
+---
+
+## 세션 후반: 채점 결과 + 어댑터 산술 실험 (2026-06-08 오후)
+
+### 채점 결과 (from-scratch 막힘 확정)
+| 어댑터 | 데이터/스펙 | 점수 |
+|---|---|---|
+| bianfu (융합) | — | 0.83 |
+| warmstart 3000 (bianfu+improved 3000iter LR1e-5) | continue | **0.66** |
+| base-only (어댑터0) | — | 0.54 |
+| round_5 from-scratch 3500 (improved, r32+lm_head 정합) | from-scratch | **0.52** |
+| round_4 4000/5000 (improved, r16) | from-scratch | 0.52/0.53 |
+
+**핵심 결론**: 스펙 정합(r32+lm_head)도 from-scratch 점수 못 올림(round_5=0.52=round_4). base(0.54)보다 낮음. from-scratch SFT 막힘 확정. warmstart(0.66)>from-scratch(0.52): 0.83 출발 이점 실재하나 continue도 0.83→0.66 하락.
+
+### Kaggle warm-start 디스크풀 crash + 회수 교훈
+- v3(ITERS5000 save500) iter3500에서 No space left crash. step별 어댑터(4.26GB) 누적이 원인.
+- **`kaggle kernels output`(API)은 crash run의 working을 안 줌(로그 `[]`만). 웹 output storage엔 step3000 온전 잔존.** signed URL로 회수 성공.
+- 교훈: crash kernel = API output 비어도 웹 스토리지 working 확인 필수. (메모리 기록 가치)
+
+### 어댑터 산술 실험 (task arithmetic / negation)
+- bianfu(model.model.layers) vs warmstart(model.backbone.layers) 키 체계 다름. **backbone→model 치환으로 12010키 정렬**(완전 매칭). warmstart 추가키=lm_head.base_layer(제외).
+- **Δ=warmstart−bianfu 상대크기 153%** (lora_A 156%, lora_B 103%). continue가 어댑터 대폭 재구성.
+- negative delta: W=(1+α)bianfu−α·warmstart. α=1.0(2bianfu−warm) 제출=53479312 PENDING. NaN/inf 없음, max_abs 0.16.
+- **발산 측정**: α=1.0에서 거의 모든 모듈(6003/6005) ΔW>3x. 전역적(국소 아님). 단 절대값 작음(max_abs 0.16). >10x는 α1.0서 8개뿐.
+
+### Ricci flow surgery 외삽 (사용자 아이디어)
+- 발산 모듈 절제(bianfu 복원)+안정 모듈 외삽. 국소 특이점 아니라 "상위 발산 절제"로 재해석.
+- 생성: surg_a1.5_t10(절제1973/외삽4032), surg_a2.0_t10(절제3045/외삽2960, max_abs0.145=발산억제), surg_a2.0_t5(절제6003=거의bianfu).
+
+### 준비된 어댑터 11개 (D50 /Volumes/D50/AEQ/)
+- 순수외삽: neg_delta_a1.0(제출)/a1p1~a1p5, 보간: interp_am0p25/0p5/0p75, surgery: surg_a1p5_t10/a2p0_t10/a2p0_t5
+- bianfu소스 /tmp/bianfu_adp (submission/fusion_086_recipe/submission.zip), step3000 /Volumes/D50/AEQ/ws_step3000_adapter
+
+### 내일 할 일
+1. **53479312(neg α=1.0) 점수 확인 = 외삽 방향 분기점** (>0.83이면 외삽 유효)
+2. 한도 5건 제출: neg α1.5 vs surg_a1.5_t10(surgery효과 직접비교) + surg_a2.0_t10 + neg α1.2 + interp am0.5
+3. 결과로 negative delta + Ricci surgery 유효성 판정
+
+### 백그라운드 작업 (전부 완료/정리됨)
+- 로컬 round_5 from-scratch: 5000 완주 (val best iter2000=0.315, 4500=0.335). 어댑터 adaptive/round_5/adapter/
+- Kaggle warm-start: v3 crash→step3000 회수→0.66. step3000 continue +5000 노트북은 미실행(dataset ws-step3000 업로드 후 중단)
