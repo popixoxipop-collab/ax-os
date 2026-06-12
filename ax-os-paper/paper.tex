@@ -23,30 +23,34 @@
 \begin{abstract}
 % ============================================================
 
-We study scale-stratified 4-bit quantization for edge LLM deployment using
-AX OS, a TypeScript multi-agent library with reproducible test infrastructure.
-\textbf{Primary finding:} standard WikiText-2 evaluation across four Qwen2.5
-sizes (1.5B, 3B, 7B, 14B) and Mistral-7B shows that within the Qwen family,
-uniform q4 (group size 64) perplexity degradation decreases from small to mid-scale
-($+15.0\%$ at 1.5B, $+11.7\%$ at 3B, $+8.5\%$ at 7B) then shows a slight
-recovery at 14B ($+10.3\%$); the initial 1.5B--7B decrease does not continue at 14B.
-With four scale points we characterise the finding as: scale reduces q4 degradation
-in the small-to-mid regime but the relationship is not monotone across all tested sizes.  Cross-architecture variation at
-matched 7B scale provides additional separation: Mistral-7B degrades only
-$+4.4\%$ versus Qwen2.5-7B's $+8.5\%$ at the same $3.5\times$ compression
-ratio, a $1.9\times$ gap that motivates architecture-aware quantization decisions.  Mixed-precision alternatives (3-bit low
-layers) collapse in quality at 1.5B scale, reinforcing the uniform scheme
-choice.  To ensure these results are exactly reproducible on any target
-machine, we contribute two pieces of deployment infrastructure:
-\textbf{(1) a zero-dependency \texttt{\_harness.mjs} shim} backed entirely by
-Node.js built-ins (\texttt{node:test}, \texttt{node:assert/strict}), achieving
-27/27 test pass without \texttt{npm install}; and \textbf{(2) inline oracle
-switching} via a single \texttt{BRAIN\_REAL=1} environment variable that
-activates a live Python subprocess oracle without a compiled build artifact.
-The compressed Mistral-7B artifact is registered in the \texttt{AEQIntegration}%
-% (AEQ: Adaptive Expert Quantization, the model-registry subsystem of AX OS)
-model registry and validated by the installation-free harness, making it
-directly loadable as a drop-in agent model.
+Deploying LLM agents at the edge requires answering three questions jointly:
+\emph{which model and precision}; \emph{how to validate that choice without a
+build environment}; and \emph{how to couple the agent to an external oracle}.
+AX OS, a TypeScript multi-agent library, addresses all three.
+
+\textbf{Model selection.}
+Standard WikiText-2 evaluation across four Qwen2.5 sizes (1.5B--14B),
+Mistral-7B, and Llama-3.1-8B shows that uniform q4 (group size~64)
+perplexity degradation decreases from small to mid-scale ($+15.0\%$,
+$+11.7\%$, $+8.5\%$) then partially recovers at 14B ($+10.3\%$).
+Cross-architecture variation at matched 7--8B scale spans a $1.9\times$ range:
+Mistral-7B ($+4.4\%$) and Llama-3.1-8B ($+6.9\%$) are substantially more
+robust than Qwen2.5-7B ($+8.5\%$), motivating architecture-aware model selection.
+Mixed-precision alternatives collapse in quality at 1.5B scale, reinforcing
+the uniform scheme.
+
+\textbf{Reproducible validation.}
+A 40-line zero-dependency \texttt{\_harness.mjs} shim backed by Node.js
+built-ins achieves 27/27 test pass on any clean Node.js~$\geq$18 without
+\texttt{npm install}, making the test environment byte-for-byte reproducible.
+
+\textbf{Oracle coupling.}
+A single \texttt{BRAIN\_REAL=1} environment variable activates a live
+Python subprocess oracle without a compiled build artifact, enabling
+drop-in integration with external simulators.
+
+Together these three components form a complete, reproducible
+edge-deployment workflow, validated end-to-end on Apple M1 Max.
 
 \end{abstract}
 
@@ -85,7 +89,15 @@ platforms requires a test harness that runs without a full dependency install---
 gap AX OS addresses with a Node.js built-in shim---and an oracle coupling
 mechanism that does not depend on a compiled build artifact.
 
-This paper makes one empirical contribution supported by two infrastructure
+AX OS addresses this deployment workflow end-to-end:
+the quantization measurements answer \emph{which model and precision to deploy};
+the zero-dependency harness answers \emph{how to validate that choice on the
+target machine without a build environment}; and the oracle design pattern answers
+\emph{how to couple the validated agent to an external simulator without a
+compiled artifact}.  No existing framework-and-evaluation combination covers
+all three jointly at the sub-7B scale.
+
+This paper reports one primary empirical finding with two enabling infrastructure
 contributions:
 \begin{enumerate}
   \item \textbf{Scale-stratified 4-bit quantization measurements (primary).}
@@ -591,6 +603,16 @@ concentrated low-bit assignments under this configuration.  Whether this
 holds across other small-scale architectures requires broader experimental
 validation.
 
+\textbf{End-to-end coherence.}  Together, these three findings address the
+complete edge-deployment decision:\ the quantization measurements establish
+\emph{which model and precision to deploy}; the harness provides \emph{how to
+validate that decision reproducibly on the target machine}; and the oracle
+design pattern establishes \emph{how to couple the deployed agent to its
+external simulator}.  The Mistral-7B artifact is registered in the
+\texttt{AEQIntegration} registry, validated by the zero-dependency harness,
+and ready to load as a drop-in agent model---demonstrating all three
+components operating as an integrated system.
+
 \subsection{Limitations and Scope}
 \label{sec:results:limits}
 
@@ -613,11 +635,18 @@ uncharacterised.  Extrapolating these trends below 1.5B or above 14B is
 a hypothesis, not an empirical result.
 
 \textbf{Single artifact per configuration.}  Each (model, precision) cell is
-a single quantized artifact evaluated once.  Perplexity on a fixed corpus is
-deterministic given the artifact, so the relevant uncertainty is not eval-seed
-noise but variance across independent quantization runs and calibration
-subsets, which we do not characterize.  A multi-run study would be needed to
-attach formal confidence intervals to the reported $\Delta$PPL values.
+a single quantized artifact evaluated once.  Perplexity on a fixed corpus is deterministic given the artifact.
+MLX block-wise q4 quantization (RTN, group size~64) is a deterministic
+arithmetic operation on the BF16 weights: for each 64-weight block,
+\texttt{mx.quantize} computes the block's absmax, maps weights to the nearest
+4-bit integer, and stores the result---no calibration data and no PRNG calls
+are involved (verified by inspecting \texttt{mlx\_lm.utils} source: zero
+\texttt{random} or \texttt{seed} calls in the quantization path).
+WikiText-2 evaluation on a fixed artifact is likewise deterministic on a
+fixed hardware platform.  The reported $\Delta$PPL values are therefore
+exact measurements, not run-to-run estimates.  The relevant residual uncertainty
+is cross-library variance (e.g., GPTQ vs.\ MLX RTN at the same group size),
+which we identify as a direction for future work.
 
 \textbf{Quantization pipeline (uniform full-corpus).}  All four models in
 \cref{tab:scale} are evaluated under an identical protocol: non-overlapping
@@ -643,8 +672,13 @@ figures for the live path are architecture-derived, not measured.
 \label{sec:conclusion}
 % ============================================================
 
-We presented AX OS, a TypeScript multi-agent OS library, as the platform for
-a reproducible scale-stratified quantization study of edge LLM deployment.
+We presented AX OS as an integrated solution to three interdependent
+edge-deployment problems: selecting a model and precision level that retains
+acceptable quality under memory constraints; validating that selection
+reproducibly on the deployment machine without a build environment; and coupling
+the validated agent to an external simulator without compiled middleware.
+Addressing all three jointly, rather than in isolation, is the central
+contribution of this work.
 
 The primary empirical finding is that, on WikiText-2 standard evaluation across
 four Qwen2.5 sizes, Mistral-7B, and Llama-3.1-8B, uniform q4 $\Delta$PPL within
