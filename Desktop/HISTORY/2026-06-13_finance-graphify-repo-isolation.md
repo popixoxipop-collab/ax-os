@@ -81,6 +81,22 @@ Finance, AEQ, BORN_LM, Claim, F-CORE
 - [x] 5개 repo .claude/ 디렉토리 초기화
 - [x] Finance 메모리 파일럿 마이그레이션
 
+---
+
+## 세션 2 — Finance P2 항목 순차 구현 (컨텍스트 이월 후 계속)
+
+### 완료 항목 (커밋)
+
+| Task | 커밋 | 내용 |
+|------|------|------|
+| A. yfinance 공용화 | `607de0a` | utils.yf_close(3-retry+Alpaca fallback), yf_series(). vrp_executor/paper_trader 교체 |
+| B. KISBroker 이중 경로 통합 | `9a9b436` | map_execution.KISBroker → live.broker_kis 위임 (토큰/헤더 중복 제거) |
+| C. phase4 yf_series | `2e6d454` | phase4_rebalance.py도 yf_series()로 전환 |
+| D. Phase4 OOS 대시보드 | `d8c9ec2` | live/phase4_monitor.py 신규. +31.40% vs SPY +25.04%, Sharpe 1.16, MDD -6.78% |
+| E. MAP 큐 적체 해소 | `db2af5f` | map_monitor+scalp_daily cancel-in-progress=true |
+| F. First-Monday guard 보강 | `bb5cf58` | live/first_monday_guard.py + Alpaca /v2/calendar 공휴일 대응 |
+
+- push: `239ba10..bb5cf58 → origin/main`
+
 ## 미완료/추적
 - AEQ/BORN_LM/Claim/F-CORE 메모리 상세 마이그레이션 → 해당 세션에서 진행
-- Finance graphify P2 항목: yfinance 공용화, KISBroker 이중 경로 통합

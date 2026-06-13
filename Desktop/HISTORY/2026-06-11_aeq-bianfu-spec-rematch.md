@@ -397,3 +397,44 @@ w3: empty [0] tensor (placeholder), 그대로 복사
 - batched_b010 v3 (53615340) PENDING — vLLM 418-key 구조 일치 여부 검증 중
 - batched_b020/030 생성 완료, b010 결과 보고 제출 예정
 - lm_head 경로: ours=`base_model.model.lm_head`, huikang=`base_model.model.model.lm_head` (2 keys diff, base_neg084와 동일 경로 → 문제 없을 것)
+
+---
+
+## 2026-06-13 세션 — 선택적 스케일링 어댑터 + 제출 API 차단
+
+### batched 포맷 최종 결과
+- batched_b010 v4 (53616244): ERROR — lm_head path fix도 무효
+- **결론**: batched 3D 포맷(418 keys) 대회 evaluator 완전 비지원. per-expert 12010-key만 유효.
+
+### neg-delta 핵심 발견
+- warmstart LoRA = 0 → neg-delta = 단순 (1+α)×kienngx 스케일링
+- plateau: α=0.08~0.12 모두 LB=0.84 (더 이상 均一 스케일링으로 돌파 불가)
+- huikang attention 48개 키가 kienngx와 동일 경로 → 교차 블렌딩 가능
+
+### 신규 어댑터 3개 생성 완료
+| 이름 | 전략 | 크기 | 경로 |
+|------|------|------|------|
+| sel_attn15_exp08 | attention×1.15, expert×1.08 | 3554MB | `/Volumes/D50/AEQ/sel_attn15_exp08/` |
+| sel_attn08_exp15 | attention×1.08, expert×1.15 | 3554MB | `/Volumes/D50/AEQ/sel_attn08_exp15/` |
+| attn_blend_b10 | neg_a010 + β=0.10×huikang_attn | 3554MB | `/Volumes/D50/AEQ/attn_blend_b10/` |
+- zip 준비: `/tmp/sel_attn15_exp08.zip`, `/tmp/sel_attn08_exp15.zip`, `/tmp/attn_blend_b10.zip` (각 3.0GB)
+
+### Kaggle API 제출 차단 (미해결)
+**증상**: GCS 업로드 100% 완료, `create_submission` 단계에서 차단
+| 방식 | 결과 |
+|------|------|
+| SDK `competition_submit()` | 400 "BlobFileTokens must be specified." |
+| REST API JSON | 400 동일 |
+| REST API + 세션 쿠키 포함 | 500 Internal Error |
+| 작은 파일 테스트 | 400 |
+
+**진단 완료 사항**:
+- GCS PUT 200 정상, token 형식(`CfDJ8Ih_...`) 올바름, SDK multipart form-data 전송 확인
+- 어제(06-12 20:34~21:01) `auto_submit_surgical.py`로 5개 제출 성공 (동일 SDK 사용)
+- 현재 총 제출: 50개 → **팀 총 제출 한도 50개 도달 가능성 높음**
+- `submissionsDisabled: False`, `maxDailySubmissions: 5`, deadline: 2026-06-15
+
+**미해결**: 웹 UI 직접 제출 시도 필요
+- URL: `https://www.kaggle.com/competitions/nvidia-nemotron-model-reasoning-challenge/submit`
+- 웹에서 시도 시 "한도 초과" 메시지가 명확히 나올 것
+- 3.0GB zip 파일 브라우저 업로드 필요
