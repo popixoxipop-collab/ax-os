@@ -98,5 +98,124 @@ Finance, AEQ, BORN_LM, Claim, F-CORE
 
 - push: `239ba10..bb5cf58 → origin/main`
 
-## 미완료/추적
+## 미완료/추적 (세션 2 기준)
 - AEQ/BORN_LM/Claim/F-CORE 메모리 상세 마이그레이션 → 해당 세션에서 진행
+
+---
+
+## 세션 3 — VRP 검증 + ETF 지식 시스템 + SpaceX→반도체→KRW 추론망
+
+### VRP 분리 검증 (CLAUDE.md §13 Data-First)
+
+- **SVOL 수익 드라이버**: term structure contango (VIX3M-VIX, corr **+0.36**) ≠ VRP (VIX-RV30, corr -0.33)
+- 파라미터 재보정 (OOS 2015-2026, n=2858일):
+  - `VRP_MU` = 0.052392 (was 0.071577)
+  - `VRP_SIG` = 0.043620 (was 0.032055)
+  - `MUL_MIN` = 0.24 → p5 데이터 기반 (was 0.50 직관)
+  - `MUL_MAX` = 1.85 → p95 데이터 기반 (was 1.50 직관)
+- SVOL 성과: 누적 +47.4%, Sharpe 0.22, 백워데이션 guard 핵심 (-3.98% vs contango +0.79%)
+- 커밋: `1269024`
+
+### ETF 지식 시스템 구축
+
+- `live/etf_research.py`: Gemini SDK (google_search grounding) 검색 루프 → `live/data/etf_knowledge/{TICKER}.md`
+- `.github/workflows/etf_research.yml`: 매주 일요일 01:00 UTC cron (GH Actions, GEMINI_API_KEY secret 필요)
+- DEFAULT_TICKERS: SVOL/BIL/QQQ/IWM/GLD/TLT/SPY/SPCX/SVIX/ZIVB/KMLM/BTAL/PFIX + NVDA/TSM/SOXL/SOXX
+- 커밋: `2009129`
+
+### SPCX 정체 발견
+
+- SPCX = **SpaceX 주식** (IPO 2026-06-12). 구 SPAC ETF SPCX는 2026-04-07 SPCK로 리네임
+- Gemini CLI 웹 검색으로 확인 (SDK는 NOT_FOUND 오류 → CLI fallback)
+- `live/data/etf_knowledge/SPCX.md` 생성 (커밋 `f65a35b`)
+
+### SpaceX → 한국 반도체 → KRW 추론망
+
+**기존 상태**: KOSPI Born 신호(community 316, 고립), macro_born_encoder(CPI/10Y/DXY/OAS), supply_chain, ais_tracker(상하이), geopolitical 존재. 반도체/FX/SpaceX 노드 없음.
+
+**신규 생성**:
+- `live/krw_fx_signal.py`: USD/KRW + Samsung/SK Hynix 모멘텀 + SpaceX 5d 수익률 → 종합 신호 (-1~+1)
+- `live/data/etf_knowledge/SPACEX_SEMICONDUCTOR_LINKS.md`: SpaceX→Starlink→LPDDR5→Samsung/SK Hynix→KRW 공급망 지식
+- graphify update: 4325→4345 nodes / 5627→5659 edges
+- 커밋: `d10cd72` + `5fb6d67`
+
+### 추론 체인 (공급망)
+SpaceX Starlink → Samsung/SK Hynix LPDDR5 수요  
+NVIDIA H100/H200 → SK Hynix HBM3e 독점공급  
+삼성전자/SK하이닉스 수출 달러화 → KRW 강세  
+USD/KRW ↓ (원화강세) → KOSPI tailwind  
+`krw_fx_signal.signal` → PRISM bot 포지션 보정 예정
+
+### 미완료 (세션 3 기준)
+- [x] ~~Finance repo GEMINI_API_KEY GH Secret 추가~~ → 기존 GOOGLE_API_KEY 매핑으로 해결 (2026-06-15)
+- [x] ~~etf_research.py NVDA/TSM/SOXL 지식 파일 생성~~ → 수동 실행 + GH Actions 17/17 ✅ (2026-06-15)
+- [x] ~~krw_fx_signal.py 파라미터 실증 측정~~ → 완료 (2026-06-16, §13)
+- [x] ~~Samsung/SK Hynix KRX 모멘텀 상관 실측~~ → 완료 (2026-06-16)
+- [x] ~~PRISM bot에 KRW regime 신호 배선~~ → 완료 (2026-06-16, commit 240c39d)
+
+---
+
+## 세션 4 — Finance 동작 확인 + ETF Research 버그 수정 (2026-06-15)
+
+### 발견 및 수정
+- ETF Research GH Actions(06-14) 전부 ❌: 구 SDK(`google-generativeai`)만 설치 → grounding 불가
+- 수정: `etf_research.yml`에 `google-genai`(신 SDK) 추가 → 재실행 17/17 ✅ (커밋 `d39af49`)
+- MAP Monitor 정상 (04:24 UTC), KIS Monitor 정상 (02:43 UTC)
+- README 현재 상태 섹션 추가 (커밋 `7aca3cd`)
+- graphify: 4347 nodes / 5659 edges
+
+### 최종 커밋 목록 (2026-06-15)
+| 커밋 | 내용 |
+|------|------|
+| `d39af49` | fix(etf): install google-genai SDK for GH Actions |
+| `86a7db3` | chore(graphify): sync |
+| `7aca3cd` | docs(readme): current status section |
+| `a10c06a` | graphify update 4347n/5659e |
+
+### Finance 상태 — 완전 정상 운영 중
+- 모든 GH Actions 워크플로 ✅
+- ETF 지식 루프 17/17 자동화 완성
+- 다음 자동 리밸런싱: 2026-07-07(월) First-Monday guard
+
+---
+
+## 세션 5 — 추론망 개선 A+B 구현 + Graphify 갱신 (2026-06-16)
+
+### 컨텍스트 이월 후 재개 (이전 세션 summary로 복원)
+
+### 개선 A — Korea Macro Composite 브릿지 (완료)
+**파일**: `live/korea_macro_composite.py` (신규)
+- MacroBornEncoder(com=19, 글로벌 CPI/10Y/DXY/OAS) ↔ krw_fx_signal(com=10, 한국 KRW+반도체)
+- 가중치: W_GLOBAL=0.40 / W_KRW=0.40 / W_SEMICON=0.20
+- 출력: composite -1~+1, regime RISK_ON/NEUTRAL/RISK_OFF
+- 의의: 분리된 두 macro 커뮤니티를 추론망에서 연결
+
+### 개선 B — news_nlp_signal 연결 (완료)
+**파일**: `live/krw_fx_signal.py` (수정)
+- 선택적 news sentiment 블록 추가 (`from news_nlp_signal import build_news_signals`)
+- SAMSUNG/SKHYNIX/NVIDIA/SPACEX 뉴스 감성 → signal 기여 ±0.2
+- `try/except` 완전 방어 — transformers 미설치 시 0.0 폴백
+
+**파일**: `news_nlp_signal.py` (수정)
+- MARKET_TICKERS += 005930.KS/000660.KS/NVDA/SPCX
+- 단절된 com=29,62,63(news_nlp) → com=10(krw_fx) 교차 엣지 형성
+
+### Graphify --update 결과
+- 변경: 167 code + 42 doc/image = 209 파일
+- 3-agent 병렬 semantic 추출 (chunk 01: 162n, 02: 117n, 03: 15n)
+- 그래프: 4350n/5660e → **4659n/5975e** (+309n/+315e)
+- 새 커뮤니티: BRAIN alpha archive, Korea P_macro chart, docs/EVOLUTION_AUDIT_LOG
+
+### 커밋
+| 커밋 | 내용 |
+|------|------|
+| `0e07e78` | feat(graphify): update graph 4659n/5975e + add KRW/SpaceX signal modules |
+| (rebase) `4b7f379` | push to origin/main (remote에 선행 커밋 있어 rebase 후 push) |
+
+### 완료 항목
+- [x] live/korea_macro_composite.py — com=19↔com=10 브릿지 (개선 A)
+- [x] news_nlp_signal.py MARKET_TICKERS 확장 (개선 B)
+- [x] krw_fx_signal.py news_sentiment optional 블록 (개선 B)
+- [x] graphify --update 4659n/5975e
+- [x] Finance MEMORY.md 갱신
+- [x] 세션 히스토리 갱신
