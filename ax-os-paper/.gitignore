@@ -1,0 +1,16 @@
+# LaTeX build artifacts
+*.aux
+*.log
+*.bbl
+*.blg
+*.out
+*.synctex.gz
+paper.tex.bak
+
+# Model weights (large binaries in artifacts/)
+artifacts/*/
+!artifacts/*.json
+
+# Python cache
+__pycache__/
+*.pyc

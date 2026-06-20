@@ -5,7 +5,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-OUT_DIR="$SCRIPT_DIR/path_a_artifacts"
+OUT_DIR="$SCRIPT_DIR/../artifacts"
 LOG="$OUT_DIR/14b_eval.log"
 Q14B_BF16_HF="mlx-community/Qwen2.5-14B-Instruct-bf16"
 Q14B_Q4_LOCAL="$OUT_DIR/qwen14b_q4_local"
@@ -17,7 +17,7 @@ echo "=== 14B eval start: $(date) ==="
 
 echo ""
 echo "--- Step 1: BF16 PPL (download + eval) ---"
-python3 "$SCRIPT_DIR/eval_ppl_wikitext2.py" --model "$Q14B_BF16_HF"
+python3 "$SCRIPT_DIR/../eval/eval_ppl_wikitext2.py" --model "$Q14B_BF16_HF"
 
 echo ""
 echo "--- Step 2: Local q4 quantization (group_size=64) ---"
@@ -28,7 +28,7 @@ python3 -m mlx_lm.convert \
 
 echo ""
 echo "--- Step 3: Q4 PPL eval ---"
-python3 "$SCRIPT_DIR/eval_ppl_wikitext2.py" --model "$Q14B_Q4_LOCAL"
+python3 "$SCRIPT_DIR/../eval/eval_ppl_wikitext2.py" --model "$Q14B_Q4_LOCAL"
 
 echo ""
 echo "=== 14B eval complete: $(date) ==="

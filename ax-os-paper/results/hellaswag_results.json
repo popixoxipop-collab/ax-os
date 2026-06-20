@@ -1,0 +1,9 @@
+{
+  "protocol": "HellaSwag validation set, n=400 random samples (seed=42), NLL/token scoring",
+  "results": [
+    {"model": "Qwen2.5-7B-Instruct", "precision": "bf16", "accuracy": 0.7825, "n": 400},
+    {"model": "Qwen2.5-7B-Instruct", "precision": "q4",   "accuracy": 0.7825, "n": 400},
+    {"model": "Mistral-7B-Instruct-v0.3", "precision": "bf16", "accuracy": 0.7950, "n": 400},
+    {"model": "Mistral-7B-Instruct-v0.3", "precision": "q4",   "accuracy": 0.7900, "n": 400}
+  ]
+}

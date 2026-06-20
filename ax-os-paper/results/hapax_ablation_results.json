@@ -1,0 +1,23 @@
+{
+  "protocol": "hapax-ablation, top/bottom 25% chunks by hapax-fraction (Qwen tokenizer)",
+  "chunk_stride": 512,
+  "n_chunks_per_subset": 146,
+  "mean_hapax_frac_low": 0.008,
+  "mean_hapax_frac_high": 0.039,
+  "results": [
+    {
+      "label": "Qwen2.5-7B-q4",
+      "ppl_low": 8.7213,
+      "ppl_high": 13.7092
+    },
+    {
+      "label": "Qwen2.5-7B-bf16",
+      "ppl_low": 8.0777,
+      "ppl_high": 12.5942
+    }
+  ],
+  "delta_ppl_Qwen2.5-7B": {
+    "low": 7.97,
+    "high": 8.85
+  }
+}

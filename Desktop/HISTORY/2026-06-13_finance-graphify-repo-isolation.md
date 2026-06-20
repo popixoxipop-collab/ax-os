@@ -219,3 +219,55 @@ USD/KRW ↓ (원화강세) → KOSPI tailwind
 - [x] graphify --update 4659n/5975e
 - [x] Finance MEMORY.md 갱신
 - [x] 세션 히스토리 갱신
+
+---
+
+## 세션 6 — Telegram 리포트 기간 표시 + 월별 달력 + KIS 시드 데이터 (2026-06-17)
+
+### 기능 1: % 수익률에 기간 추가
+- `ALPACA_START = date(2026, 4, 6)` / `KIS_START = date(2026, 4, 6)` 상수 추가
+- 출력: `순자산 $107,627 (+7.63%, 2026-04-06~, 72d)` 형식
+- 커밋: `0833994`
+
+### 기능 2: 월별 수익률 달력 (ASCII code block)
+- Alpaca: `/v2/account/portfolio/history?period=6M&timeframe=1D` API 직접 호출
+- KIS: `kis_daily.json` 일별 적립 후 월별 집계 (`_monthly_returns_kis()`)
+- `_calendar_block()`: Telegram Markdown ``` 블록, ┌─┐│─┤└ 박스
+- 커밋: `cd0ec37`
+
+### 기능 3: GH Actions → kis_daily.json 영구 저장
+- `accounts_report.yml`에 git commit+push step 추가 (`[skip ci]`)
+- `token: ${{ secrets.GITHUB_TOKEN }}` for push 권한
+- 커밋: `768e339`
+
+### KIS 히스토리 조사
+- GH Actions 전체 실행: 모두 2026-06-12 이후. 이전 누적 데이터 없음
+- Unified Accounts Report 로그 3건 파싱:
+  - 6/13 (run 27451519580): 106,869,800원
+  - 6/15 (run 27580665163): KIS API 타임아웃 (no data)
+  - 6/16 (run 27652072831): 109,955,400원
+
+### KIS 시드 데이터 생성
+- `live/data/kis_daily.json` 신규 생성 (6/13, 6/16 두 포인트)
+- 6월 KIS 달력 표시: +2.89% (6/13→6/16 기준, 부분 기간)
+- 커밋: `488387a` → push origin/main
+
+### 달력 최종 형태
+```
+      월별 수익률
+┌─────┬──────────┬──────────┐
+│ Mon │  Alpaca  │   KIS    │
+├─────┼──────────┼──────────┤
+│ Apr │  +X.XX%  │     -    │
+│ May │  +X.XX%  │     -    │
+│ Jun*│  +X.XX%  │  +2.89%  │
+└─────┴──────────┴──────────┘
+ * 진행중  KIS: 일별 수집 중
+```
+(KIS Apr/May: 데이터 없음, Jun: 6/13 시작점 기준)
+
+### 완료 항목
+- [x] Telegram 기간 표시 (`+7.63%, 2026-04-06~, 72d`)
+- [x] 월별 달력 (`_calendar_block()`)
+- [x] GH Actions KIS 일별 캐시 영구화
+- [x] KIS 시드 데이터 2 포인트 (6/13, 6/16)
