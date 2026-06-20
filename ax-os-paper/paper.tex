@@ -643,13 +643,16 @@ q4 degradation---holds across both corpora.  The close correspondence of
 $\Delta$PPL values between corpora also supports the characterization of
 WikiText-2 $\Delta$PPL as a robust signal rather than a corpus-specific artefact.
 
-As a supplementary scale extension, Qwen2.5-7B q4 was also evaluated on C4
-(absolute PPL\,=\,15.92).  Since the BF16 baseline was not obtained for 7B on C4
-(download constraint), $\Delta$PPL cannot be computed directly.  However, the
-absolute C4/WikiText-2 q4 PPL ratio across three scales is
-$1.44\times$ (1.5B), $1.42\times$ (3B), and $1.45\times$ (7B)---consistent to
-within $2\%$---indicating that the cross-corpus PPL ratio is itself
-scale-invariant for the Qwen2.5 q4 family.
+As a supplementary scale and architecture extension, Qwen2.5-7B q4 and
+Mistral-7B q4 were also evaluated on C4 (absolute PPL\,=\,15.92 and
+10.53 respectively).  Since BF16 baselines were not obtained for either 7B
+model on C4 (download constraint), $\Delta$PPL cannot be computed directly.
+However, the absolute C4/WikiText-2 q4 PPL ratio is consistent within the
+Qwen2.5 family across three scales: $1.44\times$ (1.5B), $1.42\times$ (3B),
+and $1.45\times$ (7B)---a spread of under $2\%$.  The cross-architecture
+counterpart Mistral-7B yields a C4/WikiText-2 ratio of $1.39\times$,
+moderately lower than the Qwen-7B value ($1.45\times$), consistent with
+Mistral's overall lower absolute PPL on both corpora.
 
 % ============================================================
 \section{Results and Discussion}
