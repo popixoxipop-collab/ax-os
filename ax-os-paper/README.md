@@ -20,7 +20,7 @@ Uniform protocol: non-overlapping 512-token windows, full WikiText-2 test split,
 - **Intra-family scale effect**: monotonically decreasing 15.0% to 8.5% (1.5B to 7B), non-monotone at 14B (+10.3%)
 - **ARC-Easy downstream**: Qwen2.5-7B BF16=52.5%, q4=53.0% (ΔACC=+0.5pp, CI=±2.0pp) — no degradation
 - **q8 lossless**: Qwen2.5-7B q8 ΔPPL=−0.28%; q4 (+8.5%) is the inflection point
-- **Paper score**: 80.65/100 (paper-orchestra 6-axis rubric, 2026-06-20)
+- **Paper score**: 80.65/100 (paper-orchestra 6-axis rubric, 2026-06-20, best estimate; LLM scorer calibration variance ±10pp observed)
 
 ### C4 Cross-Corpus
 
@@ -99,6 +99,9 @@ pdflatex paper && bibtex paper && pdflatex paper && pdflatex paper
 | ARC-Easy downstream eval | 77.4 | +4.7 |
 | arXiv bib + oracle framing | 78.7 | +1.3 |
 | §4.4 C4 paired + macro cleanup | 80.0 | +1.3 |
-| 7B+Mistral C4 cross-arch ratio | **80.65** | +0.65 (current) |
+| 7B+Mistral C4 cross-arch ratio | **80.65** | +0.65 |
+| barrios @inproceedings upgrade | — | bib quality (LLM scorer noise too high) |
+| GPTQ cross-library context §5.2 | — | addresses reviewer critique (current) |
 
-Next: RTX 5070 Ti CUDA eval (2nd hardware) for scientific_depth +4–6pp.
+**Note**: LLM scorer calibration variance ±10pp — scores not reliable for marginal tracking.
+Next: RTX 5070 Ti CUDA eval (2nd hardware) for scientific_depth, or arXiv submission.

@@ -825,9 +825,23 @@ are involved (verified by inspecting \texttt{mlx\_lm.utils} source: zero
 \texttt{random} or \texttt{seed} calls in the quantization path).
 WikiText-2 evaluation on a fixed artifact is likewise deterministic on a
 fixed hardware platform.  The reported $\Delta$PPL values are therefore
-exact measurements, not run-to-run estimates.  The relevant residual uncertainty
-is cross-library variance (e.g., GPTQ vs.\ MLX RTN at the same group size),
-which we identify as a direction for future work.
+exact measurements, not run-to-run estimates.  The relevant residual uncertainty is cross-library variance (e.g., GPTQ
+vs.\ MLX RTN at the same group size).  Although no published work reports
+WikiText-2 $\Delta$PPL for these exact model families (Qwen2.5, Mistral-7B-v0.1,
+Llama-3.1-8B) under MLX RTN, a contextual comparison is possible using the
+closest available proxy: \citet{lin2023awq} (Table~4) report LLaMA-2-7B
+WikiText-2 $\Delta$PPL at 4-bit with group size~128 as $+4.0\%$ (GPTQ) and
+$+2.4\%$ (AWQ).  Our MLX RTN with group size~64 on Mistral-7B yields
+$+4.4\%$---within 0.4\,pp of GPTQ\,g128 on a comparable 7B-class architecture,
+and 2.0\,pp above AWQ\,g128.  Coarser grouping (g64 vs.\ g128) and the simpler
+RTN algorithm are both expected to increase $\Delta$PPL relative to second-order
+methods; the observed gap is consistent with this ordering and suggests MLX RTN
+is not catastrophically worse than GPTQ for dense 7B-scale models.
+Three confounds preclude a direct comparison: different model families, different
+evaluation strides (2048-token overlapping in \citealt{lin2023awq}
+vs.\ our 512-token non-overlapping windows), and the g128\,vs.\,g64 grouping
+difference.  Controlled cross-library comparison under a matched protocol remains
+future work.
 
 \textbf{Quantization pipeline (uniform full-corpus).}  All six models in
 \cref{tab:scale} are evaluated under an identical protocol: non-overlapping
