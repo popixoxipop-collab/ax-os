@@ -1,23 +1,7 @@
 {
-  "/Users/xox/ax-os-paper/analysis/hapax_ablation.py": 1781297626.086824,
-  "/Users/xox/ax-os-paper/analysis/gen_scale_ppl_fig.py": 1781269853.865008,
-  "/Users/xox/ax-os-paper/analysis/integrate_hapax_ablation.py": 1781954767.3641126,
-  "/Users/xox/ax-os-paper/eval/eval_ppl_wikitext2.py": 1781295122.095965,
-  "/Users/xox/ax-os-paper/eval/eval_ppl_quick.py": 1781119679.712202,
-  "/Users/xox/ax-os-paper/eval/eval_hellaswag_mlx.py": 1781296315.4427187,
-  "/Users/xox/ax-os-paper/eval/eval_arc_e.py": 1781297644.471208,
-  "/Users/xox/ax-os-paper/eval/eval_ppl_c4.py": 1781954175.506048,
-  "/Users/xox/ax-os-paper/README.md": 1781954748.2601993,
-  "/Users/xox/ax-os-paper/HANDOFF.md": 1780634567.571498,
-  "/Users/xox/ax-os-paper/artifacts/qwen14b_q4_local/README.md": 1781195678.0101469,
-  "/Users/xox/ax-os-paper/artifacts/qwen15b_q4_local/README.md": 1781114001.3000784,
-  "/Users/xox/ax-os-paper/artifacts/qwen3b_q4_local/README.md": 1781114013.8770835,
-  "/Users/xox/ax-os-paper/artifacts/llama8b_q4_local/README.md": 1781267836.0230434,
-  "/Users/xox/ax-os-paper/artifacts/mistral7b_q4_local/README.md": 1781115594.8783898,
-  "/Users/xox/ax-os-paper/artifacts/qwen7b_q4_local/README.md": 1781114044.0147297,
-  "/Users/xox/ax-os-paper/results/ppl_results.txt": 1781118566.7198317,
-  "/Users/xox/ax-os-paper/paper.pdf": 1781955098.422319,
-  "/Users/xox/ax-os-paper/figures/fig_quantization_pareto.png": 1780183664.597993,
-  "/Users/xox/ax-os-paper/figures/fig_system_overview.png": 1780183664.598373,
-  "/Users/xox/ax-os-paper/figures/fig_harness_architecture.png": 1780183664.5973058
+  "/Users/xox/ax-os-paper/README.md": 1781955871.6324642,
+  "/Users/xox/ax-os-paper/graphify-out/graph.html": 1781956597.7351716,
+  "/Users/xox/ax-os-paper/graphify-out/GRAPH_REPORT.md": 1781956587.861417,
+  "/Users/xox/ax-os-paper/paper.pdf": 1781956207.8543167,
+  "/Users/xox/ax-os-paper/figures/fig_q4_scale_ppl.png": 1781269860.77489
 }
