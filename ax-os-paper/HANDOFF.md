@@ -1,6 +1,6 @@
 # AX OS Paper — Handoff
 
-**Last updated:** 2026-06-20  
+**Last updated:** 2026-06-26  
 **Repo:** `github.com/popixoxipop-collab/ax-os` (paper lives in `ax-os-paper/`)  
 **HEAD at handoff:** `12931b1`  
 **Branch:** `main` (pushed to `origin/main`)
@@ -182,8 +182,8 @@ python analysis/gen_scale_ppl_fig.py 7.2432 7.5601
 ## 8. Knowledge graph
 
 - Location: `graphify-out/graph.json`, `graphify-out/GRAPH_REPORT.md`, `graphify-out/graph.html`
-- Stats: 595n / 813e / 53 communities (2026-06-20)
-- God nodes: AX OS paper, Contribution 3 (scale-stratified q4), ΔPPL metric, _harness.mjs
+- Stats: 426n / 601e / 27 communities (2026-06-20, after C4 eval update)
+- God nodes: AX OS main paper (36e), Figure 4 scale-PPL (13e), _harness.mjs (12e), README (13e)
 
 ---
 
