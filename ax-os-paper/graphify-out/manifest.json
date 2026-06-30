@@ -1,7 +1,147 @@
 {
-  "/Users/xox/ax-os-paper/README.md": 1781955871.6324642,
-  "/Users/xox/ax-os-paper/graphify-out/graph.html": 1781956597.7351716,
-  "/Users/xox/ax-os-paper/graphify-out/GRAPH_REPORT.md": 1781956587.861417,
-  "/Users/xox/ax-os-paper/paper.pdf": 1781956207.8543167,
-  "/Users/xox/ax-os-paper/figures/fig_q4_scale_ppl.png": 1781269860.77489
+  "/Users/xox/ax-os-paper/README.md": {
+    "mtime": 1781957141.9901874,
+    "ast_hash": "cfdc81c9ad3332cf0d553715aa17c8b2",
+    "semantic_hash": "cfdc81c9ad3332cf0d553715aa17c8b2"
+  },
+  "/Users/xox/ax-os-paper/graphify-out/graph.html": {
+    "mtime": 1781956597.7351716,
+    "ast_hash": "",
+    "semantic_hash": ""
+  },
+  "/Users/xox/ax-os-paper/graphify-out/GRAPH_REPORT.md": {
+    "mtime": 1781956587.861417,
+    "ast_hash": "",
+    "semantic_hash": ""
+  },
+  "/Users/xox/ax-os-paper/paper.pdf": {
+    "mtime": 1781956790.5395396,
+    "ast_hash": "a413ce24689210eb1fe7c9b92a11b5ac",
+    "semantic_hash": "a413ce24689210eb1fe7c9b92a11b5ac"
+  },
+  "/Users/xox/ax-os-paper/figures/fig_q4_scale_ppl.png": {
+    "mtime": 1781269860.77489,
+    "ast_hash": "",
+    "semantic_hash": ""
+  },
+  "/Users/xox/ax-os-paper/analysis/gen_scale_ppl_fig.py": {
+    "mtime": 1781269853.865008,
+    "ast_hash": "1bea904e6460c115b5cd88b9406bea2a",
+    "semantic_hash": "1bea904e6460c115b5cd88b9406bea2a"
+  },
+  "/Users/xox/ax-os-paper/analysis/hapax_ablation.py": {
+    "mtime": 1781297626.086824,
+    "ast_hash": "0c947d0092fa5a12f5f459697a3f1eab",
+    "semantic_hash": "0c947d0092fa5a12f5f459697a3f1eab"
+  },
+  "/Users/xox/ax-os-paper/analysis/integrate_hapax_ablation.py": {
+    "mtime": 1781954767.3641126,
+    "ast_hash": "1c4cc0d3dbeee06544ecc44a0cc3962f",
+    "semantic_hash": "1c4cc0d3dbeee06544ecc44a0cc3962f"
+  },
+  "/Users/xox/ax-os-paper/analysis/tokenizer_analysis.py": {
+    "mtime": 1781264067.3793967,
+    "ast_hash": "6642bf5d83478dfa41969ca6fac5cbd0",
+    "semantic_hash": "6642bf5d83478dfa41969ca6fac5cbd0"
+  },
+  "/Users/xox/ax-os-paper/artifacts/mistral7b_q4_local_c4_ppl_checkpoint.json": {
+    "mtime": 1781955565.4107282,
+    "ast_hash": "e78c31c36f4b602705dc6898503fcac0",
+    "semantic_hash": "e78c31c36f4b602705dc6898503fcac0"
+  },
+  "/Users/xox/ax-os-paper/artifacts/qwen15b_q4_local_c4_ppl_checkpoint.json": {
+    "mtime": 1781954281.0854633,
+    "ast_hash": "274e02ce54a49c4ea7e016939833a0c5",
+    "semantic_hash": "274e02ce54a49c4ea7e016939833a0c5"
+  },
+  "/Users/xox/ax-os-paper/artifacts/qwen3b_q4_local_c4_ppl_checkpoint.json": {
+    "mtime": 1781954463.7397146,
+    "ast_hash": "63ac4143ed802127fa755b9efe45d4d8",
+    "semantic_hash": "63ac4143ed802127fa755b9efe45d4d8"
+  },
+  "/Users/xox/ax-os-paper/artifacts/qwen7b_q4_local_c4_ppl_checkpoint.json": {
+    "mtime": 1781955262.359124,
+    "ast_hash": "44a5b0dd7517f19d2438b703345ea22a",
+    "semantic_hash": "44a5b0dd7517f19d2438b703345ea22a"
+  },
+  "/Users/xox/ax-os-paper/eval/eval_arc_e.py": {
+    "mtime": 1781297644.471208,
+    "ast_hash": "7da26e39f519e4115f20ce3e9f701aa5",
+    "semantic_hash": "7da26e39f519e4115f20ce3e9f701aa5"
+  },
+  "/Users/xox/ax-os-paper/eval/eval_hellaswag_mlx.py": {
+    "mtime": 1781296315.4427187,
+    "ast_hash": "49d979e90ea60c0ea238cb7d09a948c3",
+    "semantic_hash": "49d979e90ea60c0ea238cb7d09a948c3"
+  },
+  "/Users/xox/ax-os-paper/eval/eval_ppl_c4.py": {
+    "mtime": 1781954175.506048,
+    "ast_hash": "33f2ef2d671503b51aeb04ee0bce46c9",
+    "semantic_hash": "33f2ef2d671503b51aeb04ee0bce46c9"
+  },
+  "/Users/xox/ax-os-paper/eval/eval_ppl_quick.py": {
+    "mtime": 1781119679.712202,
+    "ast_hash": "5d9ba3c6d159852d4b406e26c192b99e",
+    "semantic_hash": "5d9ba3c6d159852d4b406e26c192b99e"
+  },
+  "/Users/xox/ax-os-paper/eval/eval_ppl_wikitext2.py": {
+    "mtime": 1781295122.095965,
+    "ast_hash": "cea2117a79adbec9497ebac663af0c76",
+    "semantic_hash": "cea2117a79adbec9497ebac663af0c76"
+  },
+  "/Users/xox/ax-os-paper/results/hapax_ablation_results.json": {
+    "mtime": 1781298603.9998398,
+    "ast_hash": "fc9a4c62ae4b33de0fa75b317ff5bcda",
+    "semantic_hash": "fc9a4c62ae4b33de0fa75b317ff5bcda"
+  },
+  "/Users/xox/ax-os-paper/results/hellaswag_results.json": {
+    "mtime": 1781296315.4453382,
+    "ast_hash": "a5ccb7d2c6ac54ec88888079638aa39d",
+    "semantic_hash": "a5ccb7d2c6ac54ec88888079638aa39d"
+  },
+  "/Users/xox/ax-os-paper/results/tokenizer_analysis_results.json": {
+    "mtime": 1781302064.9336615,
+    "ast_hash": "3c2feb99bf9099c427091ad9ca0e8135",
+    "semantic_hash": "3c2feb99bf9099c427091ad9ca0e8135"
+  },
+  "/Users/xox/ax-os-paper/scripts/run_14b_eval.sh": {
+    "mtime": 1781954763.2023392,
+    "ast_hash": "2e0307cb4928d2d732b7c39a6141890d",
+    "semantic_hash": "2e0307cb4928d2d732b7c39a6141890d"
+  },
+  "/Users/xox/ax-os-paper/scripts/run_llama8b_eval.sh": {
+    "mtime": 1781954763.2077413,
+    "ast_hash": "66ef2ad839e604d7dd77314ab5717114",
+    "semantic_hash": "66ef2ad839e604d7dd77314ab5717114"
+  },
+  "/Users/xox/ax-os-paper/scripts/run_path_a.sh": {
+    "mtime": 1781954763.2105377,
+    "ast_hash": "89586f6547d2328f330c9b2e5948c961",
+    "semantic_hash": "89586f6547d2328f330c9b2e5948c961"
+  },
+  "/Users/xox/ax-os-paper/HANDOFF.md": {
+    "mtime": 1780634567.571498,
+    "ast_hash": "6341067fb24c66aa3a8d0f5000a8208e",
+    "semantic_hash": "6341067fb24c66aa3a8d0f5000a8208e"
+  },
+  "/Users/xox/ax-os-paper/results/ppl_results.txt": {
+    "mtime": 1781118566.7198317,
+    "ast_hash": "9a2cad07a081edb784d65dff4c3d7503",
+    "semantic_hash": "9a2cad07a081edb784d65dff4c3d7503"
+  },
+  "/Users/xox/ax-os-paper/figures/fig_harness_architecture.png": {
+    "mtime": 1780183664.5973058,
+    "ast_hash": "2e3c1088be39d2eacaa09b9a3cd7f0e2",
+    "semantic_hash": "2e3c1088be39d2eacaa09b9a3cd7f0e2"
+  },
+  "/Users/xox/ax-os-paper/figures/fig_quantization_pareto.png": {
+    "mtime": 1780183664.597993,
+    "ast_hash": "48e057cd1a93d8d57624070e79109280",
+    "semantic_hash": "48e057cd1a93d8d57624070e79109280"
+  },
+  "/Users/xox/ax-os-paper/figures/fig_system_overview.png": {
+    "mtime": 1780183664.598373,
+    "ast_hash": "ff6f247611d7c7c2e028bb4877ec4d70",
+    "semantic_hash": "ff6f247611d7c7c2e028bb4877ec4d70"
+  }
 }

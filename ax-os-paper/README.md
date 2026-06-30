@@ -18,7 +18,7 @@ Uniform protocol: non-overlapping 512-token windows, full WikiText-2 test split,
 **Key findings:**
 - **Cross-architecture gap at 7–8B**: 1.9× range — Qwen(+8.5%) > Llama(+6.9%) > Mistral(+4.4%)
 - **Intra-family scale effect**: monotonically decreasing 15.0% to 8.5% (1.5B to 7B), non-monotone at 14B (+10.3%)
-- **ARC-Easy downstream**: Qwen2.5-7B BF16=52.5%, q4=53.0% (ΔACC=+0.5pp, CI=±2.0pp) — no degradation
+- **ARC-Easy downstream**: Qwen2.5-7B BF16=52.5%, q4=53.0% (ΔACC=+0.5pp, CI=±2.0pp) — no detectable degradation (underpowered; cannot rule out small effects)
 - **q8 lossless**: Qwen2.5-7B q8 ΔPPL=−0.28%; q4 (+8.5%) is the inflection point
 - **Paper score**: 80.65/100 (paper-orchestra 6-axis rubric, 2026-06-20, best estimate; LLM scorer calibration variance ±10pp observed)
 
@@ -101,7 +101,8 @@ pdflatex paper && bibtex paper && pdflatex paper && pdflatex paper
 | §4.4 C4 paired + macro cleanup | 80.0 | +1.3 |
 | 7B+Mistral C4 cross-arch ratio | **80.65** | +0.65 |
 | barrios @inproceedings upgrade | — | bib quality (LLM scorer noise too high) |
-| GPTQ cross-library context §5.2 | — | addresses reviewer critique (current) |
+| GPTQ cross-library context §5.2 | — | addresses reviewer critique |
+| D1–D3 reviewer framing fixes | — | integrity/honesty (current HEAD `1dfc695`) |
 
 **Note**: LLM scorer calibration variance ±10pp — scores not reliable for marginal tracking.
-Next: RTX 5070 Ti CUDA eval (2nd hardware) for scientific_depth, or arXiv submission.
+Next: RTX 5070 Ti CUDA eval (2nd hardware) for scientific_depth (+4–6pp), or arXiv submission.
