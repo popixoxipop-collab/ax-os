@@ -1,8 +1,8 @@
 # AX OS Paper — Handoff
 
-**Last updated:** 2026-06-26  
+**Last updated:** 2026-07-01  
 **Repo:** `github.com/popixoxipop-collab/ax-os` (paper lives in `ax-os-paper/`)  
-**HEAD at handoff:** `12931b1`  
+**HEAD at handoff:** `1dfc695`  
 **Branch:** `main` (pushed to `origin/main`)
 
 ---
@@ -14,6 +14,7 @@
 - **Best score estimate: 80.65 / 100** (2-rater weighted average, 2026-06-20)
   - ⚠️ LLM scorer calibration variance = ±10 pp — single-session scores unreliable for marginal tracking
   - 80.65 was achieved at commit `444e202` (C4 cross-arch ratio complete)
+  - D1–D3 fixes (2026-07-01) are integrity/framing changes; they do not raise score but remove reviewer red flags
 
 ### Build
 ```bash
@@ -53,6 +54,7 @@ ax-os-paper/
 | `444e202` 7B+Mistral C4 cross-arch ratio | **80.65** | +0.65 ← **best** |
 | `6aa16bb` barrios @inproceedings | — | bib quality only |
 | `12931b1` GPTQ/AWQ §5.2 context | — | addresses reviewer critique |
+| `1dfc695` D1–D3 framing fixes | — | integrity only, no score change |
 
 ---
 
@@ -81,7 +83,8 @@ ax-os-paper/
 > 7B/Mistral BF16 C4 baselines not measured (download constraint). C4/Wiki ratio used as proxy for corpus-independence.
 
 ### ARC-Easy downstream (§4.3)
-- Qwen2.5-7B BF16: 52.5%, q4: 53.0%, ΔACC = +0.5pp (CI ±2.0pp) — null result (underpowered)
+- Qwen2.5-7B BF16: 52.5%, q4: 53.0%, ΔACC = +0.5pp (CI ±2.0pp)
+- **Null result (underpowered)** — no detectable degradation; test cannot rule out small effects
 
 ### Short-text screening (§3.3, tab:qwen_5way only — NOT comparable to WikiText-2)
 - q4_uniform = 59.96 PPL (scheme selection use only)
@@ -89,7 +92,9 @@ ax-os-paper/
 
 ---
 
-## 4. What was done (2026-06-05 → 2026-06-20)
+## 4. What was done
+
+### 2026-06-05 → 2026-06-20
 
 | Commit | Change |
 |--------|--------|
@@ -102,50 +107,37 @@ ax-os-paper/
 | `12931b1` | §5.2: GPTQ/AWQ cross-library context paragraph; README calibration note |
 | `025c0e1` | Graphify 426n/601e |
 
+### 2026-07-01
+
+| Commit | Change |
+|--------|--------|
+| `1dfc695` | D1–D3 reviewer framing fixes (see §5 below) |
+
 ---
 
-## 5. Reviewer critique — what's addressed vs. open
-
-From adversarial review (2026-06-20, read `paper.tex` directly):
+## 5. Reviewer critique — status
 
 ### ✅ Addressed
+
 - **Methodology inconsistency (mlx-community vs local quantize):** All Qwen models re-quantized locally with `mlx_lm.convert` g64 (confound removed, stated in §3.3 / §6.3)
 - **C4 cross-corpus:** §4.4 added, fully paired for 1.5B/3B, ratio-only for 7B/Mistral
 - **barrios citation:** Upgraded to @inproceedings (EuroMLSys '26)
-- **GPTQ/AWQ comparison (partial):** §5.2 now cites lin2023awq Table 4 — LLaMA-2-7B GPTQ g128 +4.0% / AWQ +2.4% as closest available proxy for Mistral-7B (+4.4%)
-
-### ⬜ Open (fixable without new experiments)
-
-**D1: ARC-Easy null-result framing**
-- Current: "no statistically significant commonsense reasoning degradation"
-- Correct: "+0.5pp with CI ±2.0pp is underpowered — cannot confirm absence of degradation"
-- WHY fix: reviewers flag misleading positive framing of a null result
-- COST: weakens a claim; net honest
-- EXIT: change one sentence in §4.3 results paragraph
-
-**D2: Abstract/body tone mismatch**
-- Abstract: confident "+15.0%, +11.7%, +8.5%" with no hedging
-- Body §5.1: "with four scale points, we report this as an observation, not a characterised trend"
-- WHY fix: abstract sets expectations the body doesn't fulfill
-- EXIT: add "preliminary" or "observational" qualifier to abstract claims
-
-**D3: Vocabulary-sparsity hypothesis overstatement**
-- n=3 architectures, three confounders vary simultaneously
-- Already hedged in §5.1 but led as a "finding"
-- EXIT: demote from finding to "candidate mechanism" in §5.1 framing
+- **GPTQ/AWQ comparison (partial):** §5.2 cites lin2023awq Table 4 — LLaMA-2-7B GPTQ g128 +4.0% / AWQ +2.4% as proxy for Mistral-7B (+4.4%)
+- **D1: ARC-Easy null-result framing** (`1dfc695`) — replaced "no statistically significant degradation" with "no detectable accuracy change; underpowered to rule out small effects; absence of evidence rather than evidence of absence"
+- **D2: Abstract tone** (`1dfc695`) — added "with four scale points this is an observational result, not a characterised trend"; "motivating" → "suggesting"
+- **D3: Vocabulary-sparsity overstatement** (`1dfc695`) — demoted from mechanism to "candidate mechanism"; table caption and lead-in now explicitly note n=3 / three confounders vary simultaneously
 
 ### ⬜ Open (require new experiments)
 
 **D4: 2nd hardware platform (RTX 5070 Ti)**
 - WHY: scientific_depth bottleneck is single-hardware scope (M1 Max only)
 - COST: requires CUDA setup + model download (~2-4 hr per model)
+- IMPACT: +4–6pp on scientific_depth — largest remaining score lever
 - EXIT: `python eval/eval_ppl_wikitext2.py --device cuda --model artifacts/...`
-- IMPACT: +4–6pp on scientific_depth (largest remaining lever)
 
 **D5: 7B/Mistral BF16 C4 baseline**
-- Currently missing — download constraint
-- WHY: enables proper ΔPPL(C4) for all 4 models
-- EXIT: download Qwen2.5-7B-bf16 and Mistral-7B-bf16, run `eval/eval_ppl_c4.py`
+- WHY: enables proper ΔPPL(C4) for all 4 models (currently missing due to download constraint)
+- EXIT: download Qwen2.5-7B-bf16 + Mistral-7B-bf16, run `eval/eval_ppl_c4.py`
 
 ---
 
@@ -189,11 +181,11 @@ python analysis/gen_scale_ppl_fig.py 7.2432 7.5601
 
 ## 9. Submission readiness
 
-Current state is **submission-ready** for a workshop or short-paper venue. Blockers for a main-conference venue:
+| State | Venue tier |
+|-------|-----------|
+| **Now** (D1–D3 fixed) | Workshop / short-paper / arXiv preprint |
+| + D4 (RTX 5070 Ti) | MLSys workshop, EdgeAI workshop, EMNLP System Demonstrations |
+| + D4 + D5 | Full conference short-paper track |
 
-1. ⬜ 2nd hardware platform (D4 above) — scientific_depth
-2. ⬜ ARC-Easy framing fix (D1) — evidence integrity
-3. ⬜ Abstract hedging (D2) — consistency
-
-Without D4, top candidate venues: ML workshop tracks, arXiv preprint only.  
-With D4: MLSys workshop, EdgeAI workshop, EMNLP System Demonstrations.
+**Single remaining blocker for workshop submission:** none — paper is clean.  
+**Single remaining blocker for main-conference:** D4 (2nd hardware platform).
