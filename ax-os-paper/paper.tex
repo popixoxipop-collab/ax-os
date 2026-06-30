@@ -41,10 +41,11 @@ AX OS, a TypeScript multi-agent library, addresses all three.
 Standard WikiText-2 evaluation across four Qwen2.5 sizes (1.5B--14B),
 Mistral-7B, and Llama-3.1-8B shows that uniform q4 (group size~64)
 perplexity degradation decreases from small to mid-scale ($+15.0\%$,
-$+11.7\%$, $+8.5\%$) then partially recovers at 14B ($+10.3\%$).
+$+11.7\%$, $+8.5\%$) then partially recovers at 14B ($+10.3\%$); with four
+scale points this is an observational result, not a characterised trend.
 Cross-architecture variation at matched 7--8B scale spans a $1.9\times$ range:
 Mistral-7B ($+4.4\%$) and Llama-3.1-8B ($+6.9\%$) are substantially more
-robust than Qwen2.5-7B ($+8.5\%$), motivating architecture-aware model selection.
+robust than Qwen2.5-7B ($+8.5\%$), suggesting architecture-aware model selection.
 Mixed-precision alternatives collapse in quality at 1.5B scale, reinforcing
 the uniform scheme.
 
@@ -677,11 +678,11 @@ quantization robustness than scale---a pattern consistent with, though not
 directly measured by, \citet{xu2024scaling} and \citet{ouyang2024lowbit} in the
 7B--70B range.
 
-The mechanism underlying this cross-architecture difference can be partially
-characterised by analysing vocabulary structure on the evaluation corpus
-across all three architectures.  \Cref{tab:vocab} presents the results of
-tokenising the complete WikiText-2 test split with each model's native
-tokeniser.
+One candidate mechanism for this cross-architecture difference is vocabulary
+sparsity.  \Cref{tab:vocab} presents the results of tokenising the complete
+WikiText-2 test split with each model's native tokeniser; three confounders
+(vocabulary size, architecture depth, training data) vary simultaneously,
+so this analysis is hypothesis-generating rather than causal.
 
 \begin{table}[t]
   \centering
@@ -689,7 +690,8 @@ tokeniser.
     utilisation (\% of vocab seen) and hapax rate (\% of active tokens
     appearing exactly once) are measured with each model's native tokeniser.
     Rank order of vocabulary utilisation matches rank order of $\Delta$PPL
-    sensitivity across all three architectures.}
+    sensitivity across all three architectures, consistent with a
+    vocabulary-sparsity hypothesis (n=3; three confounders vary simultaneously).}
   \label{tab:vocab}
   \begin{tabular}{lrrrr}
     \toprule
@@ -730,16 +732,17 @@ elevation does not translate to task degradation, we apply NLL-per-token
 scoring (no chat template) to both Qwen2.5-7B variants on
 ARC-Easy~\citep{clark2018arc} ($n=2{,}376$; 95\% CI $\pm2.0$pp).
 \Cref{tab:arc} presents the results.  The q4 model scores
-$+0.50$pp above BF16---well within the confidence interval---confirming that
-the $+8.5\%$ perplexity penalty produces no statistically significant
-commonsense reasoning degradation at 7B scale.
+$+0.50$pp above BF16---well within the confidence interval---indicating no
+detectable accuracy change at 7B scale.  With CI $\pm2.0$pp, however, the
+evaluation is underpowered to rule out small degradation effects; the result
+should be interpreted as absence of evidence rather than evidence of absence.
 
 \begin{table}[t]
   \centering
   \caption{ARC-Easy accuracy for Qwen2.5-7B (NLL-per-token scoring, no chat
     template, $n=2{,}376$, 95\% CI $\pm2.0$pp).  The $+0.50$pp difference
-    is within the confidence interval: uniform q4 does not degrade
-    commonsense reasoning at 7B scale.}
+    is within the confidence interval (no detectable degradation); the test
+    is underpowered to rule out small effects.}
   \label{tab:arc}
   \begin{tabular}{lrr}
     \toprule
