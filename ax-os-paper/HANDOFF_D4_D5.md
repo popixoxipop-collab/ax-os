@@ -8,36 +8,7 @@
 
 ## D4: Second hardware platform (RTX 5070 Ti)
 
-**Why it matters:** current scientific_depth bottleneck is single-hardware scope — all PPL/ΔPPL numbers were measured on M1 Max (MLX) only. A second, architecturally different platform (NVIDIA Blackwell, CUDA) turns the ΔPPL claim from "one Apple-Silicon anecdote" into a cross-hardware result. Estimated **+4–6pp**, the largest remaining score lever.
-
-### Blocker found while writing this handoff
-`eval/eval_ppl_wikitext2.py` has **no `--device cuda` flag** — it is MLX-only:
-```
-import mlx.core as mx
-import mlx.nn as nn
-from mlx_lm.utils import load
-```
-The `EXIT` command previously listed in `HANDOFF.md` (`--device cuda ...`) does not exist yet. This must be built, not just invoked.
-
-### What needs to happen
-1. **New eval script** `eval/eval_ppl_wikitext2_cuda.py` (or a `--backend {mlx,cuda}` switch in the existing one) using `transformers` + `bitsandbytes`/`auto-gptq`/`awq` for q4, matching the **exact same protocol** as the MLX script:
-   - WikiText-2 full test split
-   - 512-token non-overlapping stride
-   - same 4-bit target (g64 equivalent — check what quant scheme is achievable on CUDA and note any scheme mismatch explicitly in the paper, don't silently swap methodology)
-2. **Target machine:** RTX 5070 Ti (Blackwell, SM12.0, 15.9GB VRAM) — this is a *separate machine* from the Mac this repo currently lives on (see local memory `aeq_gpu_environment.md`). Confirm SSH/remote access path before starting; do not assume it's reachable from this session.
-3. **Models to re-run** (same set as WikiText-2 table in `HANDOFF.md` §3):
-   - Qwen2.5-1.5B, 3B, 7B, 14B
-   - Mistral-7B
-   - Llama-3.1-8B
-   - 15.9GB VRAM ceiling → 14B in q4 should fit (~8-9GB), BF16 baseline for 14B will NOT fit on this card — plan to skip BF16-14B on CUDA or note VRAM-driven scope limit explicitly.
-4. **Output:** new table in paper (§4.x "Cross-hardware validation") — BF16 PPL, q4 PPL, ΔPPL per model, side-by-side with the existing M1 Max column. The comparison that matters is **whether ΔPPL% is hardware-invariant**, not raw PPL (raw PPL differs by kernel/attention implementation even at "same" precision).
-5. Update `HANDOFF.md` score trajectory table and §9 submission-readiness table once done.
-
-### Exit criteria
-- [ ] CUDA eval script written and validated against one MLX result (should match ΔPPL% within noise)
-- [ ] All 6 models run BF16+q4 on RTX 5070 Ti (or documented exception for 14B BF16)
-- [ ] Cross-hardware table added to paper.tex
-- [ ] `results/ppl_results_cuda.txt` or equivalent checkpoint committed
+**Superseded by [`HANDOFF_D4.md`](./HANDOFF_D4.md)** — the full execution plan, including a corrected quantization-scheme-parity design (the sketch originally here suggested bitsandbytes/GPTQ/AWQ for CUDA q4, which would be a different algorithm than MLX's affine RTN group-64 scheme and would reopen the mlx-community-vs-local-quantize confound already fixed once in this paper — see `HANDOFF_D4.md` for why that matters and what to build instead).
 
 ---
 

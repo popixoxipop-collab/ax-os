@@ -132,13 +132,13 @@ ax-os-paper/
 
 ### ⬜ Open (require new experiments)
 
-**Detailed execution plan: [`HANDOFF_D4_D5.md`](./HANDOFF_D4_D5.md)**
+**Detailed execution plan: [`HANDOFF_D4.md`](./HANDOFF_D4.md)** (supersedes the brief D4 sketch in [`HANDOFF_D4_D5.md`](./HANDOFF_D4_D5.md); D5 is done)
 
 **D4: 2nd hardware platform (RTX 5070 Ti)** — last remaining blocker
 - WHY: scientific_depth bottleneck is single-hardware scope (M1 Max only)
-- COST: new CUDA eval script (existing `eval_ppl_wikitext2.py` is MLX-only, no `--device` flag) + model download (~2-4 hr per model)
+- COST: new CUDA eval script with a from-scratch RTN affine fake-quantizer matching MLX's exact scheme (existing `eval_ppl_wikitext2.py` is MLX-only, no `--device` flag; bitsandbytes/GPTQ/AWQ would be a different quantization algorithm — see `HANDOFF_D4.md` for why that matters) + model download (~2-4 hr per model) — must run on the RTX 5070 Ti machine, not this Mac
 - IMPACT: +4–6pp on scientific_depth — largest remaining score lever
-- EXIT: see `HANDOFF_D4_D5.md` §D4
+- EXIT: see `HANDOFF_D4.md`
 
 ---
 
