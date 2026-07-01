@@ -55,6 +55,7 @@ ax-os-paper/
 | `6aa16bb` barrios @inproceedings | — | bib quality only |
 | `12931b1` GPTQ/AWQ §5.2 context | — | addresses reviewer critique |
 | `1dfc695` D1–D3 framing fixes | — | integrity only, no score change |
+| D5 C4 4-model completion (this commit) | not yet re-scored | closes last C4 cross-corpus gap (Qwen-7B, Mistral-7B BF16) |
 
 ---
 
@@ -77,10 +78,10 @@ ax-os-paper/
 |-------|---------|-------|----------|--------------|
 | Qwen2.5-1.5B | 18.11 | 21.04 | +16.2% | 1.44× |
 | Qwen2.5-3B | 16.29 | 18.19 | +11.7% | 1.42× |
-| Qwen2.5-7B | — | 15.92 | — | 1.45× |
-| Mistral-7B | — | 10.53 | — | 1.39× |
+| Qwen2.5-7B | 14.77 | 15.92 | +7.80% | 1.45× |
+| Mistral-7B | 10.08 | 10.53 | +4.47% | 1.39× |
 
-> 7B/Mistral BF16 C4 baselines not measured (download constraint). C4/Wiki ratio used as proxy for corpus-independence.
+> **D5 complete (2026-07-01):** all four models now have paired BF16+q4 C4 measurements. Qwen2.5-7B ΔPPL(C4)=+7.80% vs WikiText-2 +8.5%; Mistral-7B ΔPPL(C4)=+4.47% vs WikiText-2 +4.4% — both track their WikiText-2 values closely, closing the last cross-corpus gap (see `HANDOFF_D4_D5.md` §D5).
 
 ### ARC-Easy downstream (§4.3)
 - Qwen2.5-7B BF16: 52.5%, q4: 53.0%, ΔACC = +0.5pp (CI ±2.0pp)
@@ -112,6 +113,7 @@ ax-os-paper/
 | Commit | Change |
 |--------|--------|
 | `1dfc695` | D1–D3 reviewer framing fixes (see §5 below) |
+| (this commit) | D5: Qwen2.5-7B + Mistral-7B BF16 C4 baselines measured, closing last C4 cross-corpus gap |
 
 ---
 
@@ -120,26 +122,23 @@ ax-os-paper/
 ### ✅ Addressed
 
 - **Methodology inconsistency (mlx-community vs local quantize):** All Qwen models re-quantized locally with `mlx_lm.convert` g64 (confound removed, stated in §3.3 / §6.3)
-- **C4 cross-corpus:** §4.4 added, fully paired for 1.5B/3B, ratio-only for 7B/Mistral
+- **C4 cross-corpus:** §4.4 added, fully paired BF16+q4 for all 4 models (1.5B/3B/7B/Mistral-7B) as of D5, 2026-07-01
 - **barrios citation:** Upgraded to @inproceedings (EuroMLSys '26)
 - **GPTQ/AWQ comparison (partial):** §5.2 cites lin2023awq Table 4 — LLaMA-2-7B GPTQ g128 +4.0% / AWQ +2.4% as proxy for Mistral-7B (+4.4%)
 - **D1: ARC-Easy null-result framing** (`1dfc695`) — replaced "no statistically significant degradation" with "no detectable accuracy change; underpowered to rule out small effects; absence of evidence rather than evidence of absence"
 - **D2: Abstract tone** (`1dfc695`) — added "with four scale points this is an observational result, not a characterised trend"; "motivating" → "suggesting"
 - **D3: Vocabulary-sparsity overstatement** (`1dfc695`) — demoted from mechanism to "candidate mechanism"; table caption and lead-in now explicitly note n=3 / three confounders vary simultaneously
+- **D5: 7B/Mistral BF16 C4 baseline** (2026-07-01) — Qwen2.5-7B BF16 C4=14.77 (ΔPPL=+7.80% vs WikiText-2 +8.5%), Mistral-7B BF16 C4=10.08 (ΔPPL=+4.47% vs WikiText-2 +4.4%); all 4 models now fully paired on C4, see `HANDOFF_D4_D5.md` §D5
 
 ### ⬜ Open (require new experiments)
 
 **Detailed execution plan: [`HANDOFF_D4_D5.md`](./HANDOFF_D4_D5.md)**
 
-**D4: 2nd hardware platform (RTX 5070 Ti)**
+**D4: 2nd hardware platform (RTX 5070 Ti)** — last remaining blocker
 - WHY: scientific_depth bottleneck is single-hardware scope (M1 Max only)
 - COST: new CUDA eval script (existing `eval_ppl_wikitext2.py` is MLX-only, no `--device` flag) + model download (~2-4 hr per model)
 - IMPACT: +4–6pp on scientific_depth — largest remaining score lever
 - EXIT: see `HANDOFF_D4_D5.md` §D4
-
-**D5: 7B/Mistral BF16 C4 baseline**
-- WHY: enables proper ΔPPL(C4) for all 4 models (currently missing due to download constraint)
-- EXIT: download Qwen2.5-7B-bf16 + Mistral-7B-bf16, run `eval/eval_ppl_c4.py` (see `HANDOFF_D4_D5.md` §D5)
 
 ---
 
@@ -148,8 +147,10 @@ ax-os-paper/
 All C4 checkpoints under `artifacts/`:
 - `qwen15b_q4_local_c4_ppl_checkpoint.json` — done=True
 - `qwen3b_q4_local_c4_ppl_checkpoint.json` — done=True
-- `qwen7b_q4_local_c4_ppl_checkpoint.json` — done=True (q4 only, no BF16)
-- `mistral7b_q4_local_c4_ppl_checkpoint.json` — done=True (q4 only, no BF16)
+- `qwen7b_q4_local_c4_ppl_checkpoint.json` — done=True (q4)
+- `qwen7b_bf16_c4_ppl_checkpoint.json` — done=True (BF16, added D5 2026-07-01)
+- `mistral7b_q4_local_c4_ppl_checkpoint.json` — done=True (q4)
+- `mistral7b_bf16_c4_ppl_checkpoint.json` — done=True (BF16, added D5 2026-07-01)
 
 WikiText-2 results: `results/ppl_results.txt`
 

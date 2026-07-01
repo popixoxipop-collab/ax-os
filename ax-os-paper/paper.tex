@@ -15,7 +15,7 @@
 
 \author{Anonymous}
 
-% C4 cross-corpus evaluation constants (Qwen2.5-1.5B and 3B; 200 docs, streaming)
+% C4 cross-corpus evaluation constants (all 4 models fully paired BF16+q4, D5 2026-07-01; 200 docs, streaming)
 \newcommand{\CCTOKENS}{80}             % 79,821 tokens for 200 docs
 \newcommand{\COBFL}{18.11}             % Qwen-1.5B BF16 C4 PPL
 \newcommand{\COBQU}{21.04}             % Qwen-1.5B q4 C4 PPL
@@ -23,6 +23,12 @@
 \newcommand{\CTHFL}{16.29}             % Qwen-3B BF16 C4 PPL
 \newcommand{\CTHQU}{18.19}             % Qwen-3B q4 C4 PPL
 \newcommand{\CTHDP}{$+11.7\%$}         % Qwen-3B DELTA-PPL C4
+\newcommand{\CSVFL}{14.77}             % Qwen-7B BF16 C4 PPL (D5, 2026-07-01)
+\newcommand{\CSVQU}{15.92}             % Qwen-7B q4 C4 PPL
+\newcommand{\CSVDP}{$+7.80\%$}         % Qwen-7B DELTA-PPL C4 (D5, 2026-07-01)
+\newcommand{\MSBFL}{10.08}             % Mistral-7B BF16 C4 PPL (D5, 2026-07-01)
+\newcommand{\MSQU}{10.53}              % Mistral-7B q4 C4 PPL
+\newcommand{\MSDP}{$+4.47\%$}          % Mistral-7B DELTA-PPL C4 (D5, 2026-07-01)
 
 \begin{document}
 
@@ -604,15 +610,16 @@ vs.\ article-length text), and domain coverage (broad web vs.\ Wikipedia).
 \textbf{Setup.}  We use the first 200 documents of the C4 English validation
 split (streaming extraction, fixed prefix, $\approx$\,\CCTOKENS{}K
 tokens\footnote{C4 yields $\approx$400 tokens/document on average with the
-Qwen tokeniser; 200 documents span approximately one-third of the WikiText-2 test
-set in token count.}).  The evaluation protocol is identical to
-\cref{sec:exp:aeq}: non-overlapping 512-token windows, each model's
-native tokeniser, stride 512, sequence length 512.  For Qwen2.5-1.5B and
-Qwen2.5-3B we measure both BF16 and q4 $\Delta$PPL directly, using the
-same locally-converted artifacts as the WikiText-2 evaluation.
+Qwen tokeniser (89,180 tokens with the Mistral tokeniser); 200 documents span
+approximately one-third of the WikiText-2 test set in token count.}).  The
+evaluation protocol is identical to \cref{sec:exp:aeq}: non-overlapping
+512-token windows, each model's native tokeniser, stride 512, sequence
+length 512.  We measure both BF16 and q4 $\Delta$PPL directly for all four
+models (Qwen2.5-1.5B, Qwen2.5-3B, Qwen2.5-7B, Mistral-7B-Instruct-v0.3),
+using the same locally-converted artifacts as the WikiText-2 evaluation.
 
-\textbf{Results.}  \Cref{tab:c4} presents the cross-corpus comparison for the
-two fully paired models.  Absolute C4 PPL is higher than WikiText-2 for all
+\textbf{Results.}  \Cref{tab:c4} presents the cross-corpus comparison for all
+four fully paired models. Absolute C4 PPL is higher than WikiText-2 for all
 variants---consistent with C4's noisier, more heterogeneous text---but
 $\Delta$PPL on C4 closely tracks the WikiText-2 values.
 
@@ -622,7 +629,7 @@ $\Delta$PPL on C4 closely tracks the WikiText-2 values.
     C4 English validation (200 docs, $\approx$\,\CCTOKENS{}K tokens)
     vs.\ WikiText-2 test (full).  Absolute PPL values are not directly
     comparable across corpora; the $\Delta$PPL ratio is corpus-independent
-    for deterministic RTN q4.  Both models evaluated with matched BF16 and
+    for deterministic RTN q4.  All models evaluated with matched BF16 and
     q4 artifacts under the identical 512-token window protocol.}
   \label{tab:c4}
   \begin{tabular}{lrrrrrr}
@@ -633,27 +640,29 @@ $\Delta$PPL on C4 closely tracks the WikiText-2 values.
     \midrule
     Qwen2.5-1.5B & \COBFL{} & \COBQU{} & 12.70 & 14.60 & \COBDP{} & $+15.0\%$ \\
     Qwen2.5-3B   & \CTHFL{} & \CTHQU{} & 11.45 & 12.79 & \CTHDP{} & $+11.7\%$ \\
+    Qwen2.5-7B   & \CSVFL{} & \CSVQU{} & 10.14 & 11.01 & \CSVDP{} & $+8.5\%$ \\
+    Mistral-7B   & \MSBFL{} & \MSQU{}  &  7.24 &  7.56 & \MSDP{}  & $+4.4\%$ \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-The $\Delta$PPL values for the two fully-measured models (\COBDP{} for 1.5B,
-\CTHDP{} for 3B on C4 vs.\ $+15.0\%$/$+11.7\%$ on WikiText-2) establish that
-the intra-family scaling trend---smaller models incur proportionally larger
-q4 degradation---holds across both corpora.  The close correspondence of
-$\Delta$PPL values between corpora also supports the characterization of
-WikiText-2 $\Delta$PPL as a robust signal rather than a corpus-specific artefact.
+The $\Delta$PPL values for all four models (\COBDP{} for 1.5B, \CTHDP{} for
+3B, \CSVDP{} for Qwen-7B, \MSDP{} for Mistral-7B on C4 vs.\ $+15.0\%$,
+$+11.7\%$, $+8.5\%$, $+4.4\%$ on WikiText-2 respectively) establish that
+both the intra-family scaling trend---smaller Qwen2.5 models incur
+proportionally larger q4 degradation---and the cross-architecture gap at
+7--8B---Mistral degrading substantially less than Qwen2.5-7B---hold across
+both corpora.  The close correspondence of $\Delta$PPL values between
+corpora (within 1.2pp for every model) supports the characterization of
+WikiText-2 $\Delta$PPL as a robust, corpus-independent signal rather than a
+corpus-specific artefact.
 
-As a supplementary scale and architecture extension, Qwen2.5-7B q4 and
-Mistral-7B q4 were also evaluated on C4 (absolute PPL\,=\,15.92 and
-10.53 respectively).  Since BF16 baselines were not obtained for either 7B
-model on C4 (download constraint), $\Delta$PPL cannot be computed directly.
-However, the absolute C4/WikiText-2 q4 PPL ratio is consistent within the
-Qwen2.5 family across three scales: $1.44\times$ (1.5B), $1.42\times$ (3B),
-and $1.45\times$ (7B)---a spread of under $2\%$.  The cross-architecture
-counterpart Mistral-7B yields a C4/WikiText-2 ratio of $1.39\times$,
-moderately lower than the Qwen-7B value ($1.45\times$), consistent with
-Mistral's overall lower absolute PPL on both corpora.
+As a cross-check, the absolute C4/WikiText-2 q4 PPL ratio is consistent
+within the Qwen2.5 family across three scales: $1.44\times$ (1.5B),
+$1.42\times$ (3B), and $1.45\times$ (7B)---a spread of under $2\%$.  The
+cross-architecture counterpart Mistral-7B yields a C4/WikiText-2 ratio of
+$1.39\times$, moderately lower than the Qwen-7B value ($1.45\times$),
+consistent with Mistral's overall lower absolute PPL on both corpora.
 
 % ============================================================
 \section{Results and Discussion}
@@ -757,13 +766,15 @@ should be interpreted as absence of evidence rather than evidence of absence.
 \end{table}
 
 \textbf{Cross-corpus consistency (C4).}  The $\Delta$PPL patterns observed on
-WikiText-2 generalise to C4 (web-crawled text).  For Qwen2.5-1.5B, C4
-yields $\Delta$PPL of \COBDP{} vs.\ $+15.0\%$ on WikiText-2; for
-Qwen2.5-3B, \CTHDP{} vs.\ $+11.7\%$.  The intra-family monotone
-ordering is preserved, and absolute deviations are within 2\,pp across
-the two corpora.  This corpus-independence strengthens the interpretation
-of WikiText-2 $\Delta$PPL as a model-intrinsic property rather than an
-evaluation artefact.
+WikiText-2 generalise to C4 (web-crawled text), now confirmed for all four
+models with paired BF16+q4 measurements.  For Qwen2.5-1.5B, C4 yields
+$\Delta$PPL of \COBDP{} vs.\ $+15.0\%$ on WikiText-2; for Qwen2.5-3B,
+\CTHDP{} vs.\ $+11.7\%$; for Qwen2.5-7B, \CSVDP{} vs.\ $+8.5\%$; for
+Mistral-7B, \MSDP{} vs.\ $+4.4\%$.  Both the intra-family monotone
+ordering and the cross-architecture gap at 7--8B are preserved, and absolute
+deviations are within 1.2\,pp across the two corpora for every model.  This
+corpus-independence strengthens the interpretation of WikiText-2 $\Delta$PPL
+as a model-intrinsic property rather than an evaluation artefact.
 
 \textbf{Mixed-precision failure.}  For the 1.5B dense model, both
 mixed-precision recipes (3+6-bit and 2+6-bit) are \emph{dominated} by uniform
@@ -855,8 +866,8 @@ confound).  Mistral-7B BF16 and q4 were evaluated under the same protocol.
 This uniform methodology enables a direct, protocol-matched cross-architecture
 comparison with no short-corpus caveats or inter-protocol uncertainty.
 The additional C4 evaluation (\cref{sec:exp:c4}) extends coverage to a
-second corpus; the BF16+q4 pair is fully measured for the two smallest models
-(Qwen2.5-1.5B and Qwen2.5-3B).
+second corpus; the BF16+q4 pair is fully measured for all four models
+(Qwen2.5-1.5B, Qwen2.5-3B, Qwen2.5-7B, and Mistral-7B).
 
 \textbf{MoE models untested.}  The conclusion that mixed-precision is inferior
 to uniform q4 applies only to \emph{dense} transformers.  Mixture-of-Experts

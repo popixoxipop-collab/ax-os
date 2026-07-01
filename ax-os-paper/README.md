@@ -28,10 +28,10 @@ Uniform protocol: non-overlapping 512-token windows, full WikiText-2 test split,
 |-------|---------|-------|----------|-----------|--------------|
 | Qwen2.5-1.5B | 18.11 | 21.04 | +16.2% | +15.0% | 1.44× |
 | Qwen2.5-3B | 16.29 | 18.19 | +11.7% | +11.7% | 1.42× |
-| Qwen2.5-7B | — | 15.92 | — | +8.5% | 1.45× |
-| Mistral-7B | — | 10.53 | — | +4.4% | 1.39× |
+| Qwen2.5-7B | 14.77 | 15.92 | +7.80% | +8.5% | 1.45× |
+| Mistral-7B | 10.08 | 10.53 | +4.47% | +4.4% | 1.39× |
 
-**C4 key finding**: Qwen2.5 family C4/Wiki q4 PPL ratio is scale-invariant at 1.42–1.45× (spread <2%). Mistral 1.39× (moderately lower, consistent with lower absolute PPL). ΔPPL for fully-paired models (1.5B/3B) tracks WikiText-2 within 1.2pp.
+**C4 key finding**: all four models now fully paired BF16+q4 (D5, 2026-07-01). Qwen2.5 family C4/Wiki q4 PPL ratio is scale-invariant at 1.42–1.45× (spread <2%). Mistral 1.39× (moderately lower, consistent with lower absolute PPL). ΔPPL(C4) tracks ΔPPL(Wiki) within 1.2pp for every model.
 
 ## Repository Structure
 

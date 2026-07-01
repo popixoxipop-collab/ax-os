@@ -41,9 +41,11 @@ The `EXIT` command previously listed in `HANDOFF.md` (`--device cuda ...`) does 
 
 ---
 
-## D5: 7B/Mistral BF16 C4 baseline
+## D5: 7B/Mistral BF16 C4 baseline — ✅ DONE (2026-07-01)
 
-**Why it matters:** §4.4 C4 cross-corpus section is fully paired (BF16+q4) for 1.5B/3B but **q4-only** for 7B/Mistral — the BF16 baseline was never measured (blocked on model download). Without it, ΔPPL(C4) for the two largest models is unknown; only the C4/Wiki ratio proxy exists.
+**Result:** Qwen2.5-7B BF16 C4=14.77 (ΔPPL(C4)=+7.80% vs WikiText-2 +8.5%). Mistral-7B BF16 C4=10.08 (ΔPPL(C4)=+4.47% vs WikiText-2 +4.4%). Both track WikiText-2 within 1.2pp, consistent with the corpus-invariance already shown for 1.5B/3B. Model repos used: `mlx-community/Qwen2.5-7B-Instruct-bf16`, `mlx-community/Mistral-7B-Instruct-v0.3` (unquantized bf16, no `-bf16` suffix variant exists for this repo — verified via `torch_dtype: bfloat16` in config.json, no `quantization` key). Checkpoints: `artifacts/qwen7b_bf16_c4_ppl_checkpoint.json`, `artifacts/mistral7b_bf16_c4_ppl_checkpoint.json`. paper.tex §4.4 table now has all 4 models fully paired; HANDOFF.md, README.md updated to match.
+
+**Original why it mattered:** §4.4 C4 cross-corpus section was fully paired (BF16+q4) for 1.5B/3B but **q4-only** for 7B/Mistral — the BF16 baseline was never measured (blocked on model download). Without it, ΔPPL(C4) for the two largest models was unknown; only the C4/Wiki ratio proxy existed.
 
 ### What needs to happen
 1. Download BF16 checkpoints:
@@ -54,12 +56,12 @@ The `EXIT` command previously listed in `HANDOFF.md` (`--device cuda ...`) does 
 4. Update §3 C4 table in `HANDOFF.md` and the corresponding paper table — fill in the two missing BF16 C4 cells and compute real ΔPPL(C4) instead of the ratio proxy.
 
 ### Exit criteria
-- [ ] Qwen2.5-7B BF16 + Mistral-7B BF16 downloaded
-- [ ] `eval/eval_ppl_c4.py` run for both, checkpoints saved to `artifacts/`
-- [ ] §4.4 C4 table in paper.tex updated with real ΔPPL(C4) (no more "— not measured" cells for these two)
+- [x] Qwen2.5-7B BF16 + Mistral-7B BF16 downloaded
+- [x] `eval/eval_ppl_c4.py` run for both, checkpoints saved to `artifacts/`
+- [x] §4.4 C4 table in paper.tex updated with real ΔPPL(C4) (no more "— not measured" cells for these two)
 
 ---
 
 ## Suggested order
 
-D5 first — no new code, no new hardware, just a download + existing script run on the machine already in hand. D4 is the bigger lift (new eval harness + separate machine) and the bigger payoff; start it once D5 confirms the C4 table is closed out, or in parallel if a second working session is available.
+D5 is done (2026-07-01, see above). D4 is the only remaining item — the bigger lift (new CUDA eval harness + separate RTX 5070 Ti machine) and the bigger payoff (+4–6pp on scientific_depth, the last blocker for main-conference submission tier).
