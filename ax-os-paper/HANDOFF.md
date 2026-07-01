@@ -129,15 +129,17 @@ ax-os-paper/
 
 ### ⬜ Open (require new experiments)
 
+**Detailed execution plan: [`HANDOFF_D4_D5.md`](./HANDOFF_D4_D5.md)**
+
 **D4: 2nd hardware platform (RTX 5070 Ti)**
 - WHY: scientific_depth bottleneck is single-hardware scope (M1 Max only)
-- COST: requires CUDA setup + model download (~2-4 hr per model)
+- COST: new CUDA eval script (existing `eval_ppl_wikitext2.py` is MLX-only, no `--device` flag) + model download (~2-4 hr per model)
 - IMPACT: +4–6pp on scientific_depth — largest remaining score lever
-- EXIT: `python eval/eval_ppl_wikitext2.py --device cuda --model artifacts/...`
+- EXIT: see `HANDOFF_D4_D5.md` §D4
 
 **D5: 7B/Mistral BF16 C4 baseline**
 - WHY: enables proper ΔPPL(C4) for all 4 models (currently missing due to download constraint)
-- EXIT: download Qwen2.5-7B-bf16 + Mistral-7B-bf16, run `eval/eval_ppl_c4.py`
+- EXIT: download Qwen2.5-7B-bf16 + Mistral-7B-bf16, run `eval/eval_ppl_c4.py` (see `HANDOFF_D4_D5.md` §D5)
 
 ---
 
