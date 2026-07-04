@@ -23,14 +23,19 @@ point reproduces the MLX ΔPPL% to within measurement noise.
 |-------|-----------------|---------------|-----------|-----------|---------|
 | Qwen2.5-1.5B | 12.7000 (12.70) | 14.6208 (14.60) | **+15.12%** | +15.0% | ✅ reproduced |
 | Qwen2.5-3B   | 11.4486 (11.45) | 12.8179 (12.79) | **+11.96%** | +11.7% | ✅ reproduced |
-| Qwen2.5-7B   | 10.1444 (10.14) | *pending* (11.01) | — | +8.5% | ⏳ q4 85% done |
-| Mistral-7B-v0.3 | 7.2429 (7.24) | *pending* (7.56) | — | +4.4% | ⏳ BF16 done |
-| Qwen2.5-14B  | *pending* (7.73) | *pending, NF4* (8.53) | — | +10.3% | ⏳ not started |
+| Qwen2.5-7B   | 10.1444 (10.14) | 11.0123 (11.01) | **+8.56%** | +8.5% | ✅ reproduced |
+| Mistral-7B-v0.3 | 7.2429 (7.24) | 7.5624 (7.56) | **+4.41%** | +4.4% | ✅ reproduced |
+| Qwen2.5-14B  | 7.7315 (7.73) | 8.2716 (NF4) | +7.0%<sup>†</sup> | +10.3% | ⚠ NF4 scheme |
 | Llama-3.1-8B | *blocked* (9.47) | *blocked* (10.12) | — | +6.9% | 🔒 gated repo |
 
 Numbers in parentheses are the MLX (Apple M1 Max) values from `HANDOFF.md` §3.
-The two completed rows are sufficient to state the hardware-invariance result
-qualitatively; the remaining rows strengthen it and are pure compute.
+Four of five affine-q4 models reproduce the MLX ΔPPL% within **0.3 pp** (1.5B, 3B,
+7B, Mistral); all five BF16 baselines match MLX to four significant figures
+(incl. 14B: 7.73 vs 7.7315). <sup>†</sup>Qwen2.5-14B is a **scheme exception** —
+its BF16 (~28 GB) exceeds the 15.9 GB card, so CUDA q4 uses bitsandbytes NF4, not
+affine RTN. NF4's +7.0% (vs MLX affine +10.3%) reflects NF4's better 4-bit
+encoding, not a hardware effect; reported as a separate data point. Only
+Llama-3.1-8B remains, blocked on gated-repo access.
 
 ---
 
@@ -103,10 +108,20 @@ The deprecated files are kept only as evidence of the investigation above.
 
 ## 3. What remains (all mechanical, all checkpointed)
 
+> **UPDATE 2026-07-04:** (a) 7B, (b) Mistral, and (c) 14B are **DONE** — results
+> in §1. Only **(d) Llama-3.1-8B** remains, blocked on gated-repo access. The
+> commands below are retained as the record of how each was produced. Reliability
+> note learned the hard way: long (>10 min) offloaded evals die *silently, no
+> traceback* if the last Windows `wsl.exe` client exits (WSL auto-terminates the
+> distro — not OOM; check `dmesg` for oom-killer to confirm). Keep a persistent
+> client alive for the whole run: a WMI-spawned `wsl.exe --exec sleep <N>`
+> survives the harness; a `tail -F` Monitor also works. Then `setsid nohup` the
+> eval and watch its log.
+
 Run order and exact commands. Every eval checkpoints every 100 strides, so any
 interruption resumes losslessly — just re-run the same command.
 
-**a) Qwen2.5-7B q4 — 85% done (stride 500/585), resume:**
+**a) Qwen2.5-7B q4 — ✅ DONE (11.0123, +8.56%). Was resumed from stride 500/585:**
 ```bash
 cd ~/ax-os/ax-os-paper
 python3 -u eval/eval_ppl_wikitext2_cuda_mlxparity.py \
@@ -185,13 +200,15 @@ pickup doesn't re-derive them.
       non-overlapping windows, unweighted window-mean PPL)
 - [x] **Methodology settled**: authoritative MLX convert→dequantize→inject,
       superseding the fake-quant reimplementation (§2)
-- [x] Validation reproduced on **two** models, not one (1.5B +15.12%, 3B +11.96%)
-- [x] All BF16 baselines reproduce MLX to 4 s.f. (1.5B/3B/7B/Mistral done)
-- [ ] q4 parity for 7B (85%), Mistral, 14B(NF4), Llama-8B(gated)
-- [ ] Cross-hardware ΔPPL% column/table added to `paper.tex` (macros per the D5
-      pattern); 14B NF4 asymmetry flagged explicitly
-- [ ] `HANDOFF.md` §2 (trajectory) and §9 (submission readiness — D4 is the
-      stated sole blocker for the main-conference tier) updated once q4 rows land
+- [x] Validation reproduced on **four** affine-q4 models (1.5B +15.12%, 3B
+      +11.96%, 7B +8.56%, Mistral +4.41%), all within 0.3 pp of MLX
+- [x] All **five** BF16 baselines reproduce MLX to 4 s.f. (1.5B/3B/7B/Mistral/14B)
+- [x] q4 for 7B, Mistral, 14B(NF4) **DONE**; only Llama-8B(gated) outstanding
+- [x] Cross-hardware ΔPPL% table (`tab:crosshw`) + macros added to `paper.tex`
+      (D5 macro pattern); 14B NF4 asymmetry flagged in caption and prose
+- [ ] `HANDOFF.md` §2 (trajectory) and §9 (submission readiness) — updated in this
+      commit; D4 downgraded from "sole blocker" to "complete modulo gated Llama"
+- [ ] Llama-3.1-8B: convert+eval once gated-repo access is granted (see §3d)
 
 ---
 

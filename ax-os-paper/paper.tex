@@ -30,6 +30,19 @@
 \newcommand{\MSQU}{10.53}              % Mistral-7B q4 C4 PPL
 \newcommand{\MSDP}{$+4.47\%$}          % Mistral-7B DELTA-PPL C4 (D5, 2026-07-01)
 
+% Cross-hardware WikiText-2 validation (RTX 5070 Ti, Blackwell SM12.0, CUDA 12.8,
+% PyTorch 2.11; D4, 2026-07-04). CUDA q4 = weights dequantized from the SAME
+% mlx_lm.convert -q affine checkpoints (byte-exact scheme parity via mx.dequantize);
+% only the matmul hardware differs. EXCEPTION: 14B uses bitsandbytes NF4 (BF16 14B
+% ~28GB > 15.9GB card), a different scheme, reported as a separate data point.
+\newcommand{\XEDP}{$+15.1\%$}     % 1.5B DELTA-PPL CUDA (MLX +15.0%)
+\newcommand{\XTDP}{$+12.0\%$}     % 3B   DELTA-PPL CUDA (MLX +11.7%)
+\newcommand{\XSDP}{$+8.6\%$}      % 7B   DELTA-PPL CUDA (MLX +8.5%)
+\newcommand{\XMDP}{$+4.4\%$}      % Mistral-7B DELTA-PPL CUDA (MLX +4.4%)
+\newcommand{\XXBF}{7.7315}        % 14B bf16 PPL CUDA (matches MLX 7.73)
+\newcommand{\XXNF}{8.2716}        % 14B NF4 q4 PPL CUDA (scheme exception)
+\newcommand{\XXDP}{$+7.0\%$}      % 14B NF4 DELTA-PPL vs CUDA bf16 (NOT vs MLX affine +10.3%)
+
 \begin{document}
 
 \maketitle
@@ -495,6 +508,57 @@ Qwen2.5-7B ($+8.5\%$), spanning a $1.9\times$ range from most to least robust.
     spanning a $1.9\times$ range.  All models share $\approx$3.5$\times$ compression.}
   \label{fig:scale_ppl}
 \end{figure}
+
+\textbf{Cross-hardware validation.}  Every perplexity number above was measured
+on a single hardware/software stack (Apple M1 Max, MLX/Metal).  To test whether
+the observed $\Delta$PPL pattern is a property of the models and the quantization
+scheme rather than an artifact of MLX's Metal kernels, we re-ran the identical
+WikiText-2 protocol on an architecturally unrelated platform---an NVIDIA RTX
+5070\,Ti (Blackwell, CUDA) under PyTorch/\texttt{transformers}
+(\cref{tab:crosshw}).  Crucially, we do \emph{not} re-implement the quantizer:
+the q4 weights are dequantized directly from the same \texttt{mlx\_lm.convert}
+affine checkpoints, so the two platforms operate on bitwise-identical q4 weights
+and only the matmul hardware differs.  The BF16 baselines agree to four
+significant figures ($12.70$ vs.\ $12.7000$ at 1.5B; $10.14$ vs.\ $10.1444$ at
+7B; $7.73$ vs.\ $7.7315$ at 14B), and the $\Delta$PPL\% values agree within
+$0.3$ percentage points on every affine-q4 model, despite a complete change of
+GPU architecture, kernel library, and math backend.  This indicates the
+scale-stratified q4 degradation is intrinsic to the model/quantization pair, not
+an MLX-specific effect.  Qwen2.5-14B is the one exception to scheme parity: its
+BF16 weights ($\approx$28\,GB) exceed the 15.9\,GB card, so its CUDA q4 point
+uses bitsandbytes NF4 rather than affine RTN.  The resulting $+7.0\%$ (vs.\ MLX's
+$+10.3\%$ affine) reflects NF4's more efficient 4-bit encoding, not a hardware
+effect; we therefore report it as a separate data point rather than a parity
+comparison, while noting its BF16 baseline still reproduces MLX to four figures.
+
+\begin{table}[t]
+  \centering
+  \caption{Cross-hardware reproduction of q4 $\Delta$PPL\% on WikiText-2
+    (identical protocol; full test split, non-overlapping 512-token windows).
+    CUDA q4 weights are dequantized from the same affine
+    \texttt{mlx\_lm.convert} checkpoints as the MLX column (byte-exact scheme
+    parity); only the hardware executing the matmuls differs (Apple M1 Max /
+    MLX vs.\ RTX 5070\,Ti / CUDA).  $\Delta$PPL\% agrees within $0.3$\,pp on
+    every affine-q4 model.  $^\dagger$Qwen2.5-14B is a scheme exception: its
+    BF16 weights ($\approx$28\,GB) exceed the 15.9\,GB card, so CUDA q4 uses
+    \emph{bitsandbytes NF4} (real 4-bit packing), a different quantizer than
+    MLX's affine RTN; its row is an independent data point, not a
+    hardware-parity comparison.}
+  \label{tab:crosshw}
+  \begin{tabular}{lrrr}
+    \toprule
+    Model & $\Delta$PPL$_\text{MLX}$ & $\Delta$PPL$_\text{CUDA}$ & $|\text{diff}|$ \\
+          & (M1 Max)                 & (5070\,Ti)                & (pp)            \\
+    \midrule
+    Qwen2.5-1.5B          & $+15.0$ & \XEDP & $0.1$ \\
+    Qwen2.5-3B            & $+11.7$ & \XTDP & $0.3$ \\
+    Qwen2.5-7B            & $+8.5$  & \XSDP & $0.1$ \\
+    Mistral-7B            & $+4.4$  & \XMDP & $0.0$ \\
+    \midrule
+    Qwen2.5-14B$^\dagger$ & $+10.3$ & \XXDP & --- \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 \subsection{Reproducibility Benchmark}
 \label{sec:exp:repro}

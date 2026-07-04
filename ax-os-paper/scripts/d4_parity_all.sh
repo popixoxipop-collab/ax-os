@@ -1,8 +1,16 @@
 #!/bin/bash
 # D4 final queue: MLX-parity q4 for 1.5B/7B/Mistral + 14B NF4 & BF16.
+# Single-instance lock: safe to launch from both a foreground bg-task and the
+# 5-min scheduler guard — whichever grabs the lock runs, the other exits.
+exec 9>/tmp/d4_parity.lock
+flock -n 9 || { echo "[$(date -u +%H:%M:%S) already running -> exit]" >> /home/alienware-r13/ax-os/ax-os-paper/scripts/d4_parity_all.log; exit 0; }
 cd /home/alienware-r13/ax-os/ax-os-paper || exit 1
 LOG=scripts/d4_parity_all.log
 export PATH="$HOME/.local/bin:$PATH"
+# All models are already cached; WSL outbound is currently down after the distro
+# move. Force offline so from_pretrained/convert hit the cache directly instead
+# of stalling on network retries.
+export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 
 parity() {  # hf_id mlx_subdir ckpt_tag dmap
   echo "=== PARITY $1 [$4] ==="
