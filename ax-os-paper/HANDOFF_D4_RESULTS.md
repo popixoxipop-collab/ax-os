@@ -3,7 +3,11 @@
 **Created:** 2026-07-04
 **Machine:** RTX 5070 Ti (Blackwell, SM12.0, 15.9GB VRAM), WSL2 Ubuntu, PyTorch 2.11+cu128, transformers 5.12
 **Parent doc:** [`HANDOFF_D4.md`](./HANDOFF_D4.md) (the execution plan added in `8371a88`)
-**Status:** partial — 2 of 6 models fully cross-validated; methodology settled; remainder mechanical and resumable from checkpoints.
+**Status:** ✅ **COMPLETE (2026-07-04)** — 4 affine-q4 models (1.5B/3B/7B/Mistral)
+cross-validated within 0.3 pp of MLX, + 14B via NF4 (scheme exception), + 5 BF16
+baselines matching to 4 s.f. Merged and pushed: `4174781` (results) on top of
+`d4b6823` (this doc). The D4 main-conference blocker is resolved. Only
+Llama-3.1-8B remains as an **optional** 6th point (access requested/pending; see §3d).
 
 > **This document CORRECTS the core recipe in `HANDOFF_D4.md`.** The fake-quant
 > reimplementation prescribed there (§"What to build instead") does **not**
@@ -154,12 +158,25 @@ python3 -u eval/eval_ppl_wikitext2_cuda.py --model Qwen/Qwen2.5-14B-Instruct \
   --precision bf16 --device-map auto
 ```
 
-**d) Llama-3.1-8B — BLOCKED (gated repo).** The provided HF token authenticates
-but the account is not on `meta-llama/Llama-3.1-8B-Instruct`'s access list (403
-GatedRepoError). Accept the license at
-https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct while signed in as the
-token's account, then convert+eval as in (b). If access can't be obtained,
-document Llama-8B as an explicit omission rather than dropping it silently.
+**d) Llama-3.1-8B — OPTIONAL, access requested/pending (2026-07-04).** The HF
+token (account `XOXOXOXOXOXO`) authenticates but is not yet on
+`meta-llama/Llama-3.1-8B-Instruct`'s access list — file `resolve` returns 403
+(the model-info API returning 200 is *not* a grant; check with a file-resolve
+HEAD, not `/api/models/...`). A license-acceptance request has been submitted and
+is awaiting Meta approval. This row is not needed for the paper's claim (already
+carried by the 4 affine models + 14B); add it only for completeness once granted.
+
+Completion procedure once access is granted (WSL outbound is down, so download on
+the Windows side and hand the cache to WSL via `/mnt`):
+```bash
+# Windows (has network + token): download into a shared NTFS cache
+HF_HOME='G:/hf_cache' HF_TOKEN=<token> python -c "from huggingface_hub import \
+  snapshot_download; snapshot_download('meta-llama/Llama-3.1-8B-Instruct', \
+  ignore_patterns=['original*','consolidated*','*.pth'])"
+# WSL: convert + eval, reading the shared cache offline
+bash scripts/d4_run_llama.sh          # HF_HOME=/mnt/g/hf_cache, ready to go
+```
+Then add the 6th row to `tab:crosshw` (macro `\XLDP`; MLX reference $+6.9\%$).
 
 ---
 
@@ -219,8 +236,9 @@ pickup doesn't re-derive them.
 - `eval/eval_ppl_wikitext2_cuda_mlxparity.py` — **authoritative** q4 path
   (dequantize real MLX checkpoint → inject → CUDA), streaming + low-mem loader
 - `scripts/d4_parity_all.sh` — full parity queue (1.5B→7B→Mistral→14B), resumable
+- `scripts/d4_run_mistral.sh`, `d4_run_14b.sh`, `d4_run_llama.sh` — per-model
+  direct-run scripts (the reliable pattern: setsid+nohup under a WMI keepalive)
 - `scripts/d4_download.sh`, `d4_download_llama.sh` — model fetch
-- `scripts/d4_guard.sh` — Task Scheduler self-heal relaunch (currently disabled)
 - `scripts/d4_check_ckpt.sh` — dump all checkpoint PPLs
 - `artifacts/*_cuda_bf16_*.json`, `artifacts/*_cuda_q4mlx_*.json` — authoritative
   results; `*_cuda_q4_*` / `*_cuda_q4fp32_*` — DEPRECATED (see §2)
@@ -229,4 +247,16 @@ pickup doesn't re-derive them.
 
 ---
 
-*— XOX / popixoxipop-collab*
+## Sign-off
+
+D4 is **done and merged** — cross-hardware ΔPPL% invariance is demonstrated on a
+CUDA/Blackwell stack against the original Apple/MLX numbers, within 0.3 pp across
+every affine-q4 model, with the quantizer-reimplementation trap identified and
+avoided (§2). The paper carries `tab:crosshw`; `HANDOFF.md` §9 no longer lists D4
+as a blocker. Nothing here is waiting on compute. The single open thread —
+Llama-3.1-8B — is optional, gated on an approval outside this machine, and fully
+scripted for a 30-minute finish whenever access lands (§3d).
+
+*Wrapped up 2026-07-04.*
+
+*— XOX / popixoxipop-collab* 🖤
