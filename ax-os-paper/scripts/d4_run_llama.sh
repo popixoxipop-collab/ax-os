@@ -1,10 +1,11 @@
 #!/bin/bash
-# Llama-3.1-8B: BF16 baseline + q4 MLX-parity. Model was downloaded from Windows
-# (WSL outbound is down) into a shared NTFS cache readable via /mnt/g.
+# Llama-3.1-8B: BF16 baseline + q4 MLX-parity. Model cache lives in a shared
+# NTFS cache readable via /mnt/g (originally populated from Windows while WSL
+# outbound was down; safe to reuse now regardless of network state).
+set -e
 cd /home/alienware-r13/ax-os/ax-os-paper || exit 1
 export PATH="$HOME/.local/bin:$PATH"
 export HF_HOME=/mnt/g/hf_cache
-export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 echo "[llama run start $(date -u +%H:%M:%S)]"
 
 echo "=== Llama-3.1-8B BF16 baseline ==="

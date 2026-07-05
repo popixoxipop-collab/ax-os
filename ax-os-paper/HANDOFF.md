@@ -129,21 +129,23 @@ ax-os-paper/
 - **D2: Abstract tone** (`1dfc695`) — added "with four scale points this is an observational result, not a characterised trend"; "motivating" → "suggesting"
 - **D3: Vocabulary-sparsity overstatement** (`1dfc695`) — demoted from mechanism to "candidate mechanism"; table caption and lead-in now explicitly note n=3 / three confounders vary simultaneously
 - **D5: 7B/Mistral BF16 C4 baseline** (2026-07-01) — Qwen2.5-7B BF16 C4=14.77 (ΔPPL=+7.80% vs WikiText-2 +8.5%), Mistral-7B BF16 C4=10.08 (ΔPPL=+4.47% vs WikiText-2 +4.4%); all 4 models now fully paired on C4, see `HANDOFF_D4_D5.md` §D5
-- **D4: cross-hardware WikiText-2 on RTX 5070 Ti / CUDA** (2026-07-04) — q4 ΔPPL% reproduces MLX within 0.3 pp for all four affine-q4 models (1.5B +15.1%, 3B +12.0%, 7B +8.6%, Mistral +4.4%); five BF16 baselines match to 4 s.f.; 14B via NF4 (+7.0%, scheme exception). `tab:crosshw` added. Method correction: dequantize real `mlx_lm.convert` checkpoint, not a hand-rolled RTN (which diverged). See `HANDOFF_D4_RESULTS.md`
+- **D4: cross-hardware WikiText-2 on RTX 5070 Ti / CUDA** (2026-07-04, Llama added 2026-07-05) — q4 ΔPPL% reproduces MLX within 0.3 pp for all five affine-q4 models (1.5B +15.1%, 3B +12.0%, 7B +8.6%, Mistral +4.4%, Llama-3.1-8B +7.1%); six BF16 baselines match to 4 s.f.; 14B via NF4 (+7.0%, scheme exception). `tab:crosshw` added. Method correction: dequantize real `mlx_lm.convert` checkpoint, not a hand-rolled RTN (which diverged). See `HANDOFF_D4_RESULTS.md`
 
-### ✅ D4 DONE (2026-07-04) — see [`HANDOFF_D4_RESULTS.md`](./HANDOFF_D4_RESULTS.md)
+### ✅ D4 DONE (2026-07-04, Llama completed 2026-07-05) — see [`HANDOFF_D4_RESULTS.md`](./HANDOFF_D4_RESULTS.md)
 
-**D4: 2nd hardware platform (RTX 5070 Ti)** — cross-hardware reproduction landed.
-- RESULT: q4 ΔPPL% reproduced on CUDA within **0.3 pp** of MLX for all four
-  affine-q4 models (1.5B +15.1%, 3B +12.0%, 7B +8.6%, Mistral +4.4%); all five
-  BF16 baselines match MLX to 4 s.f. Table `tab:crosshw` + macros added to `paper.tex`.
+**D4: 2nd hardware platform (RTX 5070 Ti)** — cross-hardware reproduction landed, all six models.
+- RESULT: q4 ΔPPL% reproduced on CUDA within **0.3 pp** of MLX for all five
+  affine-q4 models (1.5B +15.1%, 3B +12.0%, 7B +8.6%, Mistral +4.4%, Llama-3.1-8B
+  +7.1%); all six BF16 baselines match MLX to 4 s.f. Table `tab:crosshw` + macros
+  added to `paper.tex`.
 - METHOD CORRECTION: the from-scratch RTN fake-quantizer prescribed in
   `HANDOFF_D4.md` did **not** reproduce `mx.quantize` (3B diverged to +31.9%).
   Authoritative path = dequantize the real `mlx_lm.convert -q` checkpoint and
   inject → byte-exact scheme parity. Full write-up in `HANDOFF_D4_RESULTS.md` §2.
 - SCHEME EXCEPTION: 14B uses bitsandbytes NF4 (BF16 28 GB > 15.9 GB card); flagged
   as a separate data point, not a parity comparison.
-- OUTSTANDING: only Llama-3.1-8B (gated repo, needs license acceptance).
+- Llama-3.1-8B: gated-repo access approved 2026-07-05; BF16=9.4668 (MLX 9.47),
+  q4mlx=10.1398, ΔPPL%=+7.1% (MLX +6.9%, diff 0.2 pp). Nothing outstanding on D4.
 
 ---
 
@@ -196,8 +198,9 @@ python analysis/gen_scale_ppl_fig.py 7.2432 7.5601
 | + D4 + D5 | Full conference short-paper track |
 
 **Single remaining blocker for workshop submission:** none — paper is clean.  
-**Main-conference blocker (D4, 2nd hardware platform): RESOLVED 2026-07-04.**
+**Main-conference blocker (D4, 2nd hardware platform): RESOLVED 2026-07-04, Llama completed 2026-07-05.**
 Cross-hardware reproduction on RTX 5070 Ti (CUDA) agrees with M1 Max (MLX) within
-0.3 pp on q4 ΔPPL% for all four affine-q4 models; `tab:crosshw` is in `paper.tex`.
-Optional strengthening only: Llama-3.1-8B (gated) and extending the cross-hardware
-sweep to C4. See `HANDOFF_D4_RESULTS.md`.
+0.3 pp on q4 ΔPPL% for all five affine-q4 models (incl. Llama-3.1-8B +7.1% vs
+MLX +6.9%); `tab:crosshw` is in `paper.tex`, all six models. Nothing outstanding
+on D4. Optional strengthening only: extending the cross-hardware sweep to C4.
+See `HANDOFF_D4_RESULTS.md`.

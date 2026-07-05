@@ -39,6 +39,9 @@
 \newcommand{\XTDP}{$+12.0\%$}     % 3B   DELTA-PPL CUDA (MLX +11.7%)
 \newcommand{\XSDP}{$+8.6\%$}      % 7B   DELTA-PPL CUDA (MLX +8.5%)
 \newcommand{\XMDP}{$+4.4\%$}      % Mistral-7B DELTA-PPL CUDA (MLX +4.4%)
+\newcommand{\XLBF}{9.4668}        % Llama-3.1-8B bf16 PPL CUDA (matches MLX 9.47)
+\newcommand{\XLQU}{10.1398}       % Llama-3.1-8B q4mlx PPL CUDA
+\newcommand{\XLDP}{$+7.1\%$}      % Llama-3.1-8B DELTA-PPL CUDA (MLX +6.9%; gated repo, access granted 2026-07-05)
 \newcommand{\XXBF}{7.7315}        % 14B bf16 PPL CUDA (matches MLX 7.73)
 \newcommand{\XXNF}{8.2716}        % 14B NF4 q4 PPL CUDA (scheme exception)
 \newcommand{\XXDP}{$+7.0\%$}      % 14B NF4 DELTA-PPL vs CUDA bf16 (NOT vs MLX affine +10.3%)
@@ -520,8 +523,9 @@ the q4 weights are dequantized directly from the same \texttt{mlx\_lm.convert}
 affine checkpoints, so the two platforms operate on bitwise-identical q4 weights
 and only the matmul hardware differs.  The BF16 baselines agree to four
 significant figures ($12.70$ vs.\ $12.7000$ at 1.5B; $10.14$ vs.\ $10.1444$ at
-7B; $7.73$ vs.\ $7.7315$ at 14B), and the $\Delta$PPL\% values agree within
-$0.3$ percentage points on every affine-q4 model, despite a complete change of
+7B; $9.47$ vs.\ $9.4668$ at 8B; $7.73$ vs.\ $7.7315$ at 14B), and the
+$\Delta$PPL\% values agree within $0.3$ percentage points on every one of the
+five affine-q4 models, despite a complete change of
 GPU architecture, kernel library, and math backend.  This indicates the
 scale-stratified q4 degradation is intrinsic to the model/quantization pair, not
 an MLX-specific effect.  Qwen2.5-14B is the one exception to scheme parity: its
@@ -539,7 +543,7 @@ comparison, while noting its BF16 baseline still reproduces MLX to four figures.
     \texttt{mlx\_lm.convert} checkpoints as the MLX column (byte-exact scheme
     parity); only the hardware executing the matmuls differs (Apple M1 Max /
     MLX vs.\ RTX 5070\,Ti / CUDA).  $\Delta$PPL\% agrees within $0.3$\,pp on
-    every affine-q4 model.  $^\dagger$Qwen2.5-14B is a scheme exception: its
+    every one of the five affine-q4 models.  $^\dagger$Qwen2.5-14B is a scheme exception: its
     BF16 weights ($\approx$28\,GB) exceed the 15.9\,GB card, so CUDA q4 uses
     \emph{bitsandbytes NF4} (real 4-bit packing), a different quantizer than
     MLX's affine RTN; its row is an independent data point, not a
@@ -554,6 +558,7 @@ comparison, while noting its BF16 baseline still reproduces MLX to four figures.
     Qwen2.5-3B            & $+11.7$ & \XTDP & $0.3$ \\
     Qwen2.5-7B            & $+8.5$  & \XSDP & $0.1$ \\
     Mistral-7B            & $+4.4$  & \XMDP & $0.0$ \\
+    Llama-3.1-8B          & $+6.9$  & \XLDP & $0.2$ \\
     \midrule
     Qwen2.5-14B$^\dagger$ & $+10.3$ & \XXDP & --- \\
     \bottomrule

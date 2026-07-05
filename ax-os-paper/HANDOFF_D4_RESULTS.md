@@ -3,11 +3,13 @@
 **Created:** 2026-07-04
 **Machine:** RTX 5070 Ti (Blackwell, SM12.0, 15.9GB VRAM), WSL2 Ubuntu, PyTorch 2.11+cu128, transformers 5.12
 **Parent doc:** [`HANDOFF_D4.md`](./HANDOFF_D4.md) (the execution plan added in `8371a88`)
-**Status:** ✅ **COMPLETE (2026-07-04)** — 4 affine-q4 models (1.5B/3B/7B/Mistral)
-cross-validated within 0.3 pp of MLX, + 14B via NF4 (scheme exception), + 5 BF16
-baselines matching to 4 s.f. Merged and pushed: `4174781` (results) on top of
-`d4b6823` (this doc). The D4 main-conference blocker is resolved. Only
-Llama-3.1-8B remains as an **optional** 6th point (access requested/pending; see §3d).
+**Status:** ✅ **COMPLETE (2026-07-04, Llama added 2026-07-05)** — 5 affine-q4
+models (1.5B/3B/7B/Mistral/Llama-3.1-8B) cross-validated within 0.3 pp of MLX,
++ 14B via NF4 (scheme exception), + 6 BF16 baselines matching to 4 s.f. Merged
+and pushed: `4174781` (results) on top of `d4b6823` (this doc). The D4
+main-conference blocker is resolved. Gated-repo access for Llama-3.1-8B was
+granted 2026-07-05 and the completion run is done (see §3d) — nothing
+outstanding on D4.
 
 > **This document CORRECTS the core recipe in `HANDOFF_D4.md`.** The fake-quant
 > reimplementation prescribed there (§"What to build instead") does **not**
@@ -30,16 +32,18 @@ point reproduces the MLX ΔPPL% to within measurement noise.
 | Qwen2.5-7B   | 10.1444 (10.14) | 11.0123 (11.01) | **+8.56%** | +8.5% | ✅ reproduced |
 | Mistral-7B-v0.3 | 7.2429 (7.24) | 7.5624 (7.56) | **+4.41%** | +4.4% | ✅ reproduced |
 | Qwen2.5-14B  | 7.7315 (7.73) | 8.2716 (NF4) | +7.0%<sup>†</sup> | +10.3% | ⚠ NF4 scheme |
-| Llama-3.1-8B | *blocked* (9.47) | *blocked* (10.12) | — | +6.9% | 🔒 gated repo |
+| Llama-3.1-8B | 9.4668 (9.47) | 10.1398 (10.12) | **+7.11%** | +6.9% | ✅ reproduced |
 
 Numbers in parentheses are the MLX (Apple M1 Max) values from `HANDOFF.md` §3.
-Four of five affine-q4 models reproduce the MLX ΔPPL% within **0.3 pp** (1.5B, 3B,
-7B, Mistral); all five BF16 baselines match MLX to four significant figures
-(incl. 14B: 7.73 vs 7.7315). <sup>†</sup>Qwen2.5-14B is a **scheme exception** —
+All five affine-q4 models reproduce the MLX ΔPPL% within **0.3 pp** (1.5B, 3B,
+7B, Mistral, Llama-3.1-8B — diff 0.2 pp); all six BF16 baselines match MLX to
+four significant figures (incl. 14B: 7.73 vs 7.7315; 8B: 9.47 vs 9.4668).
+<sup>†</sup>Qwen2.5-14B is a **scheme exception** —
 its BF16 (~28 GB) exceeds the 15.9 GB card, so CUDA q4 uses bitsandbytes NF4, not
 affine RTN. NF4's +7.0% (vs MLX affine +10.3%) reflects NF4's better 4-bit
-encoding, not a hardware effect; reported as a separate data point. Only
-Llama-3.1-8B remains, blocked on gated-repo access.
+encoding, not a hardware effect; reported as a separate data point.
+Llama-3.1-8B's gated-repo access was granted 2026-07-05 (§3d) — nothing
+outstanding on D4.
 
 ---
 
@@ -112,8 +116,8 @@ The deprecated files are kept only as evidence of the investigation above.
 
 ## 3. What remains (all mechanical, all checkpointed)
 
-> **UPDATE 2026-07-04:** (a) 7B, (b) Mistral, and (c) 14B are **DONE** — results
-> in §1. Only **(d) Llama-3.1-8B** remains, blocked on gated-repo access. The
+> **UPDATE 2026-07-05:** (a) 7B, (b) Mistral, (c) 14B, and (d) Llama-3.1-8B are
+> all **DONE** — results in §1. Nothing remains open on D4. The
 > commands below are retained as the record of how each was produced. Reliability
 > note learned the hard way: long (>10 min) offloaded evals die *silently, no
 > traceback* if the last Windows `wsl.exe` client exits (WSL auto-terminates the
@@ -158,16 +162,19 @@ python3 -u eval/eval_ppl_wikitext2_cuda.py --model Qwen/Qwen2.5-14B-Instruct \
   --precision bf16 --device-map auto
 ```
 
-**d) Llama-3.1-8B — OPTIONAL, access requested/pending (2026-07-04).** The HF
-token (account `XOXOXOXOXOXO`) authenticates but is not yet on
-`meta-llama/Llama-3.1-8B-Instruct`'s access list — file `resolve` returns 403
-(the model-info API returning 200 is *not* a grant; check with a file-resolve
-HEAD, not `/api/models/...`). A license-acceptance request has been submitted and
-is awaiting Meta approval. This row is not needed for the paper's claim (already
-carried by the 4 affine models + 14B); add it only for completeness once granted.
+**d) Llama-3.1-8B — ✅ DONE (2026-07-05).** Gated-repo access was granted
+between 2026-07-04 and 2026-07-05 — confirmed via a file-resolve HEAD request on
+`.../resolve/main/config.json` returning 200 (the `/api/models/...` endpoint
+returns 200 regardless of grant status and must not be used as the check). WSL
+outbound network had also recovered by completion time, so the whole pipeline
+ran inside WSL directly — the Windows-side download detour originally planned
+below was not needed in the end. Result: BF16=9.4668 (MLX 9.47), q4mlx=10.1398
+(MLX 10.12), ΔPPL%=**+7.11%** (MLX +6.9%, diff 0.2 pp — within the 0.3 pp band).
+Row added to `tab:crosshw` (macro `\XLDP`). Two script bugs were hit and fixed
+along the way — see §4 lesson 5.
 
-Completion procedure once access is granted (WSL outbound is down, so download on
-the Windows side and hand the cache to WSL via `/mnt`):
+Original completion procedure (superseded by the above — kept only in case WSL
+outbound ever goes down again):
 ```bash
 # Windows (has network + token): download into a shared NTFS cache
 HF_HOME='G:/hf_cache' HF_TOKEN=<token> python -c "from huggingface_hub import \
@@ -176,7 +183,6 @@ HF_HOME='G:/hf_cache' HF_TOKEN=<token> python -c "from huggingface_hub import \
 # WSL: convert + eval, reading the shared cache offline
 bash scripts/d4_run_llama.sh          # HF_HOME=/mnt/g/hf_cache, ready to go
 ```
-Then add the 6th row to `tab:crosshw` (macro `\XLDP`; MLX reference $+6.9\%$).
 
 ---
 
@@ -208,6 +214,20 @@ pickup doesn't re-derive them.
 4. **Everything checkpoints.** Every eval writes NLLs every 100 strides; deaths
    resume for free. This is why the repeated distro deaths cost time but no
    results.
+5. **`HF_HOME` override relocates the token too, and stale offline-flags hide
+   failures.** Setting `HF_HOME=/mnt/g/hf_cache` moves where `huggingface_hub`
+   looks for the auth token (`$HF_HOME/token`), not just the model cache —
+   `whoami()` raised `LocalTokenNotFoundError` until the token file was copied
+   there (or `HF_TOKEN` exported directly). Separately, `d4_run_llama.sh` had
+   hardcoded `HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1` for the "WSL network
+   down" scenario (lesson 1); once network recovered this blocked
+   `load_dataset("Salesforce/wikitext", ...)` with `ConnectionError: ...
+   OfflineModeIsEnabled` — and with no `set -e` in the script, both eval
+   failures were silently masked (bash kept going after the failed `python3`
+   calls and exited 0 on the final `echo`, so the run *looked* successful from
+   the exit code alone). Fixed in the script: offline flags removed
+   (network-dependent — re-add only if WSL outbound drops again), `set -e`
+   added so a real failure actually propagates.
 
 ---
 
@@ -217,15 +237,15 @@ pickup doesn't re-derive them.
       non-overlapping windows, unweighted window-mean PPL)
 - [x] **Methodology settled**: authoritative MLX convert→dequantize→inject,
       superseding the fake-quant reimplementation (§2)
-- [x] Validation reproduced on **four** affine-q4 models (1.5B +15.12%, 3B
-      +11.96%, 7B +8.56%, Mistral +4.41%), all within 0.3 pp of MLX
-- [x] All **five** BF16 baselines reproduce MLX to 4 s.f. (1.5B/3B/7B/Mistral/14B)
-- [x] q4 for 7B, Mistral, 14B(NF4) **DONE**; only Llama-8B(gated) outstanding
+- [x] Validation reproduced on **five** affine-q4 models (1.5B +15.12%, 3B
+      +11.96%, 7B +8.56%, Mistral +4.41%, Llama-3.1-8B +7.11%), all within 0.3 pp of MLX
+- [x] All **six** BF16 baselines reproduce MLX to 4 s.f. (1.5B/3B/7B/Mistral/Llama/14B)
+- [x] q4 for 7B, Mistral, 14B(NF4), Llama-3.1-8B **all DONE** — nothing outstanding
 - [x] Cross-hardware ΔPPL% table (`tab:crosshw`) + macros added to `paper.tex`
       (D5 macro pattern); 14B NF4 asymmetry flagged in caption and prose
-- [ ] `HANDOFF.md` §2 (trajectory) and §9 (submission readiness) — updated in this
-      commit; D4 downgraded from "sole blocker" to "complete modulo gated Llama"
-- [ ] Llama-3.1-8B: convert+eval once gated-repo access is granted (see §3d)
+- [x] `HANDOFF.md` §2 (trajectory) and §9 (submission readiness) — updated;
+      D4 is fully resolved, no longer conditional on gated Llama access
+- [x] Llama-3.1-8B: convert+eval done now that gated-repo access was granted (§3d)
 
 ---
 
@@ -251,12 +271,12 @@ pickup doesn't re-derive them.
 
 D4 is **done and merged** — cross-hardware ΔPPL% invariance is demonstrated on a
 CUDA/Blackwell stack against the original Apple/MLX numbers, within 0.3 pp across
-every affine-q4 model, with the quantizer-reimplementation trap identified and
-avoided (§2). The paper carries `tab:crosshw`; `HANDOFF.md` §9 no longer lists D4
-as a blocker. Nothing here is waiting on compute. The single open thread —
-Llama-3.1-8B — is optional, gated on an approval outside this machine, and fully
-scripted for a 30-minute finish whenever access lands (§3d).
+every one of the five affine-q4 models (including Llama-3.1-8B, completed
+2026-07-05 once gated-repo access landed), with the quantizer-reimplementation
+trap identified and avoided (§2). The paper carries `tab:crosshw` with all six
+models; `HANDOFF.md` §9 no longer lists D4 as a blocker. Nothing here is waiting
+on compute, and nothing remains open.
 
-*Wrapped up 2026-07-04.*
+*Wrapped up 2026-07-04; Llama-3.1-8B closed out 2026-07-05.*
 
 *— XOX / popixoxipop-collab* 🖤
