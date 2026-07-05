@@ -20,6 +20,14 @@ Precisions:
   --precision nf4       bitsandbytes NF4 real 4-bit packing. Scheme exception
                         for models whose BF16 footprint exceeds VRAM (14B).
                         NOT scheme-identical to MLX q4 — document asymmetry.
+  --precision awq       Real published AWQ checkpoint (--model must point at
+                        the pre-quantized repo id, e.g.
+                        Qwen/Qwen2.5-7B-Instruct-AWQ). Requires autoawq.
+                        Independent baseline, not scheme-matched to our q4.
+  --precision gptq      Real published GPTQ checkpoint (--model must point at
+                        the pre-quantized repo id, e.g.
+                        Qwen/Qwen2.5-7B-Instruct-GPTQ-Int4). Requires
+                        gptqmodel. Independent baseline, not scheme-matched.
 
 Checkpointing: saves NLLs to artifacts/<tag>_ppl_checkpoint.json every 100
 strides; resumes automatically if a checkpoint exists.
@@ -140,7 +148,7 @@ def eval_wikitext2_ppl(model, tokenizer, device, stride=512, max_length=512,
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", required=True, help="HF repo id or local path")
-    parser.add_argument("--precision", choices=["bf16", "q4", "nf4"], default="bf16")
+    parser.add_argument("--precision", choices=["bf16", "q4", "nf4", "awq", "gptq"], default="bf16")
     parser.add_argument("--stride", type=int, default=512)
     parser.add_argument("--max-length", type=int, default=512)
     parser.add_argument("--group-size", type=int, default=64)
@@ -166,8 +174,11 @@ def main():
     print(f"Loading {args.model} [{args.precision}] ...")
     tokenizer = AutoTokenizer.from_pretrained(args.model, trust_remote_code=True)
 
-    load_kwargs = dict(dtype=torch.bfloat16, device_map=args.device_map,
-                       trust_remote_code=True)
+    load_kwargs = dict(device_map=args.device_map, trust_remote_code=True)
+    if args.precision in ("bf16", "q4"):
+        # awq/gptq checkpoints define their own storage dtype internally;
+        # forcing bf16 here would fight the pre-quantized config.
+        load_kwargs["dtype"] = torch.bfloat16
     if args.precision == "nf4":
         from transformers import BitsAndBytesConfig
         load_kwargs["quantization_config"] = BitsAndBytesConfig(

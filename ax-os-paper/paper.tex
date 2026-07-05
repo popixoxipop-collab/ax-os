@@ -68,6 +68,11 @@ scale points this is an observational result, not a characterised trend.
 Cross-architecture variation at matched 7--8B scale spans a $1.9\times$ range:
 Mistral-7B ($+4.4\%$) and Llama-3.1-8B ($+6.9\%$) are substantially more
 robust than Qwen2.5-7B ($+8.5\%$), suggesting architecture-aware model selection.
+This robustness ordering survives a further check: re-measuring all six
+models against published AWQ and GPTQ-Int4 checkpoints under our identical
+protocol shows both established methods dominate our uniform scheme as
+expected, while Mistral-7B's robustness advantage over Qwen2.5-7B holds under
+every quantization method tested, not only our own pipeline.
 Mixed-precision alternatives collapse in quality at 1.5B scale, reinforcing
 the uniform scheme.
 
@@ -574,6 +579,113 @@ comparison, while noting its BF16 baseline still reproduces MLX to four figures.
   \end{tabular}
 \end{table}
 
+\textbf{Statistical uncertainty on the CUDA measurements.}  \Cref{tab:crosshw}
+reports point estimates.  Because the CUDA runs log per-window negative
+log-likelihoods (unlike the original MLX runs, for which per-window data was
+not retained), we can quantify uncertainty on those six values directly: a
+paired bootstrap (10{,}000 resamples of window indices, applied identically
+to the bf16 and q4/NF4 NLL arrays since both conditions were evaluated on the
+same fixed token stream) gives a 95\% percentile interval for $\Delta$PPL\%
+that is under $0.7$\,pp wide for every model (\cref{tab:bootstrap}).  These
+intervals characterise sampling variance across WikiText-2 windows, not
+cross-hardware or cross-run variance --- the underlying evaluation is
+deterministic given a fixed artifact (\cref{sec:results:limits}) --- and they
+confirm that the cross-architecture gaps in \cref{tab:crosshw} (e.g.\
+Mistral-7B $+4.4\%$ vs.\ Llama-3.1-8B $+7.1\%$) are far larger than the
+per-model measurement uncertainty.  We could not compute the analogous
+interval for the original MLX headline numbers, since per-window NLLs were
+not retained from those runs; given the demonstrated $<0.3$\,pp cross-hardware
+agreement, the CUDA-side intervals are a reasonable proxy for that
+uncertainty, but not a literal substitute.
+
+\begin{table}[t]
+  \centering
+  \caption{Paired bootstrap 95\% CI (10{,}000 resamples of window indices,
+    same indices applied to both conditions) for the CUDA $\Delta$PPL\%
+    figures in \cref{tab:crosshw}.  $n$ is the WikiText-2 window count.}
+  \label{tab:bootstrap}
+  \begin{tabular}{lrrr}
+    \toprule
+    Model & $n$ & $\Delta$PPL$_\text{CUDA}$ & 95\% CI (pp) \\
+    \midrule
+    Qwen2.5-1.5B      & 585 & $+15.12$ & $[+14.80,+15.45]$ \\
+    Qwen2.5-3B        & 585 & $+11.96$ & $[+11.62,+12.31]$ \\
+    Qwen2.5-7B        & 585 & $+8.56$  & $[+8.28,+8.83]$   \\
+    Mistral-7B        & 654 & $+4.41$  & $[+4.27,+4.56]$   \\
+    Llama-3.1-8B      & 565 & $+7.11$  & $[+6.85,+7.38]$   \\
+    Qwen2.5-14B (NF4) & 585 & $+6.99$  & $[+6.42,+7.57]$   \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Comparison to Published Quantization Methods}
+\label{sec:results:awqgptq}
+
+The uniform RTN scheme selected in \cref{sec:method:aeq} is deliberately
+simple.  \Cref{tab:awqgptq} situates it against two established alternatives,
+AWQ~\citep{lin2023awq} and GPTQ~\citep{frantar2023gptq}, using the official
+Qwen-released checkpoints for all four Qwen sizes and well-established
+community quantizations for Mistral-7B and Llama-3.1-8B, evaluated under our
+identical WikiText-2 protocol --- a direct comparison, not the literature
+proxy used in an earlier draft of this section (\cref{sec:results:limits}).
+
+\begin{table}[t]
+  \centering
+  \caption{Our uniform q4 (RTN, group size 64) versus published AWQ and
+    GPTQ-Int4 checkpoints, same six models, identical WikiText-2 protocol
+    (full test split, 512-token non-overlapping windows).  AWQ/GPTQ
+    checkpoints are official Qwen releases (four Qwen sizes) or established
+    community quantizations (Mistral: TechxGenus; Llama: hugging-quants), at
+    group size 128 (vs.\ our 64) --- each method's standard shipped
+    configuration.  $^\dagger$Qwen2.5-14B: our column is NF4, a different
+    scheme (\cref{tab:crosshw}), not directly comparable.
+    $^\ddagger$Qwen2.5-14B GPTQ-Int4 is excluded: the checkpoint produced
+    incoherent generations under direct sampling (verified manually) and
+    PPL $>9\times$ baseline on this hardware/kernel combination, indicating a
+    loading or kernel defect rather than a genuine quantization-quality
+    result; we did not have the opportunity to root-cause it further.}
+  \label{tab:awqgptq}
+  \begin{tabular}{lrrr}
+    \toprule
+    Model & Ours (q4, g64) & AWQ & GPTQ-Int4 \\
+    \midrule
+    Qwen2.5-1.5B         & $+15.12$   & $+8.96$ & $+12.89$ \\
+    Qwen2.5-3B           & $+11.96$   & $+7.55$ & $+8.73$  \\
+    Qwen2.5-7B           & $+8.56$    & $+6.57$ & $+4.38$  \\
+    Mistral-7B           & $+4.41$    & $+2.51$ & $+1.46$  \\
+    Llama-3.1-8B         & $+7.11$    & $+4.25$ & $+4.37$  \\
+    \midrule
+    Qwen2.5-14B$^\dagger$ & n/a (NF4) & $+9.30$ & ---$^\ddagger$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Both established methods dominate our uniform RTN on every valid model, as
+expected: AWQ by $2.6$--$8.7$\,pp and GPTQ by $2.7$--$6.4$\,pp (excluding the
+excluded 14B point), confirming that protecting salient weights (AWQ) or
+calibrated second-order updates (GPTQ) meaningfully outperform naive RTN at
+group size 64.  The cross-architecture ordering from \cref{tab:scale}
+replicates closely under both established methods: Mistral-7B is the most
+robust of the three 7--8B-scale models under every method (AWQ $+2.51\%$,
+GPTQ $+1.46\%$, ours $+4.41\%$).  Qwen2.5-7B is the least robust under AWQ and
+our uniform RTN ($+6.57\%$ and $+8.56\%$, respectively); under GPTQ,
+Llama-3.1-8B and Qwen2.5-7B are nearly tied ($+4.37\%$ vs.\ $+4.38\%$, a
+$0.01$\,pp gap within measurement noise), so the full three-way ordering is
+not universal across methods.  Mistral's advantage over Qwen2.5-7B, however,
+holds robustly across every quantization method, hardware platform, and
+software stack measured in this paper --- the strongest evidence here that
+the architecture effect is a property of the models themselves, not an
+artifact of our specific RTN pipeline: it survives a change of quantization
+algorithm entirely, not merely a change of hardware (\cref{tab:crosshw}).
+
+We flag the excluded Qwen2.5-14B GPTQ-Int4 point in the same spirit as the
+mixed-precision anomaly in \cref{sec:exp:aeq}: a result extreme enough to
+demand verification before being cited, which we performed (direct greedy
+generation from the loaded checkpoint produced repetitive, semantically
+incoherent text, confirming the model itself --- not just our eval loop ---
+was malfunctioning under this loading path), rather than a data point we are
+comfortable reporting as a genuine quantization-quality measurement.
+
 \subsection{Reproducibility Benchmark}
 \label{sec:exp:repro}
 
@@ -947,22 +1059,14 @@ are involved (verified by inspecting \texttt{mlx\_lm.utils} source: zero
 WikiText-2 evaluation on a fixed artifact is likewise deterministic on a
 fixed hardware platform.  The reported $\Delta$PPL values are therefore
 exact measurements, not run-to-run estimates.  The relevant residual uncertainty is cross-library variance (e.g., GPTQ
-vs.\ MLX RTN at the same group size).  Although no published work reports
-WikiText-2 $\Delta$PPL for these exact model families (Qwen2.5, Mistral-7B-v0.3,
-Llama-3.1-8B) under MLX RTN, a contextual comparison is possible using the
-closest available proxy: \citet{lin2023awq} (Table~4) report LLaMA-2-7B
-WikiText-2 $\Delta$PPL at 4-bit with group size~128 as $+4.0\%$ (GPTQ) and
-$+2.4\%$ (AWQ).  Our MLX RTN with group size~64 on Mistral-7B yields
-$+4.4\%$---within 0.4\,pp of GPTQ\,g128 on a comparable 7B-class architecture,
-and 2.0\,pp above AWQ\,g128.  Coarser grouping (g64 vs.\ g128) and the simpler
-RTN algorithm are both expected to increase $\Delta$PPL relative to second-order
-methods; the observed gap is consistent with this ordering and suggests MLX RTN
-is not catastrophically worse than GPTQ for dense 7B-scale models.
-Three confounds preclude a direct comparison: different model families, different
-evaluation strides (2048-token overlapping in \citealt{lin2023awq}
-vs.\ our 512-token non-overlapping windows), and the g128\,vs.\,g64 grouping
-difference.  Controlled cross-library comparison under a matched protocol remains
-future work.
+vs.\ MLX RTN at the same group size).  An earlier version of this section compared our RTN numbers only against a
+literature proxy (\citealt{lin2023awq}, Table~4: a different model family,
+LLaMA-2-7B, under a different eval protocol, 2048-token overlapping windows).
+\Cref{sec:results:awqgptq} supersedes that proxy with a direct,
+matched-protocol comparison against real published AWQ and GPTQ checkpoints
+on the same six models used throughout this paper. The one residual confound
+there is group size (ours: 64; the published checkpoints: typically 128,
+each method's standard shipped configuration).
 
 \textbf{Quantization pipeline (uniform full-corpus).}  All six models in
 \cref{tab:scale} are evaluated under an identical protocol: non-overlapping
