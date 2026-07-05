@@ -967,6 +967,42 @@ could not be computed retroactively and remains future work.
   \end{tabular}
 \end{table}
 
+\textbf{Second downstream benchmark (HellaSwag).}  To extend downstream
+coverage beyond a single model and a single task, we additionally score
+Qwen2.5-7B-Instruct and Mistral-7B-Instruct-v0.3 on 400 random
+HellaSwag~\citep{zellers2019hellaswag} validation examples (NLL-per-token
+scoring, no chat template, seed 42; \cref{tab:hellaswag}).  Qwen2.5-7B shows
+\emph{no} measurable change ($78.25\%$ for both variants); Mistral-7B drops
+$0.50$\,pp ($79.50\%\to79.00\%$).  Both differences sit far inside the
+$\approx\pm4.0$\,pp per-condition 95\% CI at this sample size --- wider than
+ARC-Easy's because HellaSwag was scored on a 400-example subsample rather
+than the full validation split.  As with ARC-Easy above, this is a
+per-condition interval, not a paired one, and we did not extend this
+benchmark to the remaining four models or log per-example predictions for a
+paired test; this result supports absence of evidence for degradation on two
+models and two tasks, not evidence of its absence across the full scale
+sweep.
+
+\begin{table}[t]
+  \centering
+  \caption{HellaSwag accuracy, 400 random validation examples (seed 42,
+    NLL-per-token scoring, no chat template).  95\% CI $\approx\pm4.0$\,pp
+    per condition (wider than \cref{tab:arc}'s due to the smaller sample;
+    not a paired interval, same caveat as \cref{tab:arc}).}
+  \label{tab:hellaswag}
+  \begin{tabular}{lrr}
+    \toprule
+    Variant & Accuracy (\%) & $\Delta$ACC (pp) \\
+    \midrule
+    Qwen2.5-7B BF16 & 78.25 & --- \\
+    Qwen2.5-7B q4   & 78.25 & $0.00$ \\
+    \midrule
+    Mistral-7B BF16 & 79.50 & --- \\
+    Mistral-7B q4   & 79.00 & $-0.50$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
 \textbf{Cross-corpus consistency (C4).}  The $\Delta$PPL patterns observed on
 WikiText-2 generalise to C4 (web-crawled text), now confirmed for all four
 models with paired BF16+q4 measurements.  For Qwen2.5-1.5B, C4 yields
