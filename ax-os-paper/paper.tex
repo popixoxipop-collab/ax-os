@@ -191,10 +191,24 @@ power-law model showing that post-compression quality is predictable from
 key scaling factors related to the local loss landscape.
 \citet{ouyang2024lowbit} examine over 1500 quantized checkpoints and find
 that low-bit quantization degrades undertrained models less, with larger
-models and those with fewer training tokens being most robust.  Our work
-extends this line of inquiry \emph{below} the 7B threshold, measuring the
-quantization quality gap between 1.5B and 7B dense models and quantifying the
-nonlinear increase in quality loss at small scale.  Surveys by
+models and those with fewer training tokens being most robust.
+\citet{zhou2025taskstratified} stratify PTQ scaling laws by task type
+(memorisation, application, reasoning) rather than a single scalar quality
+loss.  Our work extends this line of inquiry \emph{below} the 7B threshold,
+measuring the quantization quality gap between 1.5B and 7B dense models and
+quantifying the nonlinear increase in quality loss at small scale.  Two
+concurrent 2025 papers begin filling this gap from different angles:
+\citet{zheng2025qwen3quant} independently find that Qwen3 degrades more
+under low-bit PTQ than LLaMA3 across a range of bit-widths and
+methods---the same Qwen-more-fragile-than-Llama direction we observe on
+Qwen2.5, though without a Mistral comparison point or a
+cross-hardware/cross-method invariance check---and \citet{xiao2025layerwise}
+study layer-wise information effectiveness for PTQ specifically in sub-8B
+Qwen3 and LLaMA3.x models.  We read \citet{zheng2025qwen3quant} as
+independent corroboration of the architecture-sensitivity direction on a
+different model generation, strengthening rather than undermining our claim,
+and note it explicitly so the finding is not mistaken for unprecedented.
+Surveys by
 \citet{wan2024efficient} and \citet{zhu2024survey} provide broad coverage of
 compression techniques including pruning, low-rank approximation, and
 knowledge distillation alongside quantization.
@@ -542,7 +556,14 @@ scheme parity, not independently re-quantized), it rules out MLX/Metal-specific
 numerical artifacts as the source of the degradation pattern, but it does not
 by itself demonstrate that an independent CUDA-native quantization pipeline
 would reproduce the same $\Delta$PPL, nor does it measure CUDA throughput or
-memory footprint (\cref{sec:results:limits}).  Qwen2.5-14B is the one exception to scheme parity: its
+memory footprint (\cref{sec:results:limits}).  This is a narrower and
+stronger invariance claim than backend-level reproducibility studies:
+\citet{pape2026silent} find that inference-backend choice alone (vLLM vs.\
+SGLang vs.\ llama.cpp, etc.) shifts benchmark scores by up to $16.6$
+percentage points, but each backend there applies its own optimisations and
+requantization; holding the quantized weights bitwise-identical, as we do,
+isolates hardware/kernel execution from backend-level algorithmic choices as
+the source of such divergence.  Qwen2.5-14B is the one exception to scheme parity: its
 BF16 weights ($\approx$28\,GB) exceed the 15.9\,GB card, so its CUDA q4 point
 uses bitsandbytes NF4 rather than affine RTN.  The resulting $+7.0\%$ (vs.\ MLX's
 $+10.3\%$ affine) reflects NF4's more efficient 4-bit encoding, not a hardware
