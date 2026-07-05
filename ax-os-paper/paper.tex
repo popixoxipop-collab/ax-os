@@ -531,7 +531,13 @@ $\Delta$PPL\% values agree within $0.3$ percentage points on every one of the
 five affine-q4 models, despite a complete change of
 GPU architecture, kernel library, and math backend.  This indicates the
 scale-stratified q4 degradation is intrinsic to the model/quantization pair, not
-an MLX-specific effect.  Qwen2.5-14B is the one exception to scheme parity: its
+an MLX-specific effect.  We note what this experiment does and does not show:
+because both platforms consume the identical dequantized weights (byte-exact
+scheme parity, not independently re-quantized), it rules out MLX/Metal-specific
+numerical artifacts as the source of the degradation pattern, but it does not
+by itself demonstrate that an independent CUDA-native quantization pipeline
+would reproduce the same $\Delta$PPL, nor does it measure CUDA throughput or
+memory footprint (\cref{sec:results:limits}).  Qwen2.5-14B is the one exception to scheme parity: its
 BF16 weights ($\approx$28\,GB) exceed the 15.9\,GB card, so its CUDA q4 point
 uses bitsandbytes NF4 rather than affine RTN.  The resulting $+7.0\%$ (vs.\ MLX's
 $+10.3\%$ affine) reflects NF4's more efficient 4-bit encoding, not a hardware
@@ -791,11 +797,17 @@ $+8.5\% \to +6.9\% \to +4.4\%$.  Notably, Qwen2.5-7B and Llama-3.1-8B have
 nearly identical hapax rates ($34.6\%$ vs.\ $34.7\%$) yet differ in
 $\Delta$PPL ($+8.5\%$ vs.\ $+6.9\%$), indicating that hapax rate alone does
 not fully account for the gap; the lower vocabulary utilisation of
-Qwen2.5-7B ($12.3\%$ vs.\ $15.0\%$) is the additional separating factor.
-Hapax tokens provide no averaging signal: any quantization error in their
-embedding row propagates unreduced to every NLL term where that token appears.
-The Mistral-7B advantage ($+4.4\%$) arises from both its much lower hapax
-rate ($22.3\%$) and its $3.4\times$ higher vocabulary utilisation.
+Qwen2.5-7B ($12.3\%$ vs.\ $15.0\%$) may be the additional separating factor.
+One candidate explanation is that hapax tokens provide little averaging
+signal: a quantization error in a single-occurrence token's embedding row
+would propagate to only one NLL term rather than being diluted across many
+occurrences.  We did not measure per-token error magnitudes directly, so
+this remains a plausible mechanism rather than a demonstrated one, and the
+correlation itself rests on only three models with three confounders
+(vocabulary size, architecture depth, training data) varying simultaneously.
+The Mistral-7B advantage ($+4.4\%$) is associated with both its much lower
+hapax rate ($22.3\%$) and its $3.4\times$ higher vocabulary utilisation,
+though as noted above this is correlational, not a controlled ablation.
 The residual gap between Qwen2.5-7B and Llama-3.1-8B is consistent with
 absolute embedding-table scale: Qwen's table
 ($151{,}643\times3584$ parameters, $\approx$2.2\,B weights) is $4.1\times$
@@ -817,12 +829,18 @@ $+0.50$pp above BF16---well within the confidence interval---indicating no
 detectable accuracy change at 7B scale.  With CI $\pm2.0$pp, however, the
 evaluation is underpowered to rule out small degradation effects; the result
 should be interpreted as absence of evidence rather than evidence of absence.
+Note also that this $\pm2.0$\,pp interval is a per-condition Wald interval on
+each variant's own accuracy, not a paired confidence interval on the
+BF16--q4 \emph{difference}; per-example predictions were not logged in this
+run, so a proper paired test (bootstrap or McNemar over matched examples)
+could not be computed retroactively and remains future work.
 
 \begin{table}[t]
   \centering
   \caption{ARC-Easy accuracy for Qwen2.5-7B (NLL-per-token scoring, no chat
-    template, $n=2{,}376$, 95\% CI $\pm2.0$pp).  The $+0.50$pp difference
-    is within the confidence interval (no detectable degradation); the test
+    template, $n=2{,}376$, 95\% CI $\pm2.0$pp per condition, \emph{not} a
+    paired BF16--q4 interval).  The $+0.50$pp difference
+    is within the per-condition interval (no detectable degradation); the test
     is underpowered to rule out small effects.}
   \label{tab:arc}
   \begin{tabular}{lrr}
@@ -854,7 +872,20 @@ q4 on both size and quality axes.  This result challenges the intuition that
 ``less important layers can use fewer bits'' for small dense models: the
 precision-sensitive layers at 1.5B scale appear distributed throughout the
 network, so that uniform quantization incurs less total rounding error than
-concentrated low-bit assignments under this configuration.  Whether this
+concentrated low-bit assignments under this configuration.  These recipes
+assign bit-width purely by layer depth and are not activation-aware or
+outlier-aware, so they are considerably cruder than established
+mixed-precision methods such as AWQ~\citep{lin2023awq} (protects the top
+1\% of salient weights by activation magnitude) or
+SqueezeLLM~\citep{kim2024squeezellm} (isolates outliers into a sparse
+full-precision component); this result speaks only to a naive depth-based
+split, not to whether principled salience-aware mixed-precision would also
+underperform uniform q4.  The 2+6-bit recipe's perplexity ($>$160{,}000, a
+$>$2700$\times$ increase over bf16) is extreme enough that we cannot rule
+out a numerical or implementation issue compounding the genuine quantization
+difficulty; we did not have the opportunity to debug this configuration
+further, so it should be read as a data point warranting caution rather
+than a clean characterisation of mixed-precision degradation.  Whether this
 holds across other small-scale architectures requires broader experimental
 validation.
 
