@@ -73,16 +73,18 @@ the uniform scheme.
 
 \textbf{Reproducible validation.}
 A 40-line zero-dependency \texttt{\_harness.mjs} shim backed by Node.js
-built-ins achieves 27/27 test pass on any clean Node.js~$\geq$18 without
-\texttt{npm install}, making the test environment byte-for-byte reproducible.
+built-ins achieves 27/27 test pass with no \texttt{npm install} step (tested
+on Node.js 22.x; relies only on \texttt{node:test}, stable since Node.js 20),
+removing the dependency-install step as a source of irreproducibility.
 
 \textbf{Oracle coupling.}
 A single \texttt{BRAIN\_REAL=1} environment variable activates a live
 Python subprocess oracle without a compiled build artifact, enabling
 drop-in integration with external simulators.
 
-Together these three components form a complete, reproducible
-edge-deployment workflow, validated end-to-end on Apple M1 Max.
+Together these three components form a reproducible edge-deployment
+workflow; the quantization measurements are further validated across two
+independent hardware platforms (Apple M1 Max/MLX and NVIDIA RTX 5070\,Ti/CUDA).
 
 \end{abstract}
 
@@ -141,8 +143,8 @@ contributions:
     outperform Qwen2.5-7B at the 7--8B scale---a $1.9\times$ range across three
     architectures at $3.5\times$ compression.
   \item \textbf{Zero-dependency \texttt{node:test} harness (enabling).}
-    A 40-line shim backed by Node.js built-ins achieves 27/27 test pass on any
-    clean Node.js $\geq$18 installation without \texttt{npm install}, including
+    A 40-line shim backed by Node.js built-ins achieves 27/27 test pass
+    without \texttt{npm install} (tested on Node.js 22.x), including
     the tests that validate the compressed-model registry.
 \end{enumerate}
 
@@ -211,9 +213,10 @@ built-in \texttt{node:test} module, first as an experimental feature in
 Node.js 18 (2022) and stabilized in Node.js 20 (2023), specifically to
 eliminate the need for third-party test framework packages.  AX OS leverages
 this primitive to provide a harness with \emph{zero external dependencies}:
-tests run on any clean Node.js $\geq$18 with no \texttt{npm install} step,
-making the test environment byte-for-byte reproducible from the runtime
-version alone.  This design directly addresses the dependency-management
+tests run with no \texttt{npm install} step (validated on Node.js 22.x;
+\texttt{node:test} has been stable since Node.js 20), removing the
+dependency-install step as a source of irreproducibility.  This design
+directly addresses the dependency-management
 failure mode identified in the reproducibility
 literature~\citep{gundersen2018state,pineau2021improving}.
 
@@ -259,7 +262,7 @@ contributions and their relationships.
   \caption{AX OS system overview.  The scale-stratified q4 compression pipeline
     (right) produces artifacts registered in \texttt{AEQIntegration}; the
     zero-dependency \texttt{\_harness.mjs} (left) validates these registry
-    entries on any clean Node.js $\geq$18 without \texttt{npm install}; and
+    entries without \texttt{npm install}; and
     the \texttt{BRAIN\_REAL} oracle gate (centre) couples the agent to live
     external simulators without a compiled build step.  The harness and oracle
     infrastructure make the quantization measurements reproducible on any
@@ -281,7 +284,7 @@ immediately with \texttt{MODULE\_NOT\_FOUND}.
 Our solution is \texttt{\_harness.mjs}: a 40-line ES module that re-exports
 \texttt{describe} and \texttt{it} from \texttt{node:test} (the Node.js built-in
 test runner, stable since Node.js 20) and implements an \texttt{expect(value)}
-function backed by \texttt{node:assert/strict}.  The harness supports eleven
+function backed by \texttt{node:assert/strict}.  The harness supports ten
 matchers: \texttt{toBe} (strict equality), \texttt{toEqual} (deep equality),
 \texttt{toHaveLength}, \texttt{toContain}, \texttt{toBeNull},
 \texttt{toBeGreaterThan}, \texttt{toBeGreaterThanOrEqual},
@@ -334,7 +337,7 @@ BRAIN_REAL=1 node ax-os-demo-phase8.mjs
 \end{verbatim}
 When \texttt{BRAIN\_REAL} is unset, the default mock path executes in under
 1\,ms.  The \texttt{if} guard checks only a string equality before any subprocess
-fork, adding zero observable overhead in mock mode.
+fork, adding negligible overhead in mock mode.
 
 \subsection{Scale-Stratified Uniform q4 Compression}
 \label{sec:method:aeq}
@@ -468,7 +471,7 @@ increase ratio $\Delta\text{PPL} = (\text{PPL}_\text{q4} -
 \end{table}
 
 \cref{fig:scale_ppl} plots perplexity increase against parameter count.
-All four models share a $\approx$3.5$\times$ compression ratio.
+All six models share a $\approx$3.5$\times$ compression ratio.
 Within the Qwen family, $\Delta$PPL decreases from 1.5B to 7B
 (1.5B: $+15.0\%$, 3B: $+11.7\%$, 7B: $+8.5\%$), but the 14B result ($+10.3\%$)
 is slightly above 7B, indicating the decrease does not continue across all tested
@@ -618,7 +621,7 @@ end-to-end connectivity.
 
 \textbf{Setup.}  The inline \texttt{realSim()} function requires no compiled
 \texttt{dist/} artifact: activation is controlled by \texttt{BRAIN\_REAL}
-with zero overhead in mock mode (one string equality check before any
+with negligible overhead in mock mode (one string equality check before any
 subprocess fork).  For the live path, we submitted a test alpha expression
 to the WorldQuant BRAIN simulation API%
 \footnote{WorldQuant BRAIN is a quantitative investment simulation platform (\url{https://platform.worldquant.com}); the live oracle submits a trading strategy and waits for a backtested performance score.}%
@@ -649,7 +652,7 @@ and exercises all code paths short of the API call itself.
 
 \begin{table}[t]
   \centering
-  \caption{Oracle gate two-mode comparison.  Mock mode incurs zero overhead;
+  \caption{Oracle gate two-mode comparison.  Mock mode incurs negligible overhead;
     live mode confirms end-to-end API connectivity in a single validation run.}
   \label{tab:oracle}
   \begin{tabular}{lll}
@@ -856,13 +859,15 @@ holds across other small-scale architectures requires broader experimental
 validation.
 
 \textbf{Reproducibility (Contribution 2, enabling).}  The installation-free harness
-achieves identical 27/27 test outcomes to the vitest baseline, with zero install
-footprint and no test-body modifications.  The migration cost is one import line
-per test file.  This result confirms that Node.js~$\geq$18 built-ins are
+achieves 27/27 test pass with zero install footprint and no test-body
+modifications, whereas the vitest-import baseline fails immediately (zero
+tests executed, \texttt{MODULE\_NOT\_FOUND}) without a prior \texttt{npm install}
+(\cref{sec:exp:repro}).  The migration cost is one import line
+per test file.  This result confirms that Node.js built-ins are
 sufficient for the full describe/it/expect test grammar used in the AX OS test suite.
 
 \textbf{Oracle switching (Contribution 3).}  The \texttt{BRAIN\_REAL=1}
-gate adds zero overhead in mock mode and generalises to any Python-backed
+gate adds negligible overhead in mock mode and generalises to any Python-backed
 JSON-serialisable oracle.  The live path was executed once for end-to-end
 validation: the BRAIN API responded in 141.9\,s and returned \texttt{alpha\_id}
 RRd5Rvmj, confirming the oracle gate is operational (see \cref{sec:results:limits}).
@@ -882,11 +887,13 @@ components operating as an integrated system.
 
 Several important caveats apply to the findings.
 
-\textbf{Single hardware platform.}  All measurements are on Apple M1 Max with
-the MLX backend.  Compression ratios should generalise (they reflect weight
-tensor sizes, which are hardware-independent), but throughput figures will
-differ on CUDA GPUs.  The RTX\,5070\,Ti (15.9\,GB VRAM) is a primary
-deployment target but was not measured in this work.
+\textbf{Two hardware platforms; throughput untested on CUDA.}  Perplexity
+measurements are now cross-validated on two independent stacks --- Apple M1
+Max/MLX and NVIDIA RTX 5070\,Ti/CUDA (\cref{tab:crosshw}) --- agreeing within
+$0.3$\,pp on every affine-q4 model.  Compression ratios generalise further
+still (they reflect weight tensor sizes, which are hardware-independent).
+Throughput, however, was measured only on Apple M1 Max; CUDA throughput, and
+behaviour on other accelerators (AMD GPUs, mobile NPUs), remain untested.
 
 \textbf{Four Qwen scale points and two cross-architecture references.}  The
 intra-family finding ($\Delta$PPL decreasing 1.5B to 7B, with the 14B result
@@ -910,7 +917,7 @@ WikiText-2 evaluation on a fixed artifact is likewise deterministic on a
 fixed hardware platform.  The reported $\Delta$PPL values are therefore
 exact measurements, not run-to-run estimates.  The relevant residual uncertainty is cross-library variance (e.g., GPTQ
 vs.\ MLX RTN at the same group size).  Although no published work reports
-WikiText-2 $\Delta$PPL for these exact model families (Qwen2.5, Mistral-7B-v0.1,
+WikiText-2 $\Delta$PPL for these exact model families (Qwen2.5, Mistral-7B-v0.3,
 Llama-3.1-8B) under MLX RTN, a contextual comparison is possible using the
 closest available proxy: \citet{lin2023awq} (Table~4) report LLaMA-2-7B
 WikiText-2 $\Delta$PPL at 4-bit with group size~128 as $+4.0\%$ (GPTQ) and
@@ -966,7 +973,7 @@ contribution of this work.
 
 The primary empirical finding is that, on WikiText-2 standard evaluation across
 six models (four Qwen2.5 sizes, Mistral-7B, and Llama-3.1-8B)---and confirmed
-on C4 web-crawled text for the two smallest models---uniform q4 $\Delta$PPL
+on C4 web-crawled text for four of those models (\cref{sec:exp:c4})---uniform q4 $\Delta$PPL
 within the Qwen family decreases from 1.5B to 7B
 ($+15.0\%$, $+11.7\%$, $+8.5\%$) at $3.5\times$ compression (the 14B
 result is slightly above 7B; see \cref{sec:results:limits}).  At the 7--8B
@@ -975,7 +982,7 @@ Mistral-7B ($+4.4\%$) and Llama-3.1-8B ($+6.9\%$) are both more robust than
 Qwen2.5-7B ($+8.5\%$), spanning a $1.9\times$ range and motivating
 architecture-aware rather than scale-only quantization scheme selection.
 
-To make these measurements exactly reproducible on any edge deployment target,
+To validate these measurements reproducibly on the deployment machine itself,
 we contribute two infrastructure components.  The built-in-only
 \texttt{\_harness.mjs} eliminates the vitest install requirement with a 40-line
 wrapper around Node.js built-ins, achieving 27/27 test pass---including the
