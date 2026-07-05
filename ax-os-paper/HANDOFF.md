@@ -115,6 +115,16 @@ ax-os-paper/
 | `1dfc695` | D1–D3 reviewer framing fixes (see §5 below) |
 | (this commit) | D5: Qwen2.5-7B + Mistral-7B BF16 C4 baselines measured, closing last C4 cross-corpus gap |
 
+### 2026-07-04 → 2026-07-06
+
+| Commit | Change |
+|--------|--------|
+| `8371a88`…`47790a7` | D4: cross-hardware CUDA validation, all six models incl. Llama (see §9) |
+| — | Independent Codex CLI review: 56/100 (vs.\ internal paper-orchestra 80.65) |
+| `857c490`, `cb3eec9` | Codex-flagged fixes: factual corrections + rigor-scoping |
+| `6f3c41d` | Paired bootstrap 95% CI (free, from existing per-window NLLs) + real AWQ/GPTQ baselines, all six models |
+| `8c3c777` | HellaSwag added as second downstream model+task (data already existed, never wired in) |
+
 ---
 
 ## 5. Reviewer critique — status
@@ -193,14 +203,52 @@ python analysis/gen_scale_ppl_fig.py 7.2432 7.5601
 
 | State | Venue tier |
 |-------|-----------|
-| **Now** (D1–D3 fixed) | Workshop / short-paper / arXiv preprint |
+| D1–D3 fixed | Workshop / short-paper / arXiv preprint |
 | + D4 (RTX 5070 Ti) | MLSys workshop, EdgeAI workshop, EMNLP System Demonstrations |
 | + D4 + D5 | Full conference short-paper track |
+| **+ independent review fixes + real AWQ/GPTQ baselines (now)** | Strengthened short-paper track; still not competitive full-paper (see below) |
 
-**Single remaining blocker for workshop submission:** none — paper is clean.  
-**Main-conference blocker (D4, 2nd hardware platform): RESOLVED 2026-07-04, Llama completed 2026-07-05.**
+**D4 (2nd hardware platform): RESOLVED 2026-07-04, Llama completed 2026-07-05.**
 Cross-hardware reproduction on RTX 5070 Ti (CUDA) agrees with M1 Max (MLX) within
 0.3 pp on q4 ΔPPL% for all five affine-q4 models (incl. Llama-3.1-8B +7.1% vs
-MLX +6.9%); `tab:crosshw` is in `paper.tex`, all six models. Nothing outstanding
-on D4. Optional strengthening only: extending the cross-hardware sweep to C4.
-See `HANDOFF_D4_RESULTS.md`.
+MLX +6.9%); `tab:crosshw` is in `paper.tex`, all six models.
+
+**Independent Codex review (2026-07-05): 56/100, "borderline workshop paper,
+reject for a competitive short-conference track."** Deliberately requested
+blind to the internal paper-orchestra self-score (80.65/100) for an unbiased
+read. Its specific factual claims were verified against source before acting
+— all confirmed accurate (a stale "Apple-only" limitations sentence
+contradicting the whole D4 section, a Mistral-7B-v0.1/v0.3 typo, a
+harness-matcher-count-off-by-one caught by grepping the actual source, an
+unsubstantiated "identical to the vitest baseline" claim). Tier-A (factual)
+and tier-B (rigor-scoping: ARC-Easy CI honesty, mixed-precision claim
+narrowed, cross-hardware "not native portability" caveat, vocabulary-sparsity
+de-causalized) fixes are in `857c490` and `cb3eec9`.
+
+**Short-paper upgrade (2026-07-06, user-directed ~1-week push toward
+competitive short-paper without a full re-scope or new training infra):**
+(1) paired bootstrap 95% CI on all six D4 CUDA ΔPPL% figures, computed free
+from already-logged per-window NLLs (`tab:bootstrap`); (2) real AWQ and
+GPTQ-Int4 baselines on all six models (official Qwen releases + established
+community quantizations), replacing the old single-model literature-proxy
+comparison — both dominate our uniform RTN as expected, and the
+Mistral > Llama > Qwen robustness ordering mostly replicates across
+quantization method (not just hardware), the paper's strongest robustness
+evidence (`tab:awqgptq`); one point (Qwen2.5-14B GPTQ-Int4) excluded as a
+confirmed model/kernel malfunction on this hardware, verified via direct
+generation before excluding; (3) HellaSwag added as a second downstream
+model+task (Qwen2.5-7B, Mistral-7B) — data already existed
+(`results/hellaswag_results.json`, committed since the repo modularization)
+but had never been wired into the paper text. Commits `6f3c41d`, `8c3c777`.
+
+**Not done, deliberately deprioritized this round:** HellaSwag on the
+remaining 4 models (needs a CUDA port of `eval_hellaswag_mlx.py`, similar
+effort to the WikiText-2 CUDA port — a multi-hour undertaking, not a data-wiring
+task like the above). ARC-Easy paired (not per-condition) CI — the raw
+per-example predictions were never logged, so this needs a re-run with
+logging added, not just new analysis.
+
+**Next**: literature search for closely-related prior work in progress (is
+"architecture > scale for quantization robustness, invariant across method
+and hardware" already published somewhere close enough to need repositioning
+or heavier citation?); target-venue decision follows that.
