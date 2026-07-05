@@ -5,6 +5,8 @@
 *.blg
 *.out
 *.synctex.gz
+*.fls
+*.fdb_latexmk
 paper.tex.bak
 
 # Model weights (large binaries in artifacts/)
