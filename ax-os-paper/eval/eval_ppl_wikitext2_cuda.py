@@ -12,11 +12,20 @@ Protocol is replicated EXACTLY from the MLX script:
 
 Precisions:
   --precision bf16      plain BF16 (baseline)
-  --precision q4        RTN affine fake-quant, group=64, bits=4, matching
-                        mx.quantize(mode='affine') exactly; covers every
-                        nn.Linear AND nn.Embedding weight (incl. embed_tokens
-                        and lm_head), same coverage as mlx_lm.convert -q.
-                        Fake quant does NOT save memory (weights stay bf16).
+  --precision q4        RTN affine fake-quant, group=64, bits=4. DEPRECATED
+                        for MLX-parity claims: this hand-rolled quantizer
+                        was found to diverge from mx.quantize(mode='affine')
+                        at 3B (+31.9% vs MLX's +11.7%) despite passing a
+                        1.5B-only gate; see HANDOFF_D4_RESULTS.md Sec 2 for
+                        the full investigation. For an authoritative,
+                        byte-exact MLX-matching comparison, dequantize a
+                        real mlx_lm.convert checkpoint instead -- see
+                        eval_ppl_wikitext2_cuda_mlxparity.py. This path
+                        covers every nn.Linear AND nn.Embedding weight
+                        (incl. embed_tokens and lm_head), same coverage as
+                        mlx_lm.convert -q, but is kept only as a from-scratch
+                        RTN reference point, not an MLX-parity path. Fake
+                        quant does NOT save memory (weights stay bf16).
   --precision nf4       bitsandbytes NF4 real 4-bit packing. Scheme exception
                         for models whose BF16 footprint exceeds VRAM (14B).
                         NOT scheme-identical to MLX q4 — document asymmetry.
@@ -46,7 +55,12 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 def rtn_affine_quantize_(weight: torch.Tensor, group_size: int = 64, bits: int = 4,
                          arith_fp32: bool = False):
-    """In-place fake-quantize a 2D weight tensor, matching mx.quantize(mode='affine').
+    """In-place fake-quantize a 2D weight tensor with hand-rolled affine RTN.
+
+    DEPRECATED for MLX-parity: this diverges from mx.quantize(mode='affine')
+    at 3B+ despite passing a 1.5B-only gate (HANDOFF_D4_RESULTS.md Sec 2).
+    Kept as a from-scratch RTN reference, not an MLX-matching path -- use
+    eval_ppl_wikitext2_cuda_mlxparity.py for byte-exact MLX comparisons.
 
     arith_fp32 computes scale/round in fp32 (matching MLX kernel precision)
     instead of the weight's bf16 dtype; bf16 division shifts values across
