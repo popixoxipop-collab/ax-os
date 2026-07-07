@@ -1,0 +1,33 @@
+{
+  "model": "mistralai/Mistral-7B-Instruct-v0.3",
+  "buckets": {
+    "hapax(=1)": {
+      "n_positions": 3044,
+      "n_unique_tokens": 3044,
+      "mean_delta_nll": 0.0728348317823864,
+      "mean_nll_bf16": 3.5048790080327175,
+      "mean_nll_q4": 3.5777138398151043
+    },
+    "low(2-5)": {
+      "n_positions": 15164,
+      "n_unique_tokens": 4798,
+      "mean_delta_nll": 0.07111283759644156,
+      "mean_nll_bf16": 3.344324253284877,
+      "mean_nll_q4": 3.4154370908813183
+    },
+    "mid(6-20)": {
+      "n_positions": 40728,
+      "n_unique_tokens": 3836,
+      "mean_delta_nll": 0.06926795498369255,
+      "mean_nll_bf16": 2.8819195644632125,
+      "mean_nll_q4": 2.951187519446905
+    },
+    "high(21+)": {
+      "n_positions": 275071,
+      "n_unique_tokens": 1996,
+      "mean_delta_nll": 0.02079415980354269,
+      "mean_nll_bf16": 1.7543038820993206,
+      "mean_nll_q4": 1.7750980419028632
+    }
+  }
+}

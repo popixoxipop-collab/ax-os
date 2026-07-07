@@ -1,0 +1,33 @@
+{
+  "model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "buckets": {
+    "hapax(=1)": {
+      "n_positions": 6468,
+      "n_unique_tokens": 6468,
+      "mean_delta_nll": 0.17132639568425828,
+      "mean_nll_bf16": 5.124127273089599,
+      "mean_nll_q4": 5.295453668773858
+    },
+    "low(2-5)": {
+      "n_positions": 20591,
+      "n_unique_tokens": 6846,
+      "mean_delta_nll": 0.17564138106818475,
+      "mean_nll_bf16": 4.482603091863722,
+      "mean_nll_q4": 4.658244472931906
+    },
+    "mid(6-20)": {
+      "n_positions": 38347,
+      "n_unique_tokens": 3720,
+      "mean_delta_nll": 0.1666849081910356,
+      "mean_nll_bf16": 3.6962803045381847,
+      "mean_nll_q4": 3.86296521272922
+    },
+    "high(21+)": {
+      "n_positions": 233087,
+      "n_unique_tokens": 1675,
+      "mean_delta_nll": 0.13105878889747147,
+      "mean_nll_bf16": 2.105691004272072,
+      "mean_nll_q4": 2.2367497931695435
+    }
+  }
+}

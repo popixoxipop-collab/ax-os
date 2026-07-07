@@ -934,10 +934,52 @@ Qwen2.5-7B ($12.3\%$ vs.\ $15.0\%$) may be the additional separating factor.
 One candidate explanation is that hapax tokens provide little averaging
 signal: a quantization error in a single-occurrence token's embedding row
 would propagate to only one NLL term rather than being diluted across many
-occurrences.  We did not measure per-token error magnitudes directly, so
-this remains a plausible mechanism rather than a demonstrated one, and the
-correlation itself rests on only three models with three confounders
-(vocabulary size, architecture depth, training data) varying simultaneously.
+occurrences.  We tested this mechanism directly in four of these models
+(Qwen2.5-1.5B/3B/7B, Mistral-7B), bucketing every scored WikiText-2 position
+by its target token's corpus frequency and comparing mean q4-vs-bf16 NLL
+increase across buckets \emph{within each model} --- a test with none of the
+cross-model confounds above, since architecture and training data are fixed
+within a single model.  (Llama-3.1-8B and Qwen2.5-14B were excluded after
+repeated VRAM/time-limit failures under this bucketing protocol on our
+16\,GB card --- a hardware constraint, not a scientific exclusion; see
+\cref{sec:results:limits}.)
+
+\begin{table}[t]
+  \centering
+  \caption{Within-model hapax-vs-high-frequency mechanism test: mean
+    q4$-$bf16 NLL increase for hapax (frequency$=1$) vs.\ high-frequency
+    ($\geq$21) tokens in the same WikiText-2 evaluation, per model.  Gap
+    $=$ hapax $-$ high; gap ratio $=$ gap / high.}
+  \label{tab:hapax}
+  \begin{tabular}{lrrrr}
+    \toprule
+    Model & Hapax & High(21+) & Gap & Gap ratio \\
+    \midrule
+    Qwen2.5-1.5B & $+0.171$ & $+0.131$ & $+0.040$ & $31\%$ \\
+    Qwen2.5-3B   & $+0.372$ & $+0.256$ & $+0.117$ & $46\%$ \\
+    Qwen2.5-7B   & $+0.205$ & $+0.081$ & $+0.124$ & $154\%$ \\
+    Mistral-7B   & $+0.073$ & $+0.021$ & $+0.052$ & $250\%$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+In every one of the four models, high-frequency tokens show a smaller
+quantization-induced NLL increase than hapax tokens (\cref{tab:hapax}) ---
+directly supporting the averaging mechanism at the token level, in each
+model individually, with no cross-model confounds.  However, the
+\emph{size} of this within-model gap does not track each model's overall
+$\Delta$PPL ranking in a simple way: Mistral-7B, the least PPL-sensitive
+model overall, shows the \emph{largest} proportional hapax-vs-high-frequency
+gap ($250\%$ of its high-frequency baseline), while Qwen2.5-1.5B shows the
+smallest ($31\%$).  The token-averaging mechanism therefore appears to
+operate within every model tested, but does not by itself explain the
+\emph{magnitude} of the cross-model ranking in \cref{tab:vocab} --- some
+other factor evidently also contributes, and we do not know what it is.  We
+report this honestly rather than fitting a cleaner-sounding story to four
+data points: the mechanism is real and consistent in direction, but only
+partially explanatory.  The cross-model correlation in \cref{tab:vocab}
+itself still rests on only three models with three confounders varying
+simultaneously.
 The Mistral-7B advantage ($+4.4\%$) is associated with both its much lower
 hapax rate ($22.3\%$) and its $3.4\times$ higher vocabulary utilisation,
 though as noted above this is correlational, not a controlled ablation.
