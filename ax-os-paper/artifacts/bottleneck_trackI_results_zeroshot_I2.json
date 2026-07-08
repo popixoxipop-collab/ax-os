@@ -1,0 +1,65 @@
+{
+  "results": [
+    {
+      "arm": "I1",
+      "layer": 14,
+      "rank": 4,
+      "init_mode": "calibrated",
+      "init_std": 0.05,
+      "target_rms": 0.4216288924217224,
+      "ppl": 19.063208522109484,
+      "baseline_ppl": 18.11,
+      "delta_pct": 5.2634374495278005,
+      "orig_params": 41287680,
+      "new_params": 12304,
+      "compression_ratio": 3355.630689206762,
+      "wall_time_s": 100.11893200874329
+    },
+    {
+      "arm": "I1",
+      "layer": 14,
+      "rank": 4,
+      "init_mode": "noop",
+      "init_std": 0.02,
+      "target_rms": null,
+      "ppl": 18.925866005396063,
+      "baseline_ppl": 18.11,
+      "delta_pct": 4.505058008813163,
+      "orig_params": 41287680,
+      "new_params": 12304,
+      "compression_ratio": 3355.630689206762,
+      "wall_time_s": 98.33426880836487
+    },
+    {
+      "arm": "I2",
+      "layer": 14,
+      "rank": 4,
+      "init_mode": "calibrated",
+      "init_std": 0.1,
+      "target_rms": 0.4216288924217224,
+      "ppl": 20.231577768718523,
+      "baseline_ppl": 18.11,
+      "delta_pct": 11.714951787512556,
+      "orig_params": 41287680,
+      "new_params": 12288,
+      "compression_ratio": 3360.0,
+      "wall_time_s": 97.5299801826477
+    },
+    {
+      "arm": "I2",
+      "layer": 14,
+      "rank": 4,
+      "init_mode": "noop",
+      "init_std": 0.02,
+      "target_rms": null,
+      "ppl": 18.920071652354043,
+      "baseline_ppl": 18.11,
+      "delta_pct": 4.473062685555182,
+      "orig_params": 41287680,
+      "new_params": 12288,
+      "compression_ratio": 3360.0,
+      "wall_time_s": 99.4736807346344
+    }
+  ],
+  "done": false
+}

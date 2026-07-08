@@ -1,0 +1,84 @@
+{
+  "note": "Combined by hand from individual qwen15b_bottleneck_trackF2_*_c4_ppl_checkpoint.json files after the per-tag bottleneck_trackH_results_<tag>.json summaries were clobbered (finetune-phase _save() reused the same tag/filename as zeroshot-phase _save(), overwriting it -- same pitfall as Track F's bottleneck_trackF_results_finetune.json). Individual checkpoint files (raw ppl only, no delta_pct) are the source of truth; delta_pct = (ppl-baseline_ppl)/baseline_ppl*100, computed here not read from any summary.",
+  "baseline_ppl": 18.11,
+  "rank_sweep_L14": [
+    {
+      "rank": 4,
+      "new_params": 12288,
+      "noop_ppl": 18.922018724905108,
+      "noop_delta_pct": 4.4838,
+      "calibrated_ppl": 19.428490372300512,
+      "calibrated_delta_pct": 7.2805,
+      "finetuned_ppl": 18.511131339594357,
+      "finetuned_delta_pct": 2.215
+    },
+    {
+      "rank": 8,
+      "new_params": 24576,
+      "noop_ppl": 18.922586441910134,
+      "noop_delta_pct": 4.4869,
+      "calibrated_ppl": 18.922586441910134,
+      "calibrated_delta_pct": 4.4869,
+      "finetuned_ppl": 18.372668617366386,
+      "finetuned_delta_pct": 1.4504,
+      "source": "reused from Track F, not rerun"
+    },
+    {
+      "rank": 16,
+      "new_params": 49152,
+      "noop_ppl": 18.918941171584358,
+      "noop_delta_pct": 4.4668,
+      "calibrated_ppl": 19.002927567118203,
+      "calibrated_delta_pct": 4.9306,
+      "finetuned_ppl": 18.479335450231872,
+      "finetuned_delta_pct": 2.0394
+    },
+    {
+      "rank": 32,
+      "new_params": 98304,
+      "noop_ppl": 18.9236278308851,
+      "noop_delta_pct": 4.4927,
+      "calibrated_ppl": 19.106075440442485,
+      "calibrated_delta_pct": 5.5001,
+      "finetuned_ppl": 18.577494091878243,
+      "finetuned_delta_pct": 2.5814
+    }
+  ],
+  "layer_sweep_r8": [
+    {
+      "layer": 4,
+      "noop_ppl": 20.179004397590717,
+      "noop_delta_pct": 11.4247,
+      "calibrated_ppl": 20.179004397590717,
+      "calibrated_delta_pct": 11.4247,
+      "finetuned_ppl": 18.974878523862827,
+      "finetuned_delta_pct": 4.7757,
+      "note": "calibrated==noop: init-grid floor saturation (same phenomenon as L14/r8); does not affect finetuned comparison"
+    },
+    {
+      "layer": 14,
+      "noop_ppl": 18.922586441910134,
+      "noop_delta_pct": 4.4869,
+      "calibrated_ppl": 18.922586441910134,
+      "calibrated_delta_pct": 4.4869,
+      "finetuned_ppl": 18.372668617366386,
+      "finetuned_delta_pct": 1.4504,
+      "source": "reused from Track F, not rerun",
+      "note": "calibrated==noop: init-grid floor saturation (same phenomenon as L14/r8); does not affect finetuned comparison"
+    },
+    {
+      "layer": 24,
+      "noop_ppl": 21.016830032741638,
+      "noop_delta_pct": 16.051,
+      "calibrated_ppl": 21.05776869984451,
+      "calibrated_delta_pct": 16.277,
+      "finetuned_ppl": 20.366190311187673,
+      "finetuned_delta_pct": 12.4583
+    }
+  ],
+  "headline_findings": {
+    "rank_sweep_is_nonmonotonic": "finetuned dPPL%: r4=+2.21, r8=+1.45 (best), r16=+2.04, r32=+2.58 -- more params does NOT monotonically help within this fixed 387-step training budget; r8 is a sweet spot, likely because r16/r32 overfit the small finetune slice faster (same pattern as Track C's bridge overfitting after epoch 1)",
+    "none_beat_track_B": "Track B (o_proj replacement, 6152 params) fine-tuned dPPL%=+1.09% remains the best result anywhere in this investigation; F2's best (r8, +1.45%) does not surpass it at any rank tried",
+    "L24_pattern_breaks_from_track_A": "Track A's per-bin SpectralFilter got ZERO benefit from training at L24 (noop +16.03% vs trained +16.25%, statistically indistinguishable). F2 at L24 DOES get real benefit from training (noop +16.05% vs trained +12.46%, a genuine improvement) -- F2's better architecture breaks that specific failure mode, though L24 remains by far the worst insertion point in absolute terms for both architectures."
+  }
+}

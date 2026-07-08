@@ -1,0 +1,12 @@
+{
+  "n_examples": 200,
+  "baseline": {
+    "hellaswag_acc": 0.435,
+    "piqa_acc": 0.765
+  },
+  "f2_c4": {
+    "hellaswag_acc": 0.42,
+    "piqa_acc": 0.755,
+    "c4_ppl_delta_pct": 1.45
+  }
+}

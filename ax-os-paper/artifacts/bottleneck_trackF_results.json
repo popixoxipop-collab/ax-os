@@ -1,0 +1,84 @@
+{
+  "results": [
+    {
+      "arm": "F1",
+      "mode": "noop",
+      "layer": 14,
+      "rank": 8,
+      "ppl": 18.930331098553292,
+      "baseline_ppl": 18.11,
+      "delta_pct": 4.529713410012662,
+      "new_params": 24608,
+      "orig_params": 41287680,
+      "compression_ratio": 1677.815344603381,
+      "source_checkpoint": "qwen15b_bottleneck_trackF1_L14_r8_noop_c4_ppl_checkpoint.json"
+    },
+    {
+      "arm": "F1",
+      "mode": "calibrated",
+      "layer": 14,
+      "rank": 8,
+      "ppl": 19.18612858342252,
+      "baseline_ppl": 18.11,
+      "delta_pct": 5.942178815143677,
+      "new_params": 24608,
+      "orig_params": 41287680,
+      "compression_ratio": 1677.815344603381,
+      "source_checkpoint": "qwen15b_bottleneck_trackF1_L14_r8_calibrated_c4_ppl_checkpoint.json"
+    },
+    {
+      "arm": "F1",
+      "mode": "finetuned",
+      "layer": 14,
+      "rank": 8,
+      "ppl": 18.622935138122145,
+      "baseline_ppl": 18.11,
+      "delta_pct": 2.832330966991416,
+      "new_params": 24608,
+      "orig_params": 41287680,
+      "compression_ratio": 1677.815344603381,
+      "source_checkpoint": "qwen15b_bottleneck_trackF1_L14_r8_finetuned_c4_ppl_checkpoint.json"
+    },
+    {
+      "arm": "F2",
+      "mode": "noop",
+      "layer": 14,
+      "rank": 8,
+      "ppl": 18.922586441910134,
+      "baseline_ppl": 18.11,
+      "delta_pct": 4.486948878576117,
+      "new_params": 24576,
+      "orig_params": 41287680,
+      "compression_ratio": 1680.0,
+      "source_checkpoint": "qwen15b_bottleneck_trackF2_L14_r8_noop_c4_ppl_checkpoint.json"
+    },
+    {
+      "arm": "F2",
+      "mode": "calibrated",
+      "layer": 14,
+      "rank": 8,
+      "ppl": 18.922586441910134,
+      "baseline_ppl": 18.11,
+      "delta_pct": 4.486948878576117,
+      "new_params": 24576,
+      "orig_params": 41287680,
+      "compression_ratio": 1680.0,
+      "source_checkpoint": "qwen15b_bottleneck_trackF2_L14_r8_calibrated_c4_ppl_checkpoint.json"
+    },
+    {
+      "arm": "F2",
+      "mode": "finetuned",
+      "layer": 14,
+      "rank": 8,
+      "ppl": 18.372668617366386,
+      "baseline_ppl": 18.11,
+      "delta_pct": 1.4504065011948484,
+      "new_params": 24576,
+      "orig_params": 41287680,
+      "compression_ratio": 1680.0,
+      "source_checkpoint": "qwen15b_bottleneck_trackF2_L14_r8_finetuned_c4_ppl_checkpoint.json"
+    }
+  ],
+  "baseline_ppl": 18.11,
+  "done": true
+}
