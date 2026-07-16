@@ -421,3 +421,18 @@ subprocess.run          = lambda cmd, *a, **kw: _orig_run(_fix_cmd(cmd), *a, **k
 - 단일 계좌 워크플로(`account_report.yml`/`kis_account_report.yml`)는 폐기됨 — 재생성 금지
 - hook `account-pair-guard.py`(PreToolUse Bash|Write|Edit)가 단일 조회를 차단
 - 트레이딩 봇 내부 동작(주문·리밸런싱)은 차단 대상 아님. bypass: `ACCOUNT_SINGLE_OK=1`
+
+## 18. GitHub 쓰기 액션 — 소유/소속 repo만 (2026-07-08)
+
+**`git push`, `gh pr/issue create·comment·edit·close·reopen·merge·review`, `gh release create`, `gh api`(POST/PATCH/PUT/DELETE/graphql)는 대상 repo owner가 내 계정 또는 내가 실제 소속된 조직일 때만 허용. 그 외는 기본 차단.**
+
+### 배경
+- 2026-07-08 `cleanlab/cleanlab`(타인 소유 upstream)에 `gh issue create`+`gh pr create`를 세션 내 1회 승인만으로 실행 → 사용자 지적("내 저장소가 아니면 올리지 마셈")으로 issue #1317/PR #1318 둘 다 close.
+- 원인: push 대상(우리 fork)은 정당했지만, 그 뒤 upstream에 대고 실행한 `gh` 명령까지는 push-owner-guard가 다루지 않았음. PR/issue/comment는 push와 달리 즉시 외부(메인테이너·커뮤니티)에 노출되고 되돌리기 어려움 — 세션 내 승인 1회로는 불충분한 별도 카테고리.
+
+### 메커니즘
+- hook `push-owner-guard.py`(PreToolUse:Bash) — `git push` 대상 owner 검사
+- hook `gh-owner-guard.py`(PreToolUse:Bash) — `gh` CLI 쓰기 명령 대상 owner 검사
+- 허용 목록: `~/.claude/owned-github-accounts.json`의 `owned_accounts`(개인 계정, 고정) + `member_orgs`(실제 소속 조직). 정적 목록에 없는 owner라도 차단 직전 `gh api user/orgs`로 라이브 재확인 → 방금 가입한 조직이면 통과시키고 파일에 자동 반영(수동 갱신 불필요)
+- 읽기 전용 액션(`view`/`list`/`api GET`)은 통과
+- bypass: `PUSH_OWNER_OK=1` (두 hook 공유) — 실제 의도한 OSS 컨트리뷰션 등 예외적 경우만. **bypass로 실행하더라도 upstream에 실제로 issue/PR/comment를 제출하는 것은 별도의 명시적 재확인 없이는 하지 않는다**(fork에 push/PR 초안까지만 하고 정지 — `feedback_no_external_repo_posting` 참조)
