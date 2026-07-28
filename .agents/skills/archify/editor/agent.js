@@ -36,6 +36,8 @@ const ArchAgent = (() => {
     var inlineEdit = null;
     // D22: 부모가 권위 있게 내려주는 선택 **집합**. 뷰는 이걸 그리기만 한다(상태는 부모가 소유).
     var selSet = [];      // 현재 선택된 eid 전부(주 선택 포함)
+    var selPrimary = null;   // D41: 마지막 drawSelSet의 주 선택 — 그룹 이동 중 오버레이 재배치에 쓴다
+    var groupMoved = false;  // D41: 방금 그룹 이동 드래그가 실제로 움직였으면 true → 뒤따르는 click이 선택을 무너뜨리지 못하게 소비
     // D30: OFF(텍스트편집)에서 유닛 테두리 mousedown이 "유닛 전체 이동"을 arm하면 true.
     //   뒤따르는 click이 인라인 텍스트편집을 열지 못하게 막는 표식(매 mousedown 시작 시 리셋).
     var offBorderArmed = false;
@@ -60,6 +62,8 @@ const ArchAgent = (() => {
     //   오버레이(#6E56CF)와 같은 색감을 써 "이동"을 읽히게 하고, 인라인 텍스트편집의 빨간 hoverBox와
     //   시각적으로 명확히 구분된다(빨강 점선=텍스트 편집, 보라 점선=상자 이동).
     var moveHoverBox = mkBox("movehover", { border: "1.5px dashed rgba(110,86,207,0.95)", borderRadius: "3px", background: "rgba(110,86,207,0.06)" });
+    // D42: 화살표 끝점 스냅 마커 — 스냅 후보에 붙는 순간 그 지점에 작은 초록 원을 잠깐 보여준다(발견성).
+    var snapMarker = mkBox("snap", { border: "2px solid #30A46C", borderRadius: "50%", background: "rgba(48,164,108,0.28)", zIndex: "2147483400" });
 
     // 편집 크롬: 이동 오버레이(전체 bbox, 드래그) + 4 코너 리사이즈 핸들
     var moveOverlay = mkBox("move", {
@@ -130,6 +134,7 @@ const ArchAgent = (() => {
     // 부모가 보낸 집합을 그린다. 재렌더 뒤 복원도 이 한 경로로 수렴한다(뷰는 순수 함수).
     function drawSelSet(eids, primary) {
       selSet = eids || [];
+      selPrimary = primary || null;   // D41: 그룹 이동 중 오버레이 재배치용
       hideMsel();
       var bi = 0, li = 0;
       for (var i = 0; i < selSet.length; i++) {
@@ -366,6 +371,12 @@ const ArchAgent = (() => {
     // D25c: 화살표 편집 focus에서 쓰는 넓힌 허용 반경. "선 클릭이 잘 안 됨"(사용자 신고)의 직접
     // 수정 레버 — 얇은 2px 선에서 3배 가까이 떨어진 클릭도 그 화살표를 잡는다.
     var EDGE_HIT_PX_FOCUS = 22;
+    // D44: "두 요소 사이 꼭짓점 중점" 스냅의 1차 필터(후보 요소 선별) 반경. 스냅 판정 자체는 여전히 22px(EDGE_HIT_PX_FOCUS)이나,
+    //   "이 요소를 중점 계산에 넣을지"는 더 넓게 봐야 두 요소 사이 허공에 끝점이 있을 때 양쪽을 포착한다.
+    //   값=EDGE_HIT_PX_FOCUS×8=176px: demo 요소 최근접중심거리 median 64px의 ~2.75배 → 커서가 gap(≤~350px, 양쪽 176px 이내)에
+    //   있을 때 두 요소를 포함하되 더 먼 무관 요소는 배제(실측 기반, §13 데이터 우선). CAP=8: 근방 상위 8개만 → 쌍 ≤28로 상한 고정.
+    var SNAP_PAIR_FOCUS_R = EDGE_HIT_PX_FOCUS * 8;   // 176px
+    var SNAP_NEAR_CAP = 8;
     function edgeScreenPts(el, cache) {
       var pts = edgePtsOf(el);
       if (!pts) return null;
@@ -807,6 +818,102 @@ const ArchAgent = (() => {
       return bdx <= bdy ? { x: bx, y: y } : { x: x, y: by };
     }
 
+    // ---- D42/D44: 화살표 끝점 스냅 ----
+    //   WHY(D42): 끝점을 다른 요소의 bbox 꼭짓점(4모서리) / 두 꼭짓점의 정중앙(변 중점·중심)에 달라붙게 한다.
+    //     스냅 반경은 D25c의 화살표 클릭반경 확장값(EDGE_HIT_PX_FOCUS=22px, 실측 기반)을 그대로 재사용 —
+    //     상호작용 스케일을 한 값으로 통일한다.
+    //   WHY(D44): 여기에 더해 "서로 다른 두 요소의 꼭짓점 사이 정중앙"(두 요소 사이 허공일 수 있음)도 후보로 넣는다.
+    //     조합폭발(N²×16) 방지: ① 후보 요소는 커서(끝점) 근방 SNAP_PAIR_FOCUS_R 이내로 한정 → ② 그중 상위
+    //     SNAP_NEAR_CAP개만 → ③ 쌍마다 상호 최근접(마주보는) 꼭짓점만 중점화. interElementMidpoints 참조.
+    //   COST: bbox 수집·꼭짓점 캐시는 드래그 시작 1회(O(요소수), getBoundingClientRect). 드래그 중 D44 중점은
+    //     캐시 좌표 산술만(요소가 안 움직이므로 유효) — 매 mousemove도 가볍다. EXIT: 대상/반경 조정은
+    //     collectSnapTargets·SNAP_* 상수에서. 좌표: 후보는 화면(getBoundingClientRect)으로 모으고, 끝점 화면
+    //     위치와 비교해 최근접에 붙인 뒤 elemUserDelta와 같은 el.getScreenCTM 기준으로 edge-local user 좌표로
+    //     되돌린다(엣지/박스가 다른 svg여도 화면 좌표가 다리 역할).
+    function userToScreenEl(el, ux, uy) {
+      var ctm = el.getScreenCTM ? el.getScreenCTM() : null, svg = ownerSvgOf(el);
+      if (!ctm || !svg) return { x: ux, y: uy };
+      var p = svg.createSVGPoint(); p.x = ux; p.y = uy;
+      var s = p.matrixTransform(ctm);
+      return { x: s.x, y: s.y };
+    }
+    function screenToUserEl(el, sx, sy) {
+      var ctm = el.getScreenCTM ? el.getScreenCTM() : null, svg = ownerSvgOf(el);
+      if (!ctm || !svg) return { x: sx, y: sy };
+      var p = svg.createSVGPoint(); p.x = sx; p.y = sy;
+      var u = p.matrixTransform(ctm.inverse());
+      return { x: u.x, y: u.y };
+    }
+    function collectSnapTargets(exceptEl) {
+      var targets = [], boxes = [], els = document.querySelectorAll("[data-arch-eid]");
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i];
+        if (el === exceptEl) continue;
+        var eid = el.getAttribute("data-arch-eid") || "";
+        if (eid.indexOf("svgedge:") === 0 || el.getAttribute("data-svgedge") === "1") continue;   // 다른 화살표는 앵커에서 제외
+        var r = el.getBoundingClientRect();
+        if (!r || (r.width < 1 && r.height < 1)) continue;
+        var L = r.left, T = r.top, R = r.right, B = r.bottom, MX = (L + R) / 2, MY = (T + B) / 2;
+        targets.push({ x: L, y: T }, { x: R, y: T }, { x: L, y: B }, { x: R, y: B },      // 4모서리
+                     { x: MX, y: T }, { x: MX, y: B }, { x: L, y: MY }, { x: R, y: MY },   // 변 중점(두 꼭짓점의 정중앙)
+                     { x: MX, y: MY });                                                    // 중심
+        // D44: 요소별 4꼭짓점 캐시 — "서로 다른 두 요소의 꼭짓점 사이 중점"을 드래그 중 커서 근방에서만 산출(아래 interElementMidpoints).
+        //   드래그 시작 1회만 getBoundingClientRect(값비싼 레이아웃 접근) — 드래그 중엔 이 캐시 좌표로 산술만 한다(엣지 편집 중 다른 요소는 안 움직임).
+        boxes.push({ c: [{ x: L, y: T }, { x: R, y: T }, { x: L, y: B }, { x: R, y: B }] });
+      }
+      return { targets: targets, boxes: boxes };
+    }
+    // D44: 커서(끝점) 근방 요소쌍의 "마주보는(상호 최근접) 꼭짓점 중점"을 후보로 반환(캐시된 boxes·화면좌표).
+    //   조합폭발(N²×16) 방지 3단: ① 커서 반경 R 밖 요소 제외 → ② 남은 것 중 커서에 가까운 상위 SNAP_NEAR_CAP개만
+    //   → ③ 쌍마다 16개 전조합이 아니라 "상호 최근접 꼭짓점"만 중점화(마주보는 2쌍 정도로 수렴). 전부 캐시 산술이라 매 mousemove도 가볍다.
+    function interElementMidpoints(boxes, sp, R) {
+      var out = [];
+      if (!boxes || boxes.length < 2) return out;
+      var near = [];
+      for (var i = 0; i < boxes.length; i++) {                     // ① 커서 반경 R 이내(요소 최근접 꼭짓점 기준)
+        var cs = boxes[i].c, dmin = Infinity;
+        for (var k = 0; k < 4; k++) { var d = Math.hypot(sp.x - cs[k].x, sp.y - cs[k].y); if (d < dmin) dmin = d; }
+        if (dmin <= R) near.push({ c: cs, d: dmin });
+      }
+      if (near.length < 2) return out;
+      near.sort(function (p, q) { return p.d - q.d; });             // ② 커서에 가까운 순 상위 CAP개만(쌍 수 상한 고정)
+      if (near.length > SNAP_NEAR_CAP) near.length = SNAP_NEAR_CAP;
+      for (var a = 0; a < near.length; a++) for (var b = a + 1; b < near.length; b++) {
+        var A = near[a].c, Bx = near[b].c;
+        for (var ci = 0; ci < 4; ci++) {                           // ③ A의 각 꼭짓점 ca에 대해 상호 최근접 B꼭짓점만
+          var ca = A[ci], cb = null, cbd = Infinity;
+          for (var cj = 0; cj < 4; cj++) { var dd = Math.hypot(ca.x - Bx[cj].x, ca.y - Bx[cj].y); if (dd < cbd) { cbd = dd; cb = Bx[cj]; } }
+          var back = null, bd = Infinity;
+          for (var ck = 0; ck < 4; ck++) { var dd2 = Math.hypot(cb.x - A[ck].x, cb.y - A[ck].y); if (dd2 < bd) { bd = dd2; back = A[ck]; } }
+          if (back === ca) out.push({ x: (ca.x + cb.x) / 2, y: (ca.y + cb.y) / 2 });   // 상호 최근접(마주보는 꼭짓점 쌍)만
+        }
+      }
+      return out;
+    }
+    function showSnapMarker(sx, sy) {
+      var sz = 12;
+      snapMarker.style.left = (sx - sz / 2) + "px"; snapMarker.style.top = (sy - sz / 2) + "px";
+      snapMarker.style.width = sz + "px"; snapMarker.style.height = sz + "px"; snapMarker.style.display = "block";
+    }
+    function hideSnapMarker() { snapMarker.style.display = "none"; }
+    // 끝점(user nx,ny)을 스냅 후보에 붙인다 — 붙으면 마커 표시 + 스냅좌표(user) 반환, 아니면 원좌표 + 마커 숨김.
+    //   후보 = D42 요소별 9앵커(targets, 드래그 1회 수집) + D44 커서 근방 요소쌍의 마주보는 꼭짓점 중점(매 move 산출, 캐시 산술).
+    function applyEndpointSnap(el, nx, ny, targets, boxes) {
+      var sp = userToScreenEl(el, nx, ny), best = null, bestD = EDGE_HIT_PX_FOCUS;
+      if (targets) for (var i = 0; i < targets.length; i++) {          // D42: 요소 자신의 9앵커
+        var t = targets[i], d = Math.sqrt((sp.x - t.x) * (sp.x - t.x) + (sp.y - t.y) * (sp.y - t.y));
+        if (d <= bestD) { bestD = d; best = t; }
+      }
+      var mids = interElementMidpoints(boxes, sp, SNAP_PAIR_FOCUS_R);  // D44: 두 요소 사이 꼭짓점 중점(커서 근방만)
+      for (var j = 0; j < mids.length; j++) {
+        var m = mids[j], dm = Math.sqrt((sp.x - m.x) * (sp.x - m.x) + (sp.y - m.y) * (sp.y - m.y));
+        if (dm <= bestD) { bestD = dm; best = m; }
+      }
+      if (!best) { hideSnapMarker(); return { x: nx, y: ny }; }
+      showSnapMarker(best.x, best.y);
+      return screenToUserEl(el, best.x, best.y);
+    }
+
     function startEdgeDrag(e, index, isMid) {
       var el = selectedEl();
       if (!el || !selSvg || !selSvg.isEdge) return;
@@ -819,9 +926,12 @@ const ArchAgent = (() => {
         return;
       }
       // 중간점은 "움직이기 시작할 때" 삽입한다(pending) — 그냥 클릭만 하면 아무 일도 없게.
+      var snap = collectSnapTargets(el);   // D42/D44: 드래그 1회만 DOM/bbox 수집(엣지 편집 중 다른 요소는 불변)
       drag = {
         kind: "edge", edge: true, index: index, pending: !!isMid, added: false, afterIndex: -1,
         sx: e.clientX, sy: e.clientY, moved: false, pts0: pts.slice(),
+        snapTargets: snap.targets,   // D42: 끝점 스냅 후보(다른 요소 bbox 꼭짓점/변중점/중심, 화면좌표)
+        snapBoxes: snap.boxes,       // D44: 요소별 4꼭짓점 캐시(커서 근방 요소쌍 중점 산출용)
       };
       e.preventDefault();
       e.stopPropagation();
@@ -845,7 +955,11 @@ const ArchAgent = (() => {
       var du = elemUserDelta(el, dx, dy);
       var next = drag.pts0.slice();
       var nx = drag.pts0[drag.index].x + du.x, ny = drag.pts0[drag.index].y + du.y;
-      if (e.shiftKey) { var s = orthoSnap(next, drag.index, nx, ny); nx = s.x; ny = s.y; }
+      // D42/D44: 끝점(index 0 또는 마지막)만 요소 스냅. Shift(직교 스냅)와는 배타 — Shift 중엔 요소 스냅 안 함.
+      var isEndpoint = (drag.index === 0 || drag.index === drag.pts0.length - 1);
+      if (e.shiftKey) { var s = orthoSnap(next, drag.index, nx, ny); nx = s.x; ny = s.y; hideSnapMarker(); }
+      else if (isEndpoint) { var sn = applyEndpointSnap(el, nx, ny, drag.snapTargets, drag.snapBoxes); nx = sn.x; ny = sn.y; }
+      else hideSnapMarker();
       next[drag.index] = { x: nx, y: ny };
       writePtsA(el, next);
       drag.moved = true;
@@ -919,8 +1033,10 @@ const ArchAgent = (() => {
     }
 
     function onDragMove(e) {
+      if (!drag) return;
+      if (drag.group) { onDragMoveGroup(e); return; }   // D41: 그룹 이동은 주 선택(selEid) 유무와 무관하게 동작
       var el = selectedEl();
-      if (!drag || !el) return;
+      if (!el) return;
       if (drag.edge) { onDragMoveEdge(e); return; }
       var dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
       if (Math.abs(dx) > 2 || Math.abs(dy) > 2) drag.moved = true;
@@ -944,11 +1060,52 @@ const ArchAgent = (() => {
       e.preventDefault();
     }
 
+    // ---- D43: 표 세로축소 시 클립 대신 폰트/패딩 자동축소 ----
+    //   WHY: 표 div를 표의 자연(intrinsic) 높이보다 작게 리사이즈하면, 클립(overflow:hidden) 대신 셀
+    //     font-size를 줄여 내용이 박스 안에 들어맞게 한다. 셀 패딩은 em(0.25em/0.5em, dom-adapter 표 템플릿)
+    //     이라 div의 font-size 한 값만 바꿔도 글자+패딩이 함께 비례 축소된다(셀마다 개별 op 불필요).
+    //   COST: 리사이즈 종료(onDragEnd) 1회만 실측 루프(≤6회) — 매 mousemove가 아니라 mouseup 후 1회라
+    //     드래그 중 부담 0. intrinsic 측정은 <table>을 잠깐 height:auto로 두고 boundingRect를 읽어 되돌린다.
+    //   EXIT: 폰트 하한(TABLE_FONT_MIN_PX)까지 줄여도 안 맞으면 그 이상은 바깥 div overflow:hidden 안전망이 클립.
+    var TABLE_FONT_BASE_PX = 16;   // 표 기본 셀 폰트(실측: 상속 기본 16px) = 확대 시 복귀 상한
+    var TABLE_FONT_MIN_PX = 12;    // 폰트 하한 — dom-adapter.js OBJ_LINE_MIN_PX(=12px, 가독 하한) 재사용.
+                                   //   기본 16px의 75%선 = 표 셀이 읽히는 최소. 이 밑은 안전망 클립으로 넘긴다.
+    function tableIntrinsicPx(tableEl) {
+      var prev = tableEl.style.height;
+      tableEl.style.height = "auto";                   // 폰트/패딩 그대로일 때 표가 필요로 하는 실제 높이
+      var h = tableEl.getBoundingClientRect().height;
+      tableEl.style.height = prev || "100%";           // 원복(고정 100% 유지 — 렌더 상태 불변)
+      return h;
+    }
+    // el(표 obj div)의 셀 폰트를 박스에 맞게 축소/복귀시키고 최종 font-size 문자열 반환(표 아니면 null).
+    function fitTableFont(el) {
+      if (!el || el.getAttribute("data-object-type") !== "table") return null;
+      var table = el.querySelector("table");
+      if (!table) return null;
+      var avail = el.clientHeight;                     // div 안쪽 높이(표 div엔 border/padding 없음 → 지정 height와 동일)
+      if (!(avail > 0)) return null;
+      var F = TABLE_FONT_BASE_PX;
+      el.style.fontSize = F + "px";                    // 늘 기본에서 출발 → 박스를 다시 키우면 이전 축소분이 복귀
+      var I = tableIntrinsicPx(table);
+      // 기본 폰트로 이미 맞으면 그대로. 안 맞으면 (avail/I) 비율 추정 + 실측 재확인으로 수렴 축소.
+      for (var iter = 0; iter < 6 && I > avail && F > TABLE_FONT_MIN_PX; iter++) {
+        var guess = Math.floor(F * avail / I);         // 높이∝폰트 가정한 1차 추정(테두리 등 고정분은 무시 → 살짝 보수적)
+        if (guess >= F) guess = F - 1;                 // 반올림 정체 방지(매 회 최소 1px 전진)
+        if (guess < TABLE_FONT_MIN_PX) guess = TABLE_FONT_MIN_PX;
+        F = guess;
+        el.style.fontSize = F + "px";
+        I = tableIntrinsicPx(table);                   // 실측 재확인 — 고정분 비선형성을 매 회 자기교정
+      }
+      return F + "px";
+    }
+
     function onDragEnd(e) {
-      var el = selectedEl();
       if (!drag) return;
       var d = drag; drag = null;
+      if (d.group) { finishGroupDrag(d, e); return; }   // D41: 그룹 이동 커밋(단일 undo)
+      var el = selectedEl();
       if (d.edge) {
+        hideSnapMarker();   // D42: 드래그 종료 — 스냅 마커 정리
         // 미이동(단순 클릭)은 뷰도 소스도 그대로 — pending 삽입은 아직 일어나지 않았다.
         if (!el || !d.moved) { showEdgeChrome(); return; }
         var epts = edgePtsOf(el);
@@ -991,7 +1148,92 @@ const ArchAgent = (() => {
       } else {
         props = { width: el.style.width, height: el.style.height, left: el.style.left, top: el.style.top };
       }
+      // D43: 리사이즈(이동 아님)로 크기가 바뀌었으면 표는 셀 폰트를 박스에 맞게 축소/복귀시켜 함께 커밋.
+      //   fitTableFont는 표가 아니면 null(폰트 미첨부 → 종전 동작 그대로). mouseup 후 1회만 실행.
+      if (d.kind !== "move") { var tf = fitTableFont(el); if (tf != null) props.fontSize = tf; }
       parent.postMessage({ type: "arch-geom", eid: selEid, props: props }, "*");
+    }
+
+    // ---------------- D41: 다중 선택 그룹 이동 ----------------
+    //   WHY: 2개 이상 선택된 상태에서 그 중 하나를 드래그하면 선택된 전부가 상대위치를 유지한 채 함께 이동한다.
+    //     단일 선택 경로(moveOverlay/OFF 테두리)는 전혀 건드리지 않는다 — 이건 selSet.length>1일 때만 타는 새 분기다.
+    //   좌표계: obj는 style.left/top(레이아웃 px, 화면 델타 1:1), svgbox/svgtext는 svgUserDelta로 화면 델타를 user
+    //     단위로 바꿔 각자의 좌표체계에 동일 델타를 적용한다. svgedge(화살표)는 이번 범위 밖(폴리라인 평행이동은
+    //     별건) → skip해 자리 보존. COST: 엣지는 함께 안 움직임. EXIT: 필요 시 엣지 전 정점 평행이동을 추가.
+    function selectedUnitAt(node) {   // node의 조상 중 선택 집합에 든 첫 유닛의 eid(없으면 null)
+      while (node && node !== document) {
+        if (node.getAttribute) {
+          var eid = node.getAttribute("data-arch-eid");
+          if (eid && selSet.indexOf(eid) >= 0) return eid;
+        }
+        node = node.parentNode;
+      }
+      return null;
+    }
+    function startGroupDrag(e) {
+      var members = [];
+      for (var i = 0; i < selSet.length; i++) {
+        var eid = selSet[i];
+        var el = document.querySelector('[data-arch-eid="' + attrEsc(eid) + '"]');
+        if (!el) continue;
+        var m = { eid: eid, el: el };
+        if (el.getAttribute("data-svgtext") === "1") {
+          var tp = textPos(el);
+          m.type = "svgtext"; m.usesTransform = (tp.mode === "transform"); m.x0 = tp.x; m.y0 = tp.y; m.svg = ownerSvgOf(el);
+        } else if (el.getAttribute("data-svgbox") === "1") {
+          var tr = parseTranslate(el);
+          m.type = "svgbox"; m.tx0 = tr.x; m.ty0 = tr.y; m.svg = ownerSvgOf(el);
+        } else if (el.getAttribute("data-svgedge") === "1") {
+          m.type = "svgedge"; m.skip = true;   // 엣지는 이번 그룹이동 범위 밖 — 자리 보존
+        } else {
+          var r = el.getBoundingClientRect();
+          m.type = "obj"; m.l0 = px(el.style.left, r.left); m.t0 = px(el.style.top, r.top);
+        }
+        members.push(m);
+      }
+      drag = { group: members, kind: "move", sx: e.clientX, sy: e.clientY, moved: false };
+      groupMoved = false;
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    function onDragMoveGroup(e) {
+      var dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) { drag.moved = true; groupMoved = true; }
+      for (var i = 0; i < drag.group.length; i++) {
+        var m = drag.group[i];
+        if (m.skip) continue;
+        if (m.type === "obj") {
+          m.el.style.left = (m.l0 + dx) + "px";
+          m.el.style.top = (m.t0 + dy) + "px";
+        } else if (m.type === "svgbox") {
+          var du = svgUserDelta(m.svg, dx, dy);
+          m.el.setAttribute("transform", "translate(" + fmtNum(m.tx0 + du.x) + " " + fmtNum(m.ty0 + du.y) + ")");
+        } else if (m.type === "svgtext") {
+          var du2 = svgUserDelta(m.svg, dx, dy);
+          if (m.usesTransform) m.el.setAttribute("transform", "translate(" + fmtNum(m.x0 + du2.x) + " " + fmtNum(m.y0 + du2.y) + ")");
+          else { m.el.setAttribute("x", fmtNum(m.x0 + du2.x)); m.el.setAttribute("y", fmtNum(m.y0 + du2.y)); }
+        }
+      }
+      drawSelSet(selSet, selPrimary);   // 오버레이(주 selBox + msel 박스)를 이동한 위치로 다시 그림
+      e.preventDefault();
+    }
+    function finishGroupDrag(d, e) {
+      if (!d.moved) return;   // 미이동(단순 클릭)은 무커밋 — 선택 유지
+      var moves = [];
+      for (var i = 0; i < d.group.length; i++) {
+        var m = d.group[i];
+        if (m.skip) continue;
+        if (m.type === "obj") {
+          moves.push({ eid: m.eid, kind: "obj", left: m.el.style.left, top: m.el.style.top });
+        } else if (m.type === "svgbox") {
+          var tr = parseTranslate(m.el);
+          moves.push({ eid: m.eid, kind: "svgbox", x: tr.x, y: tr.y });
+        } else if (m.type === "svgtext") {
+          var tp = textPos(m.el);
+          moves.push({ eid: m.eid, kind: "svgtext", x: tp.x, y: tp.y });
+        }
+      }
+      if (moves.length) parent.postMessage({ type: "arch-group-move", moves: moves }, "*");
     }
 
     // ---------------- 텍스트 편집(contenteditable) ----------------
@@ -1351,6 +1593,17 @@ const ArchAgent = (() => {
       moveHoverBox.style.display = "none"; // 이동 시작 — hover 큐 대신 selBox가 뜬다
     }, true);
 
+    // D41: ON(요소 편집)에서 2개 이상 선택된 상태에서 "선택된 요소" 위 mousedown = 그룹 이동 개시.
+    //   단일 선택은 기존 moveOverlay 경로가 담당하므로 여기선 selSet.length>1일 때만 관여한다(무회귀).
+    //   선택되지 않은 요소 위 mousedown은 무시 → 뒤따르는 click이 평소대로 그 요소를 새로 선택한다.
+    document.addEventListener("mousedown", function (e) {
+      if (mode !== "edit" || !elementEditOn || inlineEdit || editing) return;
+      if (provenance === "archify" || isOverlay(e.target)) return;
+      if (selSet.length < 2) return;                 // 단일/무선택은 기존 경로
+      if (!selectedUnitAt(e.target)) return;         // 선택된 유닛 위에서 시작한 드래그만 그룹 이동
+      startGroupDrag(e);
+    }, true);
+
     // 편집 드래그 시작(핸들/이동 오버레이)
     moveOverlay.addEventListener("mousedown", function (e) { if (mode === "edit") startDrag(e, "move", null); });
     // D25a: 요소 편집 ON에서 더블클릭 텍스트 편집은 비활성(텍스트 편집은 OFF의 단일클릭으로 일원화).
@@ -1369,6 +1622,7 @@ const ArchAgent = (() => {
       //        "바깥"인 다이어그램을 눌러도 메뉴가 안 닫힌다 — 실측으로 확인된 갭.
       //   COST: 클릭마다 메시지 1건 추가(부모는 메뉴가 열려 있을 때만 반응).
       parent.postMessage({ type: "arch-viewclick" }, "*");
+      if (groupMoved) { groupMoved = false; return; }   // D41: 그룹 이동 직후의 click은 선택 집합을 무너뜨리지 않게 소비
       // D28(A): obj contenteditable 세션이 열린 채 **다른** 유효 텍스트 타깃을 클릭하면, 한 클릭 안에서
       //   현재 줄 커밋 + 새 타깃 즉시 오픈(2클릭 버그 수정). 같은 줄(편집 중 span/div) 안 클릭은 편집 유지.
       //   커밋이 재렌더를 유발(텍스트 변경)하면 새 타깃은 부모가 arch-ready 후 arch-open-inline으로 다시 연다.

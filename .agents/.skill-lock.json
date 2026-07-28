@@ -1,0 +1,15 @@
+{
+  "version": 3,
+  "skills": {
+    "archify": {
+      "source": "popixoxipop-collab/archify",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/popixoxipop-collab/archify.git",
+      "skillPath": "archify/SKILL.md",
+      "skillFolderHash": "28c4e73556811c8c58361240b4690d7aa46fc102",
+      "installedAt": "2026-07-16T01:24:10.820Z",
+      "updatedAt": "2026-07-16T01:24:10.820Z"
+    }
+  },
+  "dismissed": {}
+}

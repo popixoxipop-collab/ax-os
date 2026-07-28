@@ -1,0 +1,698 @@
+/* archify 요소 편집기 MVP — 다크 필 툴바 + 뉴트럴 스테이지 */
+/* D32: 한글 굵게(font-synthesis) 문제 — "Pretendard"가 기존 스택 2순위로 이름만
+   있었을 뿐 로컬 미설치 시 실물 굵기가 없어 브라우저가 합성(가짜 굵게)한다
+   (test/s11 주석이 이 머신에서 실측된 현상임을 증언). 정규 배포(OFL, fonts/LICENSE)의
+   Bold 실물 웨이트를 자체호스팅. 700-900 범위를 이 정적 파일 하나로 커버(가변폰트
+   아님 — 900 요청 시에도 700 형상을 그대로 쓰지만, 완전 합성보다 실제 글리프가 낫다).
+   ★Regular(400)도 함께 등록 필수(당초 계획은 Bold만이었으나 라이브 검증에서 발견):
+   family에 단 하나의 weight만 @font-face로 등록해도 CSS 폰트매칭이 "그 family의
+   가장 가까운 등록 굵기"로 스냅해버려 Bold만 넣으면 **일반 본문(400 요청)까지
+   이 Bold 글리프로 렌더**되는 회귀가 실측 확인됨(Playwright: weight 400/700 요청의
+   캔버스 잉크 픽셀수가 완전 동일 — 같은 글리프를 썼다는 뜻). Regular를 명시
+   등록해야 400 요청이 제 굵기로 분리된다. */
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("fonts/Pretendard-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 700 900;
+  font-style: normal;
+  font-display: swap;
+  src: url("fonts/Pretendard-Bold.woff2") format("woff2");
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: "IBM Plex Sans KR", "Pretendard", system-ui, -apple-system, sans-serif;
+  background: #E9E6DF;
+  color: #1A1A1F;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ---------- top bar ---------- */
+#topbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 18px;
+  background: #101014;
+  color: #ECECF1;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.06), 0 6px 24px rgba(0,0,0,0.25);
+  z-index: 50;
+}
+.brand { font-weight: 700; font-size: 15px; letter-spacing: 0.02em; white-space: nowrap; }
+.brand-sub { font-weight: 500; font-size: 12px; color: #8B8B96; margin-left: 6px; }
+
+#mode-pill {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: #1C1C22;
+  border: 1px solid #2A2A33;
+  border-radius: 999px;
+  padding: 4px;
+  margin: 0 auto;
+}
+.mode {
+  border: 0;
+  background: transparent;
+  color: #B9B9C2;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s ease, color .15s ease;
+}
+.mode:hover:not(:disabled):not(.active) { background: #26262E; color: #E7E7EE; }
+.mode.active { background: #F5F3EE; color: #14141A; font-weight: 700; }
+.mode:disabled { color: #55555F; cursor: not-allowed; }
+
+.actions { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.actions button {
+  border: 1px solid #2E2E38;
+  background: #1C1C22;
+  color: #D9D9E0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+.actions button:hover:not(:disabled) { background: #26262E; }
+.actions button:disabled { color: #55555F; cursor: not-allowed; }
+#btn-download { border-color: #4A3D8F; background: #2A2350; color: #D8CFFF; }
+#btn-download:hover { background: #352B66; }
+
+/* ---------- settings ---------- */
+#settings-panel {
+  flex: 0 0 auto;
+  background: #17171C;
+  color: #D5D5DD;
+  padding: 12px 18px 14px;
+  border-bottom: 1px solid #2A2A33;
+  z-index: 40;
+}
+.set-grid { display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: end; }
+.set-grid label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; color: #9A9AA5; }
+.set-grid input[type="text"], .set-grid input[type="password"] {
+  width: 300px;
+  background: #101014;
+  border: 1px solid #2E2E38;
+  color: #ECECF1;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 13px;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+.set-grid #model { width: 240px; }
+.mock-row { flex-direction: row !important; align-items: center; gap: 8px !important; font-size: 13px !important; color: #E7C86B !important; padding-bottom: 7px; cursor: pointer; }
+.conn-status { margin-top: 10px; font-size: 12.5px; color: #8FBF9F; }
+.conn-status.mock { color: #E7C86B; }
+.conn-note { margin-top: 4px; font-size: 11.5px; color: #6E6E79; }
+.conn-note code { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 10.5px; }
+
+/* ---------- serve banner (class a, /render 도달 불가) ---------- */
+#serve-banner {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  background: #3A3320;
+  color: #F0D890;
+  border-bottom: 1px solid #55492A;
+  font-size: 13px;
+  line-height: 1.5;
+  z-index: 39;
+}
+#serve-banner .sb-icon { font-size: 15px; flex: 0 0 auto; }
+#serve-banner code {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11.5px;
+  background: rgba(0,0,0,0.28);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: #FDE9A8;
+}
+
+/* ---------- stage ---------- */
+#stage-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: 24px;
+}
+#stage {
+  position: relative;
+  background: #F5F3EE;
+  box-shadow: 0 12px 48px rgba(20,18,10,0.35);
+  border-radius: 3px;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+#diagram-frame {
+  border: 0;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: 0 0;
+  display: block;
+  background: #F5F3EE;
+}
+#empty-state {
+  position: absolute;
+  max-width: 560px;
+  background: #FFFFFF;
+  border: 1px solid #D8D4C8;
+  border-radius: 10px;
+  padding: 24px 28px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  box-shadow: 0 10px 34px rgba(20,18,10,0.18);
+}
+#empty-state .dim { color: #6A6A75; font-size: 13px; }
+#empty-state code { background: #F1EFE8; padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+
+/* ---------- floating input ---------- */
+#floating-input {
+  position: fixed;
+  z-index: 1000;
+  width: 430px;
+  background: #17171C;
+  color: #ECECF1;
+  border: 1px solid #2E2E38;
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.45);
+}
+.fi-head { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+.fi-badge {
+  background: #E5484D;
+  color: #FFF;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+.fi-eid { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 11px; color: #8B8B96; }
+.fi-row { display: flex; gap: 8px; align-items: center; }
+#fi-text {
+  flex: 1 1 auto;
+  background: #101014;
+  border: 1px solid #34343E;
+  color: #ECECF1;
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-size: 13.5px;
+  font-family: inherit;
+}
+#fi-text:focus { outline: none; border-color: #6E56CF; }
+#fi-text::placeholder { color: #6E6E79; }
+.fi-btn {
+  border: 0;
+  border-radius: 9px;
+  padding: 10px 13px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.fi-btn.ghost { background: transparent; color: #9A9AA5; }
+.fi-btn.ghost:hover { color: #ECECF1; }
+.fi-btn.accent { background: #6E56CF; color: #FFF; font-weight: 700; min-width: 44px; }
+.fi-btn.accent:hover:not(:disabled) { background: #7C66D9; }
+.fi-btn.accent:disabled { background: #3A3455; color: #8B84B0; cursor: wait; }
+.fi-busy { margin-top: 9px; font-size: 12.5px; color: #A78BFA; }
+.fi-error { margin-top: 9px; font-size: 12.5px; color: #FF8A8E; line-height: 1.5; word-break: break-all; }
+
+/* ---------- toast ---------- */
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #17171C;
+  color: #ECECF1;
+  border: 1px solid #2E2E38;
+  border-radius: 999px;
+  padding: 11px 20px;
+  font-size: 13.5px;
+  box-shadow: 0 14px 40px rgba(0,0,0,0.4);
+}
+#toast-action {
+  border: 1px solid #4A3D8F;
+  background: #2A2350;
+  color: #D8CFFF;
+  border-radius: 999px;
+  padding: 5px 13px;
+  font-size: 12.5px;
+  font-family: inherit;
+  cursor: pointer;
+}
+#toast-action:hover { background: #352B66; }
+
+/* ================= stage 3: 5 modes ================= */
+
+/* [hidden] 속성은 항상 이긴다 — 아래 id 규칙들의 display:flex가 UA의 [hidden]{display:none}을
+   특이도로 덮어써 패널이 안 사라지는 것을 방지(특히 #wd-confirm inset:0 백드롭이 스테이지를 가림). */
+[hidden] { display: none !important; }
+
+/* ---- audit dropdown ---- */
+.mode-dd { position: relative; display: inline-flex; }
+.dd-menu {
+  position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+  background: #17171C; border: 1px solid #2E2E38; border-radius: 12px;
+  padding: 6px; min-width: 210px; z-index: 1100;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.5);
+}
+.dd-menu button {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  width: 100%; border: 0; background: transparent; color: #D9D9E0;
+  padding: 9px 12px; border-radius: 8px; font-size: 13px; font-family: inherit;
+  cursor: pointer; text-align: left; white-space: nowrap;
+}
+.dd-menu button:hover { background: #26262E; color: #fff; }
+.dd-tag { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 999px; letter-spacing: 0.04em; }
+.dd-tag.ai { background: #2A2350; color: #C9BCFF; }
+.dd-tag.mech { background: #1E3A2C; color: #8FE3B4; }
+/* 전역(문서 단위) 동작임을 색으로 경고 — 요소 스코프 항목과 시각적으로 구분 */
+.dd-tag.all { background: #4A2A16; color: #F4B183; }
+.dd-menu button:disabled { color: #5C5C66; cursor: not-allowed; }
+.dd-menu button:disabled:hover { background: transparent; color: #5C5C66; }
+
+/* ---- draw palette (top bar) ---- */
+#draw-palette, #wd-bar, #gh-bar {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
+  padding: 9px 18px; background: #17171C; color: #D5D5DD;
+  border-bottom: 1px solid #2A2A33; z-index: 39; flex-wrap: wrap;
+}
+.dp-title, .wd-badge { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #E7C86B; }
+.dp-btn {
+  border: 1px solid #2E2E38; background: #1C1C22; color: #D9D9E0;
+  padding: 7px 13px; border-radius: 8px; font-size: 13px; font-family: inherit; cursor: pointer;
+}
+.dp-btn:hover:not(:disabled) { background: #26262E; }
+.dp-btn.active { background: #6E56CF; border-color: #6E56CF; color: #fff; font-weight: 700; }
+.dp-btn.deferred, .dp-btn:disabled { color: #6A6A75; cursor: not-allowed; border-style: dashed; }
+.dp-hint { font-size: 11.5px; color: #7C7C87; }
+
+/* ---- whole-diagram bar (layout / polish) ---- */
+.wd-badge { color: #C9BCFF; background: #2A2350; padding: 4px 11px; border-radius: 999px; }
+#wd-input {
+  flex: 1 1 320px; min-width: 240px; background: #101014; border: 1px solid #34343E;
+  color: #ECECF1; border-radius: 9px; padding: 9px 12px; font-size: 13.5px; font-family: inherit;
+}
+#wd-input:focus { outline: none; border-color: #6E56CF; }
+.wd-busy { font-size: 12.5px; color: #A78BFA; }
+.wd-error { font-size: 12.5px; color: #FF8A8E; }
+
+/* ---- global arrowhead size bar (편집 ▾ 하위 · 문서 전체) ---- */
+#gh-size { flex: 0 1 320px; min-width: 180px; accent-color: #6E56CF; cursor: pointer; }
+#gh-sizeval { font-style: normal; font-variant-numeric: tabular-nums; font-size: 12.5px; color: #E7C86B; min-width: 42px; }
+.gh-note { font-size: 11.5px; color: #F4B183; }
+
+/* ---- edit style panel (floating) ---- */
+#edit-panel {
+  position: fixed; z-index: 1000; width: 340px; background: #17171C; color: #ECECF1;
+  border: 1px solid #2E2E38; border-radius: 14px; padding: 12px 14px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.45);
+}
+.fi-badge.edit { background: #6E56CF; }
+.ep-hint { font-size: 10.5px; color: #7C7C87; margin-left: auto; }
+.ep-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
+.ep-grid label { display: flex; flex-direction: column; gap: 5px; font-size: 11px; color: #9A9AA5; }
+.ep-grid input[type="color"] {
+  width: 100%; height: 30px; padding: 0; border: 1px solid #34343E; border-radius: 7px;
+  background: #101014; cursor: pointer;
+}
+.ep-num { display: flex; align-items: center; gap: 5px; }
+.ep-num input { width: 72px; background: #101014; border: 1px solid #34343E; color: #ECECF1;
+  border-radius: 7px; padding: 6px 8px; font-size: 13px; font-family: inherit; }
+.ep-num i { font-style: normal; color: #7C7C87; font-size: 11px; }
+.ep-grid select {
+  background: #101014; border: 1px solid #34343E; color: #ECECF1; border-radius: 7px;
+  padding: 6px 8px; font-size: 13px; font-family: inherit;
+}
+.ep-row2 { display: flex; justify-content: flex-end; gap: 8px; margin-top: 11px; }
+
+/* ---- SVG box edit panel (class c) — fill/stroke/text/size ---- */
+#svgbox-panel {
+  position: fixed; z-index: 1000; width: 340px; background: #17171C; color: #ECECF1;
+  border: 1px solid #2E2E38; border-radius: 14px; padding: 12px 14px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.45);
+}
+.fi-badge.svgbox { background: #0E7C6B; }
+.fi-badge.svgtext { background: #2F6FEB; }
+.sp-textrow { display: flex; gap: 8px; align-items: center; margin-top: 10px; }
+.sp-textrow input[type="text"] {
+  flex: 1 1 auto; min-width: 0; background: #101014; border: 1px solid #34343E; color: #ECECF1;
+  border-radius: 9px; padding: 9px 11px; font-size: 13px; font-family: inherit;
+}
+/* D16(a): 박스의 모든 <text> 줄을 문서 순서로 편집(줄마다 캡션 + 입력 + 적용) */
+.sp-textlines { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.sp-textlines .sp-textrow { margin-top: 0; }
+.sp-linecap { flex: 0 0 auto; width: 30px; font-size: 10.5px; color: #7C7C87; text-align: right; }
+.sp-textlines .sp-textrow button { flex: 0 0 auto; padding: 8px 11px; }
+/* 줄 삭제(−)는 파괴적이라 기본은 흐리게, hover에서만 붉게 — 오조작 방지 */
+.sp-linedel { color: #8A8A95; }
+.sp-linedel:hover:not(:disabled) { background: #3A1E22; border-color: #6E2E36; color: #FF8A8E; }
+.sp-linerow { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+#sp-line-add { flex: 0 0 auto; }
+#sp-line-note { color: #7C7C87; }
+.sp-sizerow { display: flex; align-items: flex-end; gap: 10px; margin-top: 10px; }
+.sp-sizerow label { display: flex; flex-direction: column; gap: 5px; font-size: 11px; color: #9A9AA5; }
+.sp-sizerow[hidden] { display: none; }
+#sp-note { color: #7C7C87; }
+
+/* ---- SVG free-standing text edit panel (class c / D16 b) — text + fill + drag-move ---- */
+#svgtext-panel {
+  position: fixed; z-index: 1000; width: 320px; background: #17171C; color: #ECECF1;
+  border: 1px solid #2E2E38; border-radius: 14px; padding: 12px 14px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.45);
+}
+
+/* ---- SVG arrow (edge) edit panel (class c / D18) — flip + head size; 정점은 뷰에서 드래그 ---- */
+#svgedge-panel {
+  position: fixed; z-index: 1000; width: 366px; background: #17171C; color: #ECECF1;
+  border: 1px solid #2E2E38; border-radius: 14px; padding: 12px 14px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.45);
+}
+.fi-badge.svgedge { background: #B5561F; }
+/* 조작 안내는 헤더에 끼워넣으면 줄바꿈으로 깨진다 → 전용 행(한 줄 유지) */
+.se-hint {
+  margin-top: 9px; padding: 6px 9px; border-radius: 8px; background: #1C1C22;
+  border: 1px solid #26262E; color: #9A9AA5; font-size: 10.5px; white-space: nowrap;
+}
+.se-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+.se-headrow { display: flex; align-items: center; gap: 10px; margin-top: 11px; }
+.se-headrow label { flex: 0 0 auto; font-size: 11px; color: #9A9AA5; }
+.se-headrow input[type="range"] { flex: 1 1 auto; min-width: 0; accent-color: #6E56CF; cursor: pointer; }
+.se-headrow i {
+  flex: 0 0 auto; font-style: normal; font-size: 11.5px; color: #ECECF1; width: 38px; text-align: right;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+#se-note { color: #7C7C87; margin-left: 0; margin-right: auto; }
+
+/* ---- findings panel (right) ---- */
+#findings-panel {
+  position: fixed; top: 64px; right: 16px; bottom: 16px; width: 360px; z-index: 900;
+  background: #17171C; color: #ECECF1; border: 1px solid #2E2E38; border-radius: 14px;
+  display: flex; flex-direction: column; box-shadow: 0 18px 50px rgba(0,0,0,0.45);
+}
+.fp-head { display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 15px; border-bottom: 1px solid #2A2A33; font-weight: 700; font-size: 14px; }
+.fp-head button { background: transparent; border: 0; color: #9A9AA5; font-size: 15px; cursor: pointer; }
+.fp-status { padding: 10px 15px; font-size: 12px; color: #9A9AA5; border-bottom: 1px solid #23232B; }
+.fp-status.mech { color: #8FE3B4; } .fp-status.ai { color: #C9BCFF; } .fp-status.busy { color: #A78BFA; }
+#fp-list { flex: 1 1 auto; overflow-y: auto; padding: 8px; }
+.finding {
+  background: #1C1C22; border: 1px solid #2A2A33; border-radius: 10px; padding: 10px 11px; margin-bottom: 8px; cursor: pointer;
+}
+.finding:hover { border-color: #6E56CF; }
+.finding.sel { border-color: #E5484D; box-shadow: 0 0 0 2px rgba(229,72,77,0.25); }
+.finding-top { display: flex; align-items: center; gap: 7px; margin-bottom: 5px; }
+.finding-eid { font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 10.5px; color: #8B8B96; }
+.finding-kind { font-size: 9.5px; font-weight: 700; padding: 1px 6px; border-radius: 999px; letter-spacing: 0.04em; }
+.finding-kind.overlap { background: #3A2320; color: #F3B0A0; }
+.finding-kind.overflow { background: #3A3320; color: #E7D08B; }
+.finding-kind.ai { background: #2A2350; color: #C9BCFF; }
+.finding-issue { font-size: 12.5px; line-height: 1.45; color: #E7E7EE; }
+.finding-sugg { font-size: 11.5px; line-height: 1.4; color: #9A9AA5; margin-top: 4px; }
+.finding-actions { margin-top: 8px; display: flex; gap: 6px; }
+.finding-fix {
+  border: 1px solid #4A3D8F; background: #2A2350; color: #D8CFFF; border-radius: 7px;
+  padding: 5px 11px; font-size: 11.5px; font-family: inherit; cursor: pointer;
+}
+.finding-fix:hover:not(:disabled) { background: #352B66; }
+.finding-fix:disabled { opacity: 0.5; cursor: wait; }
+.fp-empty { padding: 24px 16px; text-align: center; color: #6E6E79; font-size: 13px; line-height: 1.6; }
+
+/* ---- layout confirm (modal) ---- */
+#wd-confirm {
+  position: fixed; inset: 0; z-index: 1300; display: flex; align-items: center; justify-content: center;
+  background: rgba(8,8,10,0.55);
+}
+.wc-card { background: #17171C; color: #ECECF1; border: 1px solid #2E2E38; border-radius: 14px;
+  padding: 20px 22px; max-width: 440px; box-shadow: 0 24px 60px rgba(0,0,0,0.55); }
+.wc-text { font-size: 14.5px; line-height: 1.6; }
+.wc-text b { color: #C9BCFF; }
+.wc-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+
+/* ---- D40: 표 삽입 다이얼로그(행/열 스테퍼) — #wd-confirm 백드롭/카드 톤을 그대로 잇는다 ---- */
+#tbl-dialog { position: fixed; inset: 0; z-index: 1300; display: flex; align-items: center; justify-content: center;
+  background: rgba(8,8,10,0.55); }
+#tbl-dialog .wc-card { min-width: 244px; }
+.tbl-row { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+.tbl-label { font-size: 14px; color: #C9C9D3; width: 26px; }
+.tbl-stepper { display: flex; align-items: center; gap: 6px; }
+.tbl-step { width: 28px; height: 28px; border-radius: 7px; border: 1px solid #34343F; background: #22222A;
+  color: #ECECF1; font-size: 17px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.tbl-step:hover { background: #2C2C36; }
+.tbl-num { width: 54px; height: 28px; text-align: center; border-radius: 7px; border: 1px solid #34343F;
+  background: #17171C; color: #ECECF1; font-size: 14px; }
+.tbl-num::-webkit-inner-spin-button, .tbl-num::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* ---- polish diff panel ---- */
+#polish-panel {
+  position: fixed; top: 64px; right: 16px; bottom: 16px; width: 420px; z-index: 900;
+  background: #17171C; color: #ECECF1; border: 1px solid #2E2E38; border-radius: 14px;
+  display: flex; flex-direction: column; box-shadow: 0 18px 50px rgba(0,0,0,0.45);
+}
+.pp-head { display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 15px; border-bottom: 1px solid #2A2A33; font-weight: 700; font-size: 14px; }
+.pp-head button { background: transparent; border: 0; color: #9A9AA5; font-size: 15px; cursor: pointer; }
+#pp-list { flex: 1 1 auto; overflow-y: auto; padding: 8px; }
+.polish-row { background: #1C1C22; border: 1px solid #2A2A33; border-radius: 10px; padding: 10px 11px; margin-bottom: 8px; }
+.polish-row .pr-top { display: flex; align-items: center; gap: 8px; }
+.polish-row .finding-eid { flex: 0 0 auto; }
+.pr-before { font-size: 12px; color: #FF8A8E; line-height: 1.4; margin-top: 6px; text-decoration: line-through; opacity: 0.8; }
+.pr-after { font-size: 12.5px; color: #8FE3B4; line-height: 1.4; margin-top: 3px; }
+.pp-actions { display: flex; align-items: center; gap: 10px; padding: 12px 15px; border-top: 1px solid #2A2A33; }
+.pp-all { font-size: 12px; color: #9A9AA5; display: flex; align-items: center; gap: 6px; margin-right: auto; }
+
+/* ================= stage 5: class-a full mode parity ================= */
+
+/* ---- arch draw panel (top strip) ---- */
+#arch-draw-panel {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 14px;
+  padding: 9px 18px; background: #17171C; color: #D5D5DD;
+  border-bottom: 1px solid #2A2A33; z-index: 39; flex-wrap: wrap;
+}
+.ad-sub { display: flex; gap: 6px; }
+.ad-form { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; }
+.ad-form label { display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: #9A9AA5; }
+.ad-form select, .ad-form input {
+  background: #101014; border: 1px solid #34343E; color: #ECECF1; border-radius: 7px;
+  padding: 6px 8px; font-size: 13px; font-family: inherit;
+}
+.ad-form input[type="number"] { width: 62px; }
+.ad-form #ad-label { width: 150px; }
+.ad-form .fi-btn.accent { padding: 7px 15px; }
+.ad-hint { font-size: 11.5px; color: #7C7C87; line-height: 1.5; max-width: 460px; }
+
+/* ---- arch edit form (floating property editor) ---- */
+#arch-edit-form {
+  position: fixed; z-index: 1000; width: 344px; background: #17171C; color: #ECECF1;
+  border: 1px solid #2E2E38; border-radius: 14px; padding: 12px 14px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.45);
+}
+.af-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px 12px; margin-top: 4px; }
+.af-row { display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: #9A9AA5; }
+.af-cap { font-size: 11px; color: #9A9AA5; }
+.af-row input, .af-row select {
+  background: #101014; border: 1px solid #34343E; color: #ECECF1; border-radius: 7px;
+  padding: 6px 8px; font-size: 13px; font-family: inherit; width: 100%;
+}
+.af-row input:focus, .af-row select:focus { outline: none; border-color: #6E56CF; }
+.af-row2 { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.af-row2 .fi-busy, .af-row2 .fi-error { margin-top: 0; margin-right: auto; }
+
+/* ---- native structural-validation finding tags ---- */
+.finding-kind.structure { background: #26203A; color: #C9BCFF; }
+.finding-kind.info { background: #23232B; color: #9A9AA5; }
+
+/* ═══════════ D24: 서식 툴바 (편집 모드 · 상단 부착 · 3단) ═══════════
+   D21의 하단 플로팅 필 → **상단 부착 바**. 모드 툴바 바로 아래에 붙어 앱 크롬의 일부로 읽힌다.
+   ★ 높이 불변이 계약이다: 선택 종류가 바뀌어도 행 수·행 내용이 그대로라 스테이지가
+   리플로우되지 않는다(클릭 좌표·scale=1 전제 보존). 그래서 각 행은 wrap하지 않고
+   넘치면 가로 스크롤한다 — 줄바꿈은 곧 높이 변화이기 때문이다. */
+#fmt-bar {
+  flex: 0 0 auto;
+  background: #17171C; color: #ECECF1;
+  border-bottom: 1px solid #2E2E38;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.34);
+  padding: 7px 16px;
+}
+/* ★★ 자리는 항상 잡아 두고 그리지만 않는다 — 스테이지가 절대 움직이지 않게.
+   WHY: 툴바가 normal flow에서 나타났다 사라지면 #stage-wrap이 줄었다 늘었다 하며
+   스테이지가 (중앙정렬이 절반을 흡수해도) ~61px 위아래로 움직인다. 그러면 "선택 모드에서
+   좌표를 재고 → 편집 모드로 바꾼 뒤 그 좌표를 클릭"하는 경로가 전부 빗나간다.
+   실제로 s9(화살표 75checks)가 정확히 이 방식이라 처음 구현에서 깨졌다 — 추측이 아니라 실측.
+   display:none 대신 visibility:hidden을 쓰면 레이아웃 높이는 유지되고(스테이지 고정)
+   그리기·포커스·클릭에서는 완전히 빠진다. `hidden` 속성 자체는 그대로라
+   fmtBarShown()의 계약("선택 전에는 숨김")도 조금도 바뀌지 않는다.
+   ★ !important가 필요한 이유: 위쪽의 전역 `[hidden]{display:none!important}`가 특이도와
+   무관하게 이긴다 — 없이 쓰면 그대로 display:none이 된다(실측으로 확인). */
+#fmt-bar[hidden] { display: block !important; visibility: hidden; }
+/* ═══ Issue 1 (s13): 서식 툴바가 구조적으로 뜰 수 없는 4모드에서는 예약 공간마저 없앤다 ═══
+   fmtBarVisible()는 그리기·검증·레이아웃·다듬기에서 **항상 false**다(select·edit에서만 true).
+   그 4모드에서는 바가 절대 안 뜨므로 visibility:hidden으로 ~123px를 예약하는 건 순수 죽은 여백이다
+   → 진짜 display:none으로 접어 스테이지를 위로 붙인다. select·edit에서는 위 규칙(공간 예약)을
+   그대로 유지해 select↔edit 좌표 불변식(s9)을 지킨다 — 여기서만 바가 실제로 뜰 수 있기 때문.
+   body.fmt-inert는 updateFmtBar가 오직 mode로만 토글한다(선택 상태와 무관).
+   특이도 (1id,2attr/class,1type) > 위 규칙 (1id,1attr) + 둘 다 !important → 이 규칙이 이긴다. */
+body.fmt-inert #fmt-bar[hidden] { display: none !important; }
+#fmt-rows { display: flex; flex-direction: column; gap: 6px; }
+.fmt-row {
+  display: flex; align-items: center; gap: 5px;
+  flex-wrap: nowrap;              /* ★ 높이 불변 — 줄바꿈 금지 */
+  overflow-x: auto; overflow-y: hidden;
+  min-height: 30px;
+  scrollbar-width: none;          /* 스크롤바가 높이를 먹지 않게 */
+}
+.fmt-row::-webkit-scrollbar { height: 0; width: 0; }
+.fmt-row > * { flex: 0 0 auto; }
+.fmt-spacer { flex: 1 1 auto !important; min-width: 8px; }
+/* 화살표 전용 행 — 살짝 다른 바닥색으로 "여기는 화살표 도구"를 분리해 보여준다 */
+.fmt-row.arrow {
+  background: #14141A; border: 1px solid #24242E; border-radius: 9px;
+  padding: 3px 9px; margin-top: 1px;
+}
+#fmt-collapsed { display: flex; align-items: center; gap: 10px; }
+.fmt-title { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; color: #E7C86B; }
+/* 세그먼트 구분선 — 레퍼런스의 얇은 divider */
+.fmt-div { width: 1px; align-self: stretch; min-height: 22px; background: #2E2E38; margin: 0 5px; }
+
+.fmt-btn {
+  border: 1px solid transparent; background: transparent; color: #C9C9D2;
+  padding: 5px 10px; border-radius: 8px; font-size: 13px; font-family: inherit;
+  cursor: pointer; white-space: nowrap; line-height: 1.15;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+}
+.fmt-btn.ico { min-width: 30px; padding: 5px 7px; font-size: 14px; }
+.fmt-btn.ico.sm { min-width: 22px; padding: 3px 5px; font-size: 12px; color: #8B8B96; }
+.fmt-btn:hover:not(:disabled) { background: #26262E; color: #FFF; }
+.fmt-btn.on { background: #6E56CF; border-color: #6E56CF; color: #fff; }
+.fmt-btn.on:hover:not(:disabled) { background: #7C66D9; color: #fff; }
+/* 혼합 선택에서 값이 서로 다를 때 — 켜짐도 꺼짐도 아님을 밑줄 점선으로 */
+.fmt-btn.mixed { box-shadow: inset 0 -2px 0 #E7C86B; }
+/* D45: color만으론 이모지 라벨(🔗 등)이 안 탈색돼 비활성 대비가 거의 안 보임(2026-07-24 실측,
+   linkbtn_* 스크린샷) — .excluded와 동일한 grayscale+opacity 처리로 통일 */
+.fmt-btn:disabled { color: #4E4E58; cursor: not-allowed; filter: grayscale(1); opacity: .62; }
+/* 의도적 제외 항목 — 이모지까지 탈색해 "쓸 수 있는 버튼"으로 안 읽히게 한다(사유는 title에) */
+.fmt-btn.excluded {
+  color: #55555F; border: 1px dashed #33333D; cursor: not-allowed;
+  font-size: 12px; padding: 4px 9px; filter: grayscale(1); opacity: .62;
+}
+
+.fmt-sel-input {
+  background: #101014; border: 1px solid #34343E; color: #DCDCE4; border-radius: 8px;
+  padding: 5px 8px; font-size: 12.5px; font-family: inherit; cursor: pointer; max-width: 168px;
+}
+.fmt-sel-input:disabled { color: #55555F; cursor: not-allowed; }
+.fmt-sel-input:focus { outline: none; border-color: #6E56CF; }
+
+.fmt-num { display: inline-flex; align-items: center; gap: 3px; }
+.fmt-num input {
+  width: 62px; background: #101014; border: 1px solid #34343E; color: #ECECF1;
+  border-radius: 8px; padding: 5px 7px; font-size: 12.5px; font-family: inherit;
+  font-variant-numeric: tabular-nums;
+}
+.fmt-num input:focus { outline: none; border-color: #6E56CF; }
+.fmt-num input:disabled { color: #4E4E58; background: #131318; cursor: not-allowed; }
+.fmt-num input.mixed { color: #E7C86B; }
+/* ★ 팝업 이전: 박스 줄 인덱스·W/H 입력은 더 좁게 */
+.fmt-num input.fmt-idx { width: 42px; text-align: center; }
+.fmt-num input.fmt-wh { width: 54px; }
+/* 박스 전용 컨트롤 — 박스 미선택 시 숨김(높이는 행 구조라 불변, 폭만 회수) */
+.fmt-num.box-only[hidden] { display: none !important; }
+.fmt-lab { font-size: 10.5px; color: #8B8B96; letter-spacing: 0.02em; }
+
+.fmt-color { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+.fmt-color input[type="color"] {
+  width: 30px; height: 24px; padding: 0; border: 1px solid #34343E; border-radius: 6px;
+  background: #101014; cursor: pointer;
+}
+.fmt-color input[type="color"]:disabled { cursor: not-allowed; opacity: .35; }
+.fmt-color:has(input:disabled) .fmt-lab { color: #4E4E58; }
+
+/* 적용 대상 배지 — 단일이면 eid, 다중이면 "N개 선택 (종류 …)" */
+.fmt-sel {
+  font-size: 11.5px; color: #C9BCFF; background: #2A2350; border-radius: 999px;
+  padding: 3px 10px; font-variant-numeric: tabular-nums; white-space: nowrap;
+  max-width: 260px; min-width: 92px; overflow: hidden; text-overflow: ellipsis;
+  display: inline-block; text-align: center;
+}
+.fmt-sel.multi { background: #143A2C; color: #8FE3B4; }
+/* 선택이 없는 상태 — "대상"이 아니라 "요구"로 읽히게 색을 바꾼다(전 항목 비활성과 짝) */
+.fmt-sel.empty { background: #2B2517; color: #E7C86B; }
+
+/* ── D24: 편집 도구 그룹(구 편집 ▾ 드롭다운) ── */
+.fmt-tools { display: inline-flex; align-items: center; gap: 4px; }
+.fmt-btn.tool {
+  border: 1px solid #33333D; background: #1C1C23; gap: 7px; padding: 4px 10px; font-size: 12.5px;
+}
+.fmt-btn.tool:hover:not(:disabled) { background: #26262E; border-color: #45454F; color: #FFF; }
+.fmt-btn.tool.on { background: #6E56CF; border-color: #6E56CF; color: #fff; }
+.fmt-btn.tool.on .dd-tag.mech { background: #123322; color: #A7EFC7; }
+/* 문서 전체를 건드리는 항목 — 테두리까지 경고색으로 "스코프가 다르다"를 예고 */
+.fmt-btn.tool.danger { border-color: #5A3A1E; }
+.fmt-btn.tool.danger:hover:not(:disabled) { background: #2C2015; border-color: #7A4F26; color: #F4B183; }
+.fmt-btn.tool:disabled { border-color: #26262E; background: #15151A; }
+.fmt-btn.tool:disabled .dd-tag { opacity: .4; }
+.fmt-btn svg { display: block; flex: 0 0 auto; }
+
+/* ── D25c: 3-way focus 세그먼트(전체 / 노드 편집 / 화살표 편집) — 요소 편집 ON일 때만 노출 ── */
+.fmt-seg {
+  display: inline-flex; align-items: center; gap: 0;
+  border: 1px solid #33333D; border-radius: 8px; overflow: hidden; background: #15151A;
+}
+.fmt-seg[hidden] { display: none; }
+.fmt-seg-btn {
+  border: 0; background: transparent; color: #B7B7C2; cursor: pointer; font-family: inherit;
+  font-size: 12px; padding: 5px 11px; line-height: 1.15; white-space: nowrap;
+  border-right: 1px solid #2A2A33;
+}
+.fmt-seg-btn:last-child { border-right: 0; }
+.fmt-seg-btn:hover:not(.on) { background: #22222A; color: #FFF; }
+.fmt-seg-btn.on { background: #6E56CF; color: #fff; }
+
+/* ── D24: 화살표 행 어포던스 힌트 ── */
+.fmt-lab.strong { font-size: 11px; font-weight: 700; color: #C9BCFF; letter-spacing: 0.04em; }
+.fmt-hint {
+  font-size: 11px; color: #7C7C87; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; flex: 1 1 auto !important; min-width: 0;
+}
+.fmt-hint.live { color: #9FE0C0; }
+.fmt-hint kbd {
+  font-family: inherit; font-size: 10.5px; background: #23232C; color: #C9C9D2;
+  border: 1px solid #33333D; border-radius: 4px; padding: 1px 5px; margin: 0 1px;
+}
+
+#fmt-inspect-panel {
+  margin-top: 7px; border-top: 1px solid #2A2A33; padding-top: 8px;
+  font-size: 11.5px; color: #A8A8B4; max-height: 220px; overflow: auto;
+  max-width: 100%;
+}
+#fmt-inspect-panel .fi-sec { color: #E7C86B; font-weight: 700; margin: 6px 0 3px; }
+#fmt-inspect-panel ul { margin: 0; padding-left: 16px; }
+#fmt-inspect-panel li { margin: 2px 0; line-height: 1.45; }
+#fmt-inspect-panel .why { color: #7C7C87; }
+#fmt-inspect-panel code { color: #C9BCFF; font-size: 11px; }

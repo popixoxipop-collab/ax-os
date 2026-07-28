@@ -1,0 +1,25 @@
+{
+  "name": "archify",
+  "version": "2.10.0",
+  "private": true,
+  "type": "module",
+  "description": "JSON-IR diagram renderers (architecture / workflow / sequence / dataflow / lifecycle).",
+  "license": "MIT",
+  "bin": {
+    "archify": "./bin/archify.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "generate:validators": "node scripts/generate-validators.mjs",
+    "check:validators": "node scripts/generate-validators.mjs --check",
+    "test": "npm run check:validators && node test/golden.mjs && node --test test/*.test.mjs",
+    "render:examples": "node scripts/render-examples.mjs ../examples",
+    "check:overlaps": "node scripts/check-line-overlaps.mjs",
+    "check:text-overlaps": "node scripts/check-text-overlaps.mjs"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1"
+  }
+}

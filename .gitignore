@@ -1,3 +1,44 @@
 ax-os-dist/
 .claude/
 .env
+.gstack/
+
+# --- credentials: this repo is PUBLIC (popixoxipop-collab/ax-os) ---
+# $HOME is the repo root here, so a stray `git add -A` would otherwise stage real
+# SSH private keys and AWS credentials and push them to a public remote. Ignoring
+# them makes that mistake structurally impossible rather than merely unlikely.
+.ssh/
+.aws/
+.gnupg/
+.netrc
+.npmrc
+.docker/config.json
+.config/gh/
+*.pem
+*.p12
+id_rsa*
+id_ed25519*
+.emulator_console_auth_token
+
+# --- OS / editor noise ---
+.DS_Store
+.CFUserTextEncoding
+.localized
+.Trash/
+.ipynb_checkpoints/
+
+# --- dependencies & caches (reinstallable, never source) ---
+node_modules/
+__pycache__/
+*.pyc
+.EasyOCR/
+.venv/
+venv/
+
+# --- editor backup copies: the archify editor writes <file>.<tag>.bak on every
+# refactor step. 111 of them existed at the time this rule was added; they are
+# scratch state, not history -- git already provides that. ---
+*.bak
+
+# --- generated test output (screenshots, downloaded pages) ---
+.agents/skills/archify/editor/test/artifacts/

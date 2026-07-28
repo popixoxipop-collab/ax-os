@@ -1,0 +1,572 @@
+<title>P03 소크라틱 검증 세션 서비스 플로우</title>
+<style>
+  :root { color-scheme: light; }
+  html, body { margin:0; padding:0; background:#e8eaef; }
+  body {
+    display:flex; align-items:flex-start; justify-content:center;
+    min-height:100vh; box-sizing:border-box; padding:24px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR","Malgun Gothic",Arial,sans-serif;
+  }
+  /* This is a fixed-size (1920x1080) presentation slide, not a fluid page -- the exact
+     pixel layout (SVG diagram coordinates, absolute-positioned lanes/labels) is the
+     content itself, so it is deliberately reproduced as-is rather than made fluid.
+     This wrapper only adds scroll/scale so it's viewable at any window size without
+     clipping -- it does not touch anything inside .slide-container. */
+  .slide-scroll {
+    max-width:100%;
+    overflow:auto;
+    background:#ffffff;
+    box-shadow:0 20px 60px -20px rgba(15,23,42,.35), 0 1px 0 rgba(15,23,42,.06);
+    border-radius:4px;
+  }
+  .slide-container { background:#f4f6fa; }
+</style>
+
+<div class="slide-scroll">
+<div class="slide-container" data-screen-label="01 P03 Pipeline" style="position:relative;width:1920px;height:1080px;overflow:hidden;background:#f4f6fa;">
+
+  <!-- top accent strip -->
+  <div data-object="true" data-object-type="shape" style="position:absolute;left:0;top:0;width:1920px;height:6px;background:#5b3fd6;z-index:1;"></div>
+
+  <!-- eyebrow left -->
+  <div data-object="true" data-object-type="textbox" style="position:absolute;left:56px;top:34px;width:900px;font-size:13px;letter-spacing:.38em;font-weight:700;color:#6b7280;z-index:10;">
+    SERVICE FLOW · WORKFLOW DIAGRAM
+  </div>
+
+  <!-- page tag right -->
+  <div data-object="true" data-object-type="textbox" style="position:absolute;right:56px;top:34px;width:700px;text-align:right;font-size:13px;letter-spacing:.28em;color:#6b7280;font-weight:700;z-index:10;">
+    프로세스번호  P03 &nbsp;·&nbsp; SOCRATIC VERIFICATION SESSION
+  </div>
+
+  <!-- Title -->
+  <div data-object="true" data-object-type="textbox" style="position:absolute;left:56px;top:58px;width:1360px;height:70px;font-size:52px;font-weight:900;letter-spacing:-0.5px;color:#1a1f2b;line-height:1.1;z-index:10;">
+    P03 소크라틱 검증 세션 서비스 플로우
+  </div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute;left:58px;top:132px;width:1400px;font-size:18px;color:#6b7280;font-weight:600;z-index:10;">
+    사용자 → 브라우저 클라이언트(JS + Pyodide 분류기) → NVIDIA LLM &nbsp;·&nbsp; L1 → L2 → L3 → Reflection 4턴 루프
+  </div>
+
+  <!-- Legend right -->
+  <div data-object="true" data-object-type="textbox" style="position:absolute;right:56px;top:74px;width:600px;text-align:right;font-size:13px;color:#4b5563;font-weight:700;z-index:10;line-height:1.9;">
+    <span style="display:inline-block;width:22px;height:0;border-top:2px solid #2f3b4a;vertical-align:middle;margin-right:6px;"></span>메인 흐름
+    &nbsp;&nbsp;
+    <span style="display:inline-block;width:22px;height:0;border-top:2px dashed #6b7280;vertical-align:middle;margin-right:6px;"></span>다음 턴 루프백
+    &nbsp;&nbsp;
+    <span style="display:inline-block;width:22px;height:0;border-top:2px solid #b03434;vertical-align:middle;margin-right:6px;"></span>오류 경로
+  </div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute;right:56px;top:108px;width:600px;text-align:right;font-size:12px;color:#6b7280;font-weight:700;letter-spacing:.06em;z-index:10;">
+    <span style="background:#111827;color:#fff;padding:2px 9px;margin-right:4px;">AND</span>
+    <span style="background:#111827;color:#fff;padding:2px 9px;margin-right:4px;">OR</span>
+    <span style="border:1.5px solid #111827;color:#111827;padding:2px 9px;background:#fff;">◇ 분기</span>
+    <span style="border:1.5px solid #b03434;color:#b03434;padding:2px 9px;background:#fdecec;margin-left:4px;">오류/종료</span>
+  </div>
+
+  <!-- ============ PHASE HEADER BAND ============ -->
+  <div data-object="true" data-object-type="shape" style="position:absolute;left:56px;top:180px;width:1808px;height:42px;background:#151a24;z-index:2;"></div>
+  <!-- Phase divisions -->
+  <div data-object="true" data-object-type="textbox" style="position:absolute;left:56px;top:180px;width:270px;height:42px;line-height:42px;text-align:center;color:#fff;font-size:14px;font-weight:800;letter-spacing:.18em;z-index:11;">
+    0 · finding 연결
+  </div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute;left:326px;top:180px;width:264px;height:42px;line-height:42px;text-align:center;color:#fff;font-size:14px;font-weight:800;letter-spacing:.18em;z-index:11;">
+    1 · codeContexts
+  </div>
+  <div data-object="true" data-object-type="shape" style="position:absolute;left:590px;top:180px;width:290px;height:42px;background:#5b3fd6;z-index:3;"></div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute;left:590px;top:180px;width:290px;height:42px;line-height:42px;text-align:center;color:#fff;font-size:14px;font-weight:800;letter-spacing:.18em;z-index:11;">
+    2 · 세션 시작 <span style="font-size:11px;opacity:.9;letter-spacing:.24em;">EMPHASIS</span>
+  </div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute;left:880px;top:180px;width:300px;height:42px;line-height:42px;text-align:center;color:#fff;font-size:14px;font-weight:800;letter-spacing:.18em;z-index:11;">
+    3 · Turn · 질문/답변
+  </div>
+  <div data-object="true" data-object-type="shape" style="position:absolute;left:1180px;top:180px;width:360px;height:42px;background:#5b3fd6;z-index:3;"></div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute;left:1180px;top:180px;width:360px;height:42px;line-height:42px;text-align:center;color:#fff;font-size:14px;font-weight:800;letter-spacing:.18em;z-index:11;">
+    4 · 분류 / 판정 <span style="font-size:11px;opacity:.9;letter-spacing:.24em;">EMPHASIS</span>
+  </div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute;left:1540px;top:180px;width:324px;height:42px;line-height:42px;text-align:center;color:#fff;font-size:14px;font-weight:800;letter-spacing:.18em;z-index:11;">
+    5 · Verdict &nbsp;/&nbsp; 6 · 저장
+  </div>
+
+  <!-- ============ LANE BACKGROUNDS ============ -->
+  <!-- lane user: 234..340 (h 106) -->
+  <div data-object="true" data-object-type="shape" style="position:absolute;left:56px;top:234px;width:1808px;height:106px;background:#f2f4f8;z-index:1;"></div>
+  <!-- lane browser: 340..636 (h 296) -->
+  <div data-object="true" data-object-type="shape" style="position:absolute;left:56px;top:340px;width:1808px;height:296px;background:#fbfcfe;border-top:1px dashed #c9d1dc;border-bottom:1px dashed #c9d1dc;z-index:1;"></div>
+  <!-- lane llm: 636..742 (h 106) -->
+  <div data-object="true" data-object-type="shape" style="position:absolute;left:56px;top:636px;width:1808px;height:106px;background:#fdf5e0;z-index:1;"></div>
+
+  <!-- Lane labels — left column overlay -->
+  <div data-object="true" data-object-type="shape" style="position:absolute;left:56px;top:234px;width:180px;height:508px;background:transparent;border-left:4px solid #5b3fd6;z-index:2;"></div>
+
+  <div data-object="true" data-object-type="textbox" style="position:absolute;left:76px;top:250px;width:160px;z-index:10;">
+    <div style="font-size:11px;letter-spacing:.28em;color:#6b7280;font-weight:800;">LANE 01</div>
+    <div style="font-size:20px;font-weight:900;color:#1a1f2b;margin-top:4px;line-height:1.1;">사용자</div>
+    <div style="font-size:12px;color:#6b7280;margin-top:4px;font-weight:600;line-height:1.35;">팀원 · 답변 입력</div>
+  </div>
+
+  <div data-object="true" data-object-type="textbox" style="position:absolute;left:76px;top:358px;width:160px;z-index:10;">
+    <div style="font-size:11px;letter-spacing:.28em;color:#6b7280;font-weight:800;">LANE 02</div>
+    <div style="font-size:20px;font-weight:900;color:#1a1f2b;margin-top:4px;line-height:1.1;">브라우저<br>클라이언트</div>
+    <div style="font-size:12px;color:#6b7280;margin-top:6px;font-weight:600;line-height:1.35;">JS 엔진 · Pyodide 분류기<br>4턴 게이트 판정</div>
+  </div>
+
+  <div data-object="true" data-object-type="textbox" style="position:absolute;left:76px;top:652px;width:160px;z-index:10;">
+    <div style="font-size:11px;letter-spacing:.28em;color:#6b7280;font-weight:800;">LANE 03</div>
+    <div style="font-size:20px;font-weight:900;color:#1a1f2b;margin-top:4px;line-height:1.1;">NVIDIA LLM</div>
+    <div style="font-size:12px;color:#6b7280;margin-top:4px;font-weight:600;line-height:1.35;">프록시 경유 · ask · grade</div>
+  </div>
+
+  <!-- ============ MAIN SVG DIAGRAM ============ -->
+  <!-- SVG canvas: left 236, top 234, width 1628, height 508 -->
+  <svg data-object="true" data-object-type="shape" xmlns="http://www.w3.org/2000/svg"
+       style="position:absolute;left:236px;top:234px;width:1628px;height:508px;z-index:5;"
+       viewBox="0 0 1628 508">
+    <defs>
+      <marker id="ah" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+        <path d="M0,0 L10,4 L0,8 Z" fill="#2f3b4a"/>
+      </marker>
+      <marker id="ah-muted" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+        <path d="M0,0 L10,4 L0,8 Z" fill="#6b7280"/>
+      </marker>
+      <marker id="ah-red" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+        <path d="M0,0 L10,4 L0,8 Z" fill="#b03434"/>
+      </marker>
+    </defs>
+
+    <!-- ============ USER LANE (y 0..106) ============ -->
+    <!-- start -->
+    <circle cx="30" cy="52" r="22" fill="#eef2f8" stroke="#2f3b4a" stroke-width="2"/>
+    <text x="30" y="58" text-anchor="middle" font-size="15" font-weight="800" fill="#1a1f2b">시작</text>
+
+    <!-- 0.1 P02 finding 선택 -->
+    <g transform="translate(80 22)">
+      <rect width="130" height="58" fill="#eef2f8" stroke="#2f3b4a" stroke-width="2"/>
+      <text x="65" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#6b7280" letter-spacing="1.3">STEP 0.1</text>
+      <text x="65" y="42" text-anchor="middle" font-size="14" font-weight="800" fill="#1a1f2b">P02 finding 선택</text>
+    </g>
+
+    <!-- 2.3 세션 시작 클릭 -->
+    <g transform="translate(590 22)">
+      <rect width="140" height="58" fill="#eef2f8" stroke="#2f3b4a" stroke-width="2"/>
+      <text x="70" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#6b7280" letter-spacing="1.3">STEP 2.3</text>
+      <text x="70" y="42" text-anchor="middle" font-size="14" font-weight="800" fill="#1a1f2b">검증 세션 시작</text>
+    </g>
+
+    <!-- 3.3 질문 확인 -->
+    <g transform="translate(908 22)">
+      <rect width="120" height="58" fill="#eef2f8" stroke="#2f3b4a" stroke-width="2"/>
+      <text x="60" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#6b7280" letter-spacing="1.3">STEP 3.3</text>
+      <text x="60" y="42" text-anchor="middle" font-size="14" font-weight="800" fill="#1a1f2b">질문 확인</text>
+    </g>
+
+    <!-- 3.4 답변 입력/제출 -->
+    <g transform="translate(1042 22)">
+      <rect width="140" height="58" fill="#eef2f8" stroke="#2f3b4a" stroke-width="2"/>
+      <text x="70" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#6b7280" letter-spacing="1.3">STEP 3.4</text>
+      <text x="70" y="42" text-anchor="middle" font-size="14" font-weight="800" fill="#1a1f2b">답변 입력/제출</text>
+    </g>
+
+    <!-- 종료 -->
+    <circle cx="1592" cy="52" r="24" fill="#eef2f8" stroke="#2f3b4a" stroke-width="2"/>
+    <text x="1592" y="58" text-anchor="middle" font-size="14" font-weight="800" fill="#1a1f2b">종료</text>
+
+    <!-- ============ BROWSER LANE row 1 (y 122..194) ============ -->
+
+    <!-- 0.2 P02 결과 finding -->
+    <g transform="translate(20 130)">
+      <rect width="150" height="60" fill="#ffffff" stroke="#2f3b4a" stroke-width="2"/>
+      <text x="75" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#6b7280" letter-spacing="1.3">STEP 0.2</text>
+      <text x="75" y="38" text-anchor="middle" font-size="13" font-weight="800" fill="#1a1f2b">P02 결과 finding</text>
+      <text x="75" y="52" text-anchor="middle" font-size="11" fill="#6b7280" font-weight="600">+ files 확보</text>
+    </g>
+
+    <!-- 1.1 OR gate -->
+    <g transform="translate(190 138)">
+      <path d="M8,0 C28,10 34,26 8,52 C34,48 54,38 68,26 C54,14 34,4 8,0 Z" fill="#ffffff" stroke="#111827" stroke-width="2.4"/>
+      <text x="38" y="32" text-anchor="middle" font-size="12" font-weight="900" fill="#111827">OR</text>
+    </g>
+    <text x="228" y="111" text-anchor="middle" font-size="11" font-weight="800" fill="#1a1f2b">1.1 finding-code 연결?</text>
+
+    <!-- 1.3 codeContexts 생성 -->
+    <g transform="translate(280 130)">
+      <rect width="140" height="60" fill="#ffffff" stroke="#2f3b4a" stroke-width="2"/>
+      <text x="70" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#6b7280" letter-spacing="1.3">STEP 1.3</text>
+      <text x="70" y="38" text-anchor="middle" font-size="13" font-weight="800" fill="#1a1f2b">codeContexts 구성</text>
+      <text x="70" y="52" text-anchor="middle" font-size="11" fill="#6b7280" font-weight="600">최대 3개 파일</text>
+    </g>
+
+    <!-- 1.4 저장 -->
+    <g transform="translate(432 130)">
+      <rect width="140" height="60" fill="#ffffff" stroke="#2f3b4a" stroke-width="2"/>
+      <text x="70" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#6b7280" letter-spacing="1.3">STEP 1.4</text>
+      <text x="70" y="38" text-anchor="middle" font-size="13" font-weight="800" fill="#1a1f2b">finding + code 저장</text>
+      <text x="70" y="52" text-anchor="middle" font-size="11" fill="#6b7280" font-weight="600">sessionStorage</text>
+    </g>
+
+    <!-- 2.1 AND gate -->
+    <g transform="translate(590 138)">
+      <path d="M8,0 L38,0 C56,0 68,11 68,26 C68,41 56,52 38,52 L8,52 Z" fill="#ffffff" stroke="#111827" stroke-width="2.4"/>
+      <text x="36" y="32" text-anchor="middle" font-size="11" font-weight="900" fill="#111827">AND</text>
+    </g>
+    <text x="590" y="111" text-anchor="middle" font-size="11" font-weight="800" fill="#1a1f2b">2.1 세션 시작 전제조건?</text>
+
+    <!-- 2.4 manifest 로드 (accent) -->
+    <g transform="translate(672 130)">
+      <rect width="160" height="60" fill="#ede7ff" stroke="#3b25a1" stroke-width="2"/>
+      <text x="80" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#3b25a1" letter-spacing="1.3">STEP 2.4</text>
+      <text x="80" y="38" text-anchor="middle" font-size="13" font-weight="800" fill="#1a1f2b">manifest / 모델 고정</text>
+      <text x="80" y="52" text-anchor="middle" font-size="11" fill="#6b7280" font-weight="600">Pyodide 분류기 로드</text>
+    </g>
+
+    <!-- 2.5 codeContexts 결합 -->
+    <g transform="translate(846 130)">
+      <rect width="140" height="60" fill="#ffffff" stroke="#2f3b4a" stroke-width="2"/>
+      <text x="70" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#6b7280" letter-spacing="1.3">STEP 2.5</text>
+      <text x="70" y="38" text-anchor="middle" font-size="13" font-weight="800" fill="#1a1f2b">codeContexts 결합</text>
+      <text x="70" y="52" text-anchor="middle" font-size="11" fill="#6b7280" font-weight="600">context cap 적용</text>
+    </g>
+
+    <!-- 3.1 턴 선택 (accent) -->
+    <g transform="translate(1000 130)">
+      <rect width="160" height="60" fill="#ede7ff" stroke="#3b25a1" stroke-width="2"/>
+      <text x="80" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#3b25a1" letter-spacing="1.3">STEP 3.1</text>
+      <text x="80" y="38" text-anchor="middle" font-size="13" font-weight="800" fill="#1a1f2b">턴 선택</text>
+      <text x="80" y="52" text-anchor="middle" font-size="11" fill="#6b7280" font-weight="600">L1→L2→L3→Reflection</text>
+    </g>
+
+    <!-- 3.2 traffic ≥ 30 diamond -->
+    <g transform="translate(1180 130)">
+      <polygon points="50,0 100,30 50,60 0,30" fill="#ffffff" stroke="#111827" stroke-width="2.4"/>
+      <text x="50" y="26" text-anchor="middle" font-size="11" font-weight="900" fill="#111827">3.2</text>
+      <text x="50" y="42" text-anchor="middle" font-size="10.5" font-weight="700" fill="#334155">traffic ≥ 30?</text>
+    </g>
+
+    <!-- 3.3 질문 표시 (browser) -->
+    <g transform="translate(1300 130)">
+      <rect width="126" height="60" fill="#ffffff" stroke="#2f3b4a" stroke-width="2"/>
+      <text x="63" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#6b7280" letter-spacing="1.3">STEP 3.3</text>
+      <text x="63" y="38" text-anchor="middle" font-size="13" font-weight="800" fill="#1a1f2b">질문 표시</text>
+      <text x="63" y="52" text-anchor="middle" font-size="11" fill="#6b7280" font-weight="600">카운트다운</text>
+    </g>
+
+    <!-- ============ BROWSER LANE row 2 (classify — y 216..282) ============ -->
+
+    <!-- 4.1 diamond: category = cognition-isolation? -->
+    <g transform="translate(20 220)">
+      <polygon points="70,0 140,40 70,80 0,40" fill="#ffffff" stroke="#111827" stroke-width="2.4"/>
+      <text x="70" y="32" text-anchor="middle" font-size="11" font-weight="900" fill="#111827">4.1</text>
+      <text x="70" y="48" text-anchor="middle" font-size="10" font-weight="700" fill="#334155">category =</text>
+      <text x="70" y="60" text-anchor="middle" font-size="10" font-weight="700" fill="#334155">cognition-isolation?</text>
+    </g>
+
+    <!-- 4.2 classify_justification -->
+    <g transform="translate(190 226)">
+      <rect width="150" height="60" fill="#ede7ff" stroke="#3b25a1" stroke-width="2"/>
+      <text x="75" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#3b25a1" letter-spacing="1.3">STEP 4.2</text>
+      <text x="75" y="38" text-anchor="middle" font-size="13" font-weight="800" fill="#1a1f2b">정당화 답변 분류</text>
+      <text x="75" y="52" text-anchor="middle" font-size="10.5" fill="#6b7280" font-weight="600">classify_justification</text>
+    </g>
+
+    <!-- 4.3 diamond 개수 임계값 -->
+    <g transform="translate(360 226)">
+      <polygon points="50,0 100,30 50,60 0,30" fill="#ffffff" stroke="#111827" stroke-width="2.4"/>
+      <text x="50" y="26" text-anchor="middle" font-size="11" font-weight="900" fill="#111827">4.3</text>
+      <text x="50" y="42" text-anchor="middle" font-size="10.5" font-weight="700" fill="#334155">개수 임계값</text>
+    </g>
+    <text x="375" y="304" text-anchor="middle" font-size="10.5" font-weight="600" fill="#6b7280">0 surface / 1 partial / 2+ defended</text>
+
+    <!-- 4.4 diamond level = reflection -->
+    <g transform="translate(20 328)">
+      <polygon points="70,0 140,32 70,64 0,32" fill="#ffffff" stroke="#111827" stroke-width="2.4"/>
+      <text x="70" y="28" text-anchor="middle" font-size="11" font-weight="900" fill="#111827">4.4</text>
+      <text x="70" y="44" text-anchor="middle" font-size="10.5" font-weight="700" fill="#334155">level = reflection?</text>
+    </g>
+
+    <!-- 4.5 evaluate_reflection (NO branch) -->
+    <g transform="translate(190 328)">
+      <rect width="150" height="60" fill="#ede7ff" stroke="#3b25a1" stroke-width="2"/>
+      <text x="75" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#3b25a1" letter-spacing="1.3">STEP 4.5</text>
+      <text x="75" y="38" text-anchor="middle" font-size="13" font-weight="800" fill="#1a1f2b">답변 신호 평가</text>
+      <text x="75" y="52" text-anchor="middle" font-size="10.5" fill="#6b7280" font-weight="600">evaluate_reflection</text>
+    </g>
+
+    <!-- 4.6 diamond -->
+    <g transform="translate(360 328)">
+      <polygon points="50,0 100,30 50,60 0,30" fill="#ffffff" stroke="#111827" stroke-width="2.4"/>
+      <text x="50" y="26" text-anchor="middle" font-size="11" font-weight="900" fill="#111827">4.6</text>
+      <text x="50" y="42" text-anchor="middle" font-size="10.5" font-weight="700" fill="#334155">개수 임계값</text>
+    </g>
+
+    <!-- 4.7 evaluate_reflection (YES branch) -->
+    <g transform="translate(190 402)">
+      <rect width="150" height="58" fill="#ede7ff" stroke="#3b25a1" stroke-width="2"/>
+      <text x="75" y="18" text-anchor="middle" font-size="11" font-weight="800" fill="#3b25a1" letter-spacing="1.3">STEP 4.7</text>
+      <text x="75" y="36" text-anchor="middle" font-size="13" font-weight="800" fill="#1a1f2b">Reflection 답변 평가</text>
+      <text x="75" y="50" text-anchor="middle" font-size="10.5" fill="#6b7280" font-weight="600">evaluate_reflection</text>
+    </g>
+
+    <!-- 4.8 AND gate Reflection defended -->
+    <g transform="translate(360 415)">
+      <path d="M8,0 L38,0 C56,0 68,10 68,22 C68,34 56,44 38,44 L8,44 Z" fill="#ffffff" stroke="#111827" stroke-width="2.4"/>
+      <text x="36" y="28" text-anchor="middle" font-size="11" font-weight="900" fill="#111827">AND</text>
+    </g>
+    <text x="396" y="473" text-anchor="middle" font-size="11" font-weight="800" fill="#1a1f2b">4.8 Reflection defended?</text>
+    <text x="396" y="488" text-anchor="middle" font-size="10" font-weight="600" fill="#6b7280">required_ok AND optional ≥ min</text>
+
+    <!-- ============ VERDICT COLUMN (right of classify) ============ -->
+    <!-- 5.1 verdict = defended -->
+    <g transform="translate(490 226)">
+      <rect width="150" height="52" fill="#ffffff" stroke="#2f3b4a" stroke-width="2"/>
+      <text x="75" y="18" text-anchor="middle" font-size="11" font-weight="800" fill="#6b7280" letter-spacing="1.3">STEP 5.1</text>
+      <text x="75" y="38" text-anchor="middle" font-size="13" font-weight="800" fill="#1a1f2b">defended 판정</text>
+      <text x="75" y="50" text-anchor="middle" font-size="10.5" fill="#6b7280" font-weight="600">verdict = defended</text>
+    </g>
+
+    <!-- 5.2 surface/partial 기록 -->
+    <g transform="translate(490 330)">
+      <rect width="150" height="60" fill="#ffffff" stroke="#2f3b4a" stroke-width="2"/>
+      <text x="75" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#6b7280" letter-spacing="1.3">STEP 5.2</text>
+      <text x="75" y="38" text-anchor="middle" font-size="13" font-weight="800" fill="#1a1f2b">surface / partial 기록</text>
+      <text x="75" y="52" text-anchor="middle" font-size="10.5" fill="#6b7280" font-weight="600">다음 턴 준비</text>
+    </g>
+
+    <!-- 5.3 OR gate 루프 종료 -->
+    <g transform="translate(680 250)">
+      <path d="M8,0 C28,10 34,26 8,52 C34,48 54,38 68,26 C54,14 34,4 8,0 Z" fill="#ffffff" stroke="#111827" stroke-width="2.4"/>
+      <text x="38" y="32" text-anchor="middle" font-size="12" font-weight="900" fill="#111827">OR</text>
+    </g>
+    <text x="718" y="240" text-anchor="middle" font-size="11" font-weight="800" fill="#1a1f2b">5.3 루프 종료?</text>
+    <text x="780" y="315" text-anchor="middle" font-size="10" font-weight="600" fill="#6b7280">defended OR 4턴 소진</text>
+
+    <!-- 5.4 verdict=exhausted_at_cap -->
+    <g transform="translate(686 348)">
+      <rect width="176" height="52" fill="#ffffff" stroke="#2f3b4a" stroke-width="2"/>
+      <text x="88" y="18" text-anchor="middle" font-size="11" font-weight="800" fill="#6b7280" letter-spacing="1.3">STEP 5.4</text>
+      <text x="88" y="38" text-anchor="middle" font-size="13" font-weight="800" fill="#1a1f2b">턴 소진 판정</text>
+      <text x="88" y="50" text-anchor="middle" font-size="10.5" fill="#6b7280" font-weight="600">verdict = exhausted</text>
+    </g>
+
+    <!-- ============ 6 · 저장 COLUMN ============ -->
+    <!-- 6.1 traffic ≥ 30 diamond -->
+    <g transform="translate(800 226)">
+      <polygon points="55,0 110,30 55,60 0,30" fill="#ffffff" stroke="#111827" stroke-width="2.4"/>
+      <text x="55" y="26" text-anchor="middle" font-size="11" font-weight="900" fill="#111827">6.1</text>
+      <text x="55" y="42" text-anchor="middle" font-size="10.5" font-weight="700" fill="#334155">traffic ≥ 30?</text>
+    </g>
+
+    <!-- 6.3 결과 구성/저장 (accent) -->
+    <g transform="translate(940 226)">
+      <rect width="240" height="60" fill="#ede7ff" stroke="#3b25a1" stroke-width="2"/>
+      <text x="120" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#3b25a1" letter-spacing="1.3">STEP 6.3</text>
+      <text x="120" y="38" text-anchor="middle" font-size="14" font-weight="800" fill="#1a1f2b">결과 구성 / 저장</text>
+      <text x="120" y="52" text-anchor="middle" font-size="10.5" fill="#6b7280" font-weight="600">verdict · turns · transcript · grades</text>
+    </g>
+
+    <!-- ============ ERROR BRANCHES ============ -->
+    <!-- 1.2 인터뷰 연결 불가 -->
+    <g transform="translate(30 470)">
+      <rect width="150" height="34" fill="#fdecec" stroke="#b03434" stroke-width="2"/>
+      <text x="75" y="14" text-anchor="middle" font-size="10" font-weight="800" fill="#b03434" letter-spacing="1.3">STEP 1.2 · NO</text>
+      <text x="75" y="28" text-anchor="middle" font-size="12" font-weight="800" fill="#1a1f2b">인터뷰 연결 불가</text>
+    </g>
+
+    <!-- 2.2 시작 불가 -->
+    <g transform="translate(555 470)">
+      <rect width="150" height="34" fill="#fdecec" stroke="#b03434" stroke-width="2"/>
+      <text x="75" y="14" text-anchor="middle" font-size="10" font-weight="800" fill="#b03434" letter-spacing="1.3">STEP 2.2 · NO</text>
+      <text x="75" y="28" text-anchor="middle" font-size="12" font-weight="800" fill="#1a1f2b">시작 불가 · 폴백</text>
+    </g>
+
+    <!-- ============ LLM LANE (y 402..488) ============ -->
+    <!-- 6.2 grade_interview_answer (LLM) -->
+    <g transform="translate(940 410)">
+      <rect width="240" height="60" fill="#fff9e9" stroke="#c8a03a" stroke-width="2"/>
+      <text x="120" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#8a6b1a" letter-spacing="1.3">LLM · STEP 6.2</text>
+      <text x="120" y="38" text-anchor="middle" font-size="13" font-weight="800" fill="#1a1f2b">5축 채점</text>
+      <text x="120" y="52" text-anchor="middle" font-size="10.5" fill="#6b7280" font-weight="600">grade_interview_answer</text>
+    </g>
+
+    <!-- 3.2 ask_question (LLM) -->
+    <g transform="translate(1240 410)">
+      <rect width="180" height="60" fill="#fff9e9" stroke="#c8a03a" stroke-width="2"/>
+      <text x="90" y="20" text-anchor="middle" font-size="11" font-weight="800" fill="#8a6b1a" letter-spacing="1.3">LLM · STEP 3.2</text>
+      <text x="90" y="38" text-anchor="middle" font-size="13" font-weight="800" fill="#1a1f2b">질문 생성</text>
+      <text x="90" y="52" text-anchor="middle" font-size="10.5" fill="#6b7280" font-weight="600">ask_question</text>
+    </g>
+
+    <!-- ============ ARROWS ============ -->
+
+    <!-- Row 0/1: start → 0.1 → down 0.2 → 1.1 OR → 1.3 → 1.4 → 2.1 AND → up 2.3 user → down 2.4 → 2.5 → 3.1 → 3.2 → 3.3 -->
+    <line x1="52" y1="52" x2="80" y2="52" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <path d="M145,80 L145,130" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- 0.2 → 1.1 -->
+    <line x1="170" y1="160" x2="190" y2="160" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- 1.1 YES → 1.3 -->
+    <line x1="262" y1="160" x2="280" y2="160" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="269" y="153" text-anchor="middle" font-size="10" font-weight="800" fill="#334155">YES</text>
+    <!-- 1.1 NO → down to 1.2 (left branch) -->
+    <path d="M228,196 L228,210 L14,210 L14,445 L105,445 L105,470" fill="none" stroke="#b03434" stroke-width="2" marker-end="url(#ah-red)"/>
+    <text x="234" y="203" font-size="10" font-weight="800" fill="#b03434">NO</text>
+    <!-- 1.3 → 1.4 -->
+    <line x1="420" y1="160" x2="432" y2="160" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- 1.4 → 2.1 -->
+    <line x1="572" y1="160" x2="590" y2="160" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- 2.1 YES → up to user 2.3 -->
+    <path d="M658,164 L660,164 L660,80" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="634" y="133" font-size="10" font-weight="800" fill="#334155">YES</text>
+    <!-- 2.1 NO → down to 2.2 -->
+    <path d="M628,196 L628,210 L652,210 L652,410 L630,410 L630,470" fill="none" stroke="#b03434" stroke-width="2" marker-end="url(#ah-red)"/>
+    <text x="606" y="207" font-size="10" font-weight="800" fill="#b03434">NO</text>
+    <!-- user 2.3 → down to 2.4 -->
+    <path d="M660,80 L750,80 L750,130" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- 2.4 → 2.5 -->
+    <line x1="832" y1="160" x2="846" y2="160" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- 2.5 → 3.1 -->
+    <line x1="986" y1="160" x2="1000" y2="160" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- 3.1 → 3.2 diamond -->
+    <line x1="1160" y1="160" x2="1180" y2="160" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- 3.2 → 3.3 browser (question shown) -->
+    <line x1="1280" y1="160" x2="1300" y2="160" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- 3.2 down → LLM ask_question -->
+    <path d="M1230,190 L1230,410" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="1240" y="272" font-size="10" font-weight="800" fill="#334155">LLM 요청</text>
+    <!-- LLM ask_question → up to browser 3.3 -->
+    <path d="M1360,410 L1360,190 L1363,190" fill="none" stroke="none"/>
+    <!-- browser 3.3 → up to user 3.3 (질문 확인) -->
+    <path d="M1363,130 L1363,100 L968,100 L968,80" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- user 3.3 → user 3.4 -->
+    <line x1="1028" y1="52" x2="1042" y2="52" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- user 3.4 → down to 4.1 diamond (start classify) -->
+    <path d="M1112,80 L1112,118 L10,118 L10,205 L90,205 L90,220" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="400" y="106" text-anchor="middle" font-size="10.5" font-weight="800" fill="#334155" style="paint-order:stroke;stroke:#fbfcfe;stroke-width:4;">답변 제출 → classify 단계로 진입</text>
+
+    <!-- 4.1 YES → 4.2 -->
+    <line x1="160" y1="260" x2="190" y2="256" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="167" y="246" font-size="10" font-weight="800" fill="#334155">YES</text>
+    <!-- 4.2 → 4.3 -->
+    <line x1="340" y1="256" x2="360" y2="256" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- 4.3 defended → 5.1 -->
+    <path d="M460,256 L490,252" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="475" y="248" text-anchor="middle" font-size="10" font-weight="800" fill="#334155">2+</text>
+    <!-- 4.3 surface/partial → 5.2 (routes under 5.1, enters 5.2 top edge — keeps clear of the 4.6→5.1 riser at x=470) -->
+    <path d="M410,286 L510,286 L510,330" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="516" y="302" font-size="10" font-weight="800" fill="#334155">0/1</text>
+
+    <!-- 4.1 NO → 4.4 diamond -->
+    <path d="M90,300 L90,328" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="100" y="318" font-size="10" font-weight="800" fill="#334155">NO</text>
+    <!-- 4.4 NO → 4.5 -->
+    <line x1="160" y1="360" x2="190" y2="358" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="170" y="350" font-size="10" font-weight="800" fill="#334155">NO</text>
+    <!-- 4.5 → 4.6 -->
+    <line x1="340" y1="358" x2="360" y2="358" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- 4.6 defended → 5.1 (up) -->
+    <path d="M460,358 L467,358 L467,252 L490,252" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="475" y="308" font-size="10" font-weight="800" fill="#334155">2+</text>
+    <!-- 4.6 surface/partial → 5.2 -->
+    <path d="M460,358 L490,358" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="471" y="352" font-size="10" font-weight="800" fill="#334155">0/1</text>
+
+    <!-- 4.4 YES → 4.7 -->
+    <path d="M90,392 L90,431 L190,431" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="100" y="422" font-size="10" font-weight="800" fill="#334155">YES</text>
+    <!-- 4.7 → 4.8 -->
+    <line x1="340" y1="431" x2="360" y2="437" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- 4.8 YES → 5.1 (up to defended, shared riser with 4.6-defended) -->
+    <path d="M430,437 L467,437 L467,252 L490,252" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="440" y="430" font-size="10" font-weight="800" fill="#334155">YES</text>
+    <!-- 4.8 NO → 5.2 (surface/partial, enters 5.2 bottom edge — keeps the x=467 riser corridor single-line) -->
+    <path d="M430,437 L520,437 L520,390" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="526" y="416" font-size="10" font-weight="800" fill="#334155">NO</text>
+
+    <!-- 5.1 → 5.3 -->
+    <path d="M640,252 L680,268" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- 5.2 → 5.3 -->
+    <path d="M640,360 L678,290" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- 5.3 defended → 6.1 (up right) -->
+    <path d="M754,278 L790,278 L790,256 L800,256" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="749" y="296" font-size="10" font-weight="800" fill="#334155">defended</text>
+    <!-- 5.3 4턴 소진 → 5.4 -->
+    <path d="M718,302 L718,348" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="728" y="330" font-size="10" font-weight="800" fill="#334155">4턴 소진</text>
+    <!-- 5.4 → 6.1 -->
+    <path d="M862,374 L878,374 L878,286" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- 6.1 → 6.3 -->
+    <line x1="910" y1="256" x2="940" y2="256" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- 6.1 down → LLM 6.2 grade -->
+    <path d="M855,286 L912,286 L912,410" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <text x="918" y="360" font-size="10" font-weight="800" fill="#334155">채점 요청</text>
+    <!-- LLM 6.2 → back to 6.3 (up right) -->
+    <path d="M1180,440 L1200,440 L1200,286 L1180,286" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+    <!-- 6.3 → 종료 (up to user lane) -->
+    <path d="M1180,256 L1290,256 L1290,52 L1568,52" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+
+    <!-- LLM ask_question up-arrow (from 3.2 diamond down-arrow return) -->
+    <path d="M1330,410 L1330,190" fill="none" stroke="#2f3b4a" stroke-width="2" marker-end="url(#ah)"/>
+
+    <!-- Loop-back dashed: 5.3 NO(다음 턴) → 3.1 -->
+    <path d="M718,302 L718,336 L900,336 L900,498 L1212,498 L1212,205 L1080,205 L1080,190" fill="none" stroke="#6b7280" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#ah-muted)"/>
+    <text x="1060" y="492" text-anchor="middle" font-size="11" font-weight="800" fill="#4b5563" style="paint-order:stroke;stroke:#fbfcfe;stroke-width:4;">NO · 다음 턴 → L1/L2/L3/Reflection 재진입</text>
+
+  </svg>
+
+  <!-- ============ EVIDENCE panel (bottom) ============ -->
+  <div data-object="true" data-object-type="shape" style="position:absolute;left:56px;top:766px;width:1808px;height:272px;background:#ffffff;border:1.5px solid #d0d7e2;z-index:2;"></div>
+
+  <div data-object="true" data-object-type="textbox" style="position:absolute;left:80px;top:786px;width:400px;z-index:10;">
+    <div style="font-size:12px;letter-spacing:.28em;color:#5b3fd6;font-weight:800;">EVIDENCE</div>
+    <div style="font-size:26px;font-weight:900;color:#1a1f2b;margin-top:4px;line-height:1.15;">AND / OR 게이트<br>설명표</div>
+    <div style="font-size:13px;color:#6b7280;font-weight:600;margin-top:8px;line-height:1.5;">
+      게이트 4개 · 진위 조건과 소스 근거를 매핑.<br>
+      4.1 / 4.3 / 4.6 은 개수 임계값 분기이며<br>
+      AND/OR 게이트가 아님.
+    </div>
+  </div>
+
+  <div data-object="true" data-object-type="textbox" style="position:absolute;left:500px;top:786px;width:1360px;z-index:10;font-size:13px;color:#1a1f2b;">
+    <table style="width:100%;border-collapse:collapse;font-family:inherit;">
+      <thead>
+        <tr style="background:#151a24;color:#fff;">
+          <th style="text-align:left;padding:9px 12px;font-weight:800;letter-spacing:.06em;font-size:12px;width:22%;border:1px solid #151a24;">게이트</th>
+          <th style="text-align:left;padding:9px 12px;font-weight:800;letter-spacing:.06em;font-size:12px;width:8%;border:1px solid #151a24;">구분</th>
+          <th style="text-align:left;padding:9px 12px;font-weight:800;letter-spacing:.06em;font-size:12px;width:38%;border:1px solid #151a24;">조건</th>
+          <th style="text-align:left;padding:9px 12px;font-weight:800;letter-spacing:.06em;font-size:12px;width:32%;border:1px solid #151a24;">소스 근거</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding:9px 12px;border:1px solid #d0d7e2;font-weight:800;">1.1 finding-code 연결</td>
+          <td style="padding:9px 12px;border:1px solid #d0d7e2;"><span style="background:#111827;color:#fff;padding:3px 9px;font-size:11px;font-weight:800;letter-spacing:.15em;">OR</span></td>
+          <td style="padding:9px 12px;border:1px solid #d0d7e2;color:#334155;">finding.file basename 직접 매치 <span style="color:#5b3fd6;font-weight:800;">OR</span> finding 텍스트에 basename 언급</td>
+          <td style="padding:9px 12px;border:1px solid #d0d7e2;color:#4b5563;font-family:'SF Mono',Menlo,monospace;font-size:11.5px;">p02-engine.js:120-146</td>
+        </tr>
+        <tr style="background:#fafbfd;">
+          <td style="padding:9px 12px;border:1px solid #d0d7e2;font-weight:800;">2.1 세션 시작 전제조건</td>
+          <td style="padding:9px 12px;border:1px solid #d0d7e2;"><span style="background:#111827;color:#fff;padding:3px 9px;font-size:11px;font-weight:800;letter-spacing:.15em;">AND</span></td>
+          <td style="padding:9px 12px;border:1px solid #d0d7e2;color:#334155;">finding/submission <span style="color:#5b3fd6;font-weight:800;">∧</span> NVIDIA key <span style="color:#5b3fd6;font-weight:800;">∧</span> proxy URL</td>
+          <td style="padding:9px 12px;border:1px solid #d0d7e2;color:#4b5563;font-family:'SF Mono',Menlo,monospace;font-size:11.5px;">session.html:209-218 · p03-engine.js:281-290</td>
+        </tr>
+        <tr>
+          <td style="padding:9px 12px;border:1px solid #d0d7e2;font-weight:800;">4.8 Reflection defended</td>
+          <td style="padding:9px 12px;border:1px solid #d0d7e2;"><span style="background:#111827;color:#fff;padding:3px 9px;font-size:11px;font-weight:800;letter-spacing:.15em;">AND</span></td>
+          <td style="padding:9px 12px;border:1px solid #d0d7e2;color:#334155;">required_ok=true <span style="color:#5b3fd6;font-weight:800;">∧</span> optional_matches ≥ min_optional_required</td>
+          <td style="padding:9px 12px;border:1px solid #d0d7e2;color:#4b5563;font-family:'SF Mono',Menlo,monospace;font-size:11.5px;">reflection_signal.py:46-48 · turn_engine.py:100-107</td>
+        </tr>
+        <tr style="background:#fafbfd;">
+          <td style="padding:9px 12px;border:1px solid #d0d7e2;font-weight:800;">5.3 루프 종료</td>
+          <td style="padding:9px 12px;border:1px solid #d0d7e2;"><span style="background:#111827;color:#fff;padding:3px 9px;font-size:11px;font-weight:800;letter-spacing:.15em;">OR</span></td>
+          <td style="padding:9px 12px;border:1px solid #d0d7e2;color:#334155;">verdict = "defended" <span style="color:#5b3fd6;font-weight:800;">OR</span> L1/L2/L3/Reflection 최대 턴 소진</td>
+          <td style="padding:9px 12px;border:1px solid #d0d7e2;color:#4b5563;font-family:'SF Mono',Menlo,monospace;font-size:11.5px;">turn_engine.py:233-253 · p03-engine.js:312-334</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div data-object="true" data-object-type="textbox" style="position:absolute;left:56px;bottom:20px;width:1200px;font-size:12px;letter-spacing:.22em;color:#6b7280;font-weight:700;z-index:10;">
+    P03 · SOCRATIC VERIFICATION SESSION · SERVICE FLOW
+  </div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute;right:56px;bottom:20px;width:200px;text-align:right;font-size:12px;letter-spacing:.22em;color:#6b7280;font-weight:700;z-index:10;">
+    01 / 01
+  </div>
+
+</div>
+</div>

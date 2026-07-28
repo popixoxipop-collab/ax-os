@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>P01 교안/커리큘럼 분석 서비스 플로우</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap');
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; overflow:hidden; font-family:'IBM Plex Sans KR', system-ui, sans-serif; }
+</style>
+</head>
+<body>
+<div class="slide-container" data-screen-label="01 P01 Service Flow" style="position:relative; width:1920px; height:1080px; overflow:hidden; background:#F5F3EE;">
+
+  <!-- Background grain shape (subtle) -->
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:0; top:0; width:1920px; height:1080px; background:
+    radial-gradient(1200px 600px at 20% 0%, rgba(93,64,196,0.05), transparent 60%),
+    radial-gradient(900px 500px at 100% 100%, rgba(200,120,20,0.06), transparent 60%);
+    z-index:1;"></div>
+
+  <!-- Title -->
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:64px; top:44px; width:1200px; z-index:10;">
+    <div style="font-size:15px; letter-spacing:0.24em; color:#8A7B5C; font-weight:600;">SERVICE FLOW · WORKFLOW DIAGRAM</div>
+    <div style="font-size:40px; font-weight:700; color:#1A1A1F; line-height:1.15; margin-top:8px;">P01 교안/커리큘럼 분석 서비스 플로우</div>
+    <div style="font-size:18px; color:#4A4A55; margin-top:8px; font-weight:500;">사용자 → 브라우저 클라이언트(JS 엔진) → NVIDIA LLM · <span style="color:#5D40C4; font-weight:600;">3중 재시도 루프</span></div>
+  </div>
+
+  <!-- Legend (top right) -->
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:1420px; top:60px; width:440px; z-index:10; font-size:13px; color:#3A3A45;">
+    <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:flex-end;">
+      <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:22px; height:3px; background:#1A1A1F; display:inline-block;"></span>메인 흐름</span>
+      <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:22px; height:0; border-top:2px dashed #8A7B5C; display:inline-block;"></span>결과·재시도</span>
+      <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:22px; height:3px; background:#C13B3B; display:inline-block;"></span>오류 경로</span>
+    </div>
+    <div style="display:flex; gap:12px; margin-top:10px; justify-content:flex-end; font-size:12px; color:#6A6A75;">
+      <span style="padding:3px 10px; background:#EDE7DA; border-radius:2px;">AND</span>
+      <span style="padding:3px 10px; background:#EDE7DA; border-radius:2px;">OR</span>
+      <span style="padding:3px 10px; background:#EDE7DA; border-radius:2px;">fan-in</span>
+    </div>
+  </div>
+
+  <!-- ============ PHASE HEADER BAR ============ -->
+  <!-- Phase strip background -->
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:240px; top:150px; width:1616px; height:44px; background:#1A1A1F; z-index:2;"></div>
+
+  <!-- Phase labels -->
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:240px; top:150px; width:280px; height:44px; z-index:10; color:#F5F3EE; font-size:14px; font-weight:600; letter-spacing:0.08em; display:flex; align-items:center; justify-content:center;">
+    <div>01 · 입력·전제</div>
+  </div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:520px; top:150px; width:400px; height:44px; z-index:10; color:#F5F3EE; font-size:14px; font-weight:600; letter-spacing:0.08em; background:#5D40C4; display:flex; align-items:center; justify-content:center;">
+    <div>02 · 청크 분석 <span style="opacity:0.7; margin-left:8px;">EMPHASIS</span></div>
+  </div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:920px; top:150px; width:400px; height:44px; z-index:10; color:#F5F3EE; font-size:14px; font-weight:600; letter-spacing:0.08em; background:#5D40C4; display:flex; align-items:center; justify-content:center;">
+    <div>03 · refine 검수 <span style="opacity:0.7; margin-left:8px;">EMPHASIS</span></div>
+  </div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:1320px; top:150px; width:536px; height:44px; z-index:10; color:#F5F3EE; font-size:14px; font-weight:600; letter-spacing:0.08em; display:flex; align-items:center; justify-content:center;">
+    <div>04 · 질문 생성·결과</div>
+  </div>
+
+  <!-- ============ LANE LABELS (LEFT) ============ -->
+  <!-- Lane 1: user -->
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:60px; top:210px; width:180px; height:150px; background:#FFFFFF; border-left:4px solid #1A1A1F; z-index:3;"></div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:78px; top:230px; width:150px; z-index:10;">
+    <div style="font-size:12px; letter-spacing:0.16em; color:#8A7B5C; font-weight:600;">LANE 01</div>
+    <div style="font-size:22px; font-weight:700; color:#1A1A1F; margin-top:6px;">사용자</div>
+    <div style="font-size:12px; color:#6A6A75; margin-top:8px; line-height:1.4;">PDF 업로드 · 결과 확인</div>
+  </div>
+
+  <!-- Lane 2: client -->
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:60px; top:380px; width:180px; height:250px; background:#FFFFFF; border-left:4px solid #5D40C4; z-index:3;"></div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:78px; top:400px; width:150px; z-index:10;">
+    <div style="font-size:12px; letter-spacing:0.16em; color:#8A7B5C; font-weight:600;">LANE 02</div>
+    <div style="font-size:20px; font-weight:700; color:#1A1A1F; margin-top:6px; line-height:1.2;">브라우저 클라이언트</div>
+    <div style="font-size:13px; color:#5D40C4; margin-top:4px; font-weight:600;">JS 엔진</div>
+    <div style="font-size:12px; color:#6A6A75; margin-top:8px; line-height:1.4;">4개 루프-게이트 노드로 압축</div>
+  </div>
+
+  <!-- Lane 3: exceptions -->
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:60px; top:650px; width:180px; height:110px; background:#FFF6F4; border-left:4px solid #C13B3B; z-index:3;"></div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:78px; top:670px; width:150px; z-index:10;">
+    <div style="font-size:12px; letter-spacing:0.16em; color:#C13B3B; font-weight:600;">LANE 03 · EXCEPTION</div>
+    <div style="font-size:22px; font-weight:700; color:#1A1A1F; margin-top:6px;">예외 처리</div>
+  </div>
+
+  <!-- Lane 4: llm -->
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:60px; top:780px; width:180px; height:150px; background:#FFFFFF; border-left:4px solid #4A9E7A; z-index:3;"></div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:78px; top:800px; width:150px; z-index:10;">
+    <div style="font-size:12px; letter-spacing:0.16em; color:#8A7B5C; font-weight:600;">LANE 04</div>
+    <div style="font-size:22px; font-weight:700; color:#1A1A1F; margin-top:6px;">NVIDIA LLM</div>
+    <div style="font-size:12px; color:#6A6A75; margin-top:8px; line-height:1.4;">analyse · refine · questions</div>
+  </div>
+
+  <!-- ============ LANE HORIZONTAL GUIDES ============ -->
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:240px; top:210px; width:1616px; height:150px; background:rgba(255,255,255,0.4); z-index:2;"></div>
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:240px; top:380px; width:1616px; height:250px; background:rgba(255,255,255,0.4); z-index:2;"></div>
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:240px; top:650px; width:1616px; height:110px; background:rgba(255,246,244,0.6); z-index:2;"></div>
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:240px; top:780px; width:1616px; height:150px; background:rgba(255,255,255,0.4); z-index:2;"></div>
+
+  <!-- ============ SVG EDGES (draw connections underneath nodes) ============ -->
+  <svg data-object="true" data-object-type="shape" xmlns="http://www.w3.org/2000/svg" style="position:absolute; left:240px; top:210px; width:1616px; height:720px; z-index:4; pointer-events:none;" viewBox="0 0 1616 720">
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#1A1A1F"/>
+      </marker>
+      <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#C13B3B"/>
+      </marker>
+      <marker id="arrow-dash" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#8A7B5C"/>
+      </marker>
+      <marker id="arrow-emp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#5D40C4"/>
+      </marker>
+    </defs>
+
+    <!-- Column x-centers (lane content area starts at x=0 within svg, width=1616): user col0=140, col1=460, col3=860, col5=1340 -->
+
+    <!-- u-upload (140, 75) -> gate-precond (140, 245) : DROP -->
+    <line x1="140" y1="130" x2="140" y2="245" stroke="#1A1A1F" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+    <!-- gate-precond (140, 285) -> gate-chunk (460, 245) : YES (emphasis, main) -->
+    <path d="M 200 260 L 400 260" stroke="#5D40C4" stroke-width="3" fill="none" marker-end="url(#arrow-emp)"/>
+    <text x="300" y="252" text-anchor="middle" font-family="'IBM Plex Sans KR'" font-size="13" font-weight="700" fill="#5D40C4">YES</text>
+
+    <!-- gate-precond (140, 285) -> error-precond (140, 500) : NO (error, drop) -->
+    <line x1="140" y1="285" x2="140" y2="490" stroke="#C13B3B" stroke-width="2.5" stroke-dasharray="0" marker-end="url(#arrow-red)"/>
+    <text x="150" y="400" font-family="'IBM Plex Sans KR'" font-size="13" font-weight="700" fill="#C13B3B">NO</text>
+
+    <!-- gate-chunk (460, 285) -> llm-analyse (460, 620) : DROP -->
+    <line x1="460" y1="285" x2="460" y2="620" stroke="#5D40C4" stroke-width="3" marker-end="url(#arrow-emp)"/>
+
+    <!-- llm-analyse (460, 620) -> gate-chunk (460, 285) : return-left (dashed) -->
+    <path d="M 420 620 C 340 620 340 260 420 260" stroke="#8A7B5C" stroke-width="2" fill="none" stroke-dasharray="6 5" marker-end="url(#arrow-dash)"/>
+    <text x="310" y="440" text-anchor="middle" font-family="'IBM Plex Sans KR'" font-size="12" font-weight="600" fill="#8A7B5C">결과·재시도</text>
+
+    <!-- gate-chunk (460, 260) -> gate-refine (860, 260) : 완료 (emphasis) -->
+    <path d="M 520 260 L 800 260" stroke="#5D40C4" stroke-width="3" fill="none" marker-end="url(#arrow-emp)"/>
+    <text x="660" y="252" text-anchor="middle" font-family="'IBM Plex Sans KR'" font-size="13" font-weight="700" fill="#5D40C4">완료</text>
+
+    <!-- gate-refine (860, 285) -> llm-refine (860, 620) : DROP -->
+    <line x1="860" y1="285" x2="860" y2="620" stroke="#5D40C4" stroke-width="3" marker-end="url(#arrow-emp)"/>
+
+    <!-- llm-refine return -->
+    <path d="M 820 620 C 740 620 740 260 820 260" stroke="#8A7B5C" stroke-width="2" fill="none" stroke-dasharray="6 5" marker-end="url(#arrow-dash)"/>
+    <text x="710" y="440" text-anchor="middle" font-family="'IBM Plex Sans KR'" font-size="12" font-weight="600" fill="#8A7B5C">감사·수정</text>
+
+    <!-- gate-refine -> gate-question : 종료 -->
+    <path d="M 920 260 L 1280 260" stroke="#5D40C4" stroke-width="3" fill="none" marker-end="url(#arrow-emp)"/>
+    <text x="1100" y="252" text-anchor="middle" font-family="'IBM Plex Sans KR'" font-size="13" font-weight="700" fill="#5D40C4">종료 (OR)</text>
+
+    <!-- gate-question (1340, 285) -> llm-questions (1340, 620) : DROP -->
+    <line x1="1340" y1="285" x2="1340" y2="620" stroke="#5D40C4" stroke-width="3" marker-end="url(#arrow-emp)"/>
+
+    <!-- llm-questions return -->
+    <path d="M 1300 620 C 1220 620 1220 260 1300 260" stroke="#8A7B5C" stroke-width="2" fill="none" stroke-dasharray="6 5" marker-end="url(#arrow-dash)"/>
+    <text x="1190" y="440" text-anchor="middle" font-family="'IBM Plex Sans KR'" font-size="12" font-weight="600" fill="#8A7B5C">결과·재시도</text>
+
+    <!-- gate-question -> u-result : 완료 (up) -->
+    <path d="M 1340 220 L 1340 130" stroke="#5D40C4" stroke-width="3" fill="none" marker-end="url(#arrow-emp)"/>
+    <text x="1355" y="180" font-family="'IBM Plex Sans KR'" font-size="13" font-weight="700" fill="#5D40C4">완료</text>
+  </svg>
+
+  <!-- ============ NODES ============ -->
+
+  <!-- u-upload : user col 0 -->
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:320px; top:245px; width:200px; height:80px; background:#1A1A1F; border-radius:2px; z-index:6;"></div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:326px; top:251px; width:188px; z-index:11; color:#F5F3EE; padding:6px 12px;">
+    <div style="font-size:10px; letter-spacing:0.14em; color:#B8A97C; font-weight:600;">FRONTEND</div>
+    <div style="font-size:17px; font-weight:700; margin-top:2px;">PDF 업로드</div>
+    <div style="font-size:11px; color:#B8B8C0; margin-top:2px;">key/proxy 설정</div>
+  </div>
+
+  <!-- u-result : user col 5 -->
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:1480px; top:245px; width:220px; height:80px; background:#1A1A1F; border-radius:2px; z-index:6;"></div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:1486px; top:251px; width:208px; z-index:11; color:#F5F3EE; padding:6px 12px;">
+    <div style="font-size:10px; letter-spacing:0.14em; color:#B8A97C; font-weight:600;">FRONTEND</div>
+    <div style="font-size:17px; font-weight:700; margin-top:2px;">결과 확인</div>
+    <div style="font-size:11px; color:#B8B8C0; margin-top:2px;">질문 / 그래프</div>
+  </div>
+
+  <!-- gate-precond : client col 0 -->
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:320px; top:430px; width:200px; height:110px; background:#FFFFFF; border:2px solid #1A1A1F; border-radius:2px; z-index:6;"></div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:326px; top:436px; width:188px; height:98px; z-index:11; padding:8px 12px;">
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <div style="font-size:10px; letter-spacing:0.14em; color:#5D40C4; font-weight:700;">SECURITY</div>
+      <div style="font-size:11px; font-weight:700; color:#F5F3EE; background:#1A1A1F; padding:2px 8px; border-radius:2px;">AND</div>
+    </div>
+    <div style="font-size:18px; font-weight:700; color:#1A1A1F; margin-top:4px;">실행 전제</div>
+    <div style="font-family:'JetBrains Mono', monospace; font-size:11px; color:#5D40C4; margin-top:6px; background:#F0EBFA; padding:3px 6px; display:inline-block; border-radius:2px;">PDF ∧ key ∧ proxy</div>
+  </div>
+
+  <!-- gate-chunk : client col 1 (emphasis) -->
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:620px; top:430px; width:220px; height:110px; background:#F0EBFA; border:2px solid #5D40C4; border-radius:2px; z-index:6;"></div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:626px; top:436px; width:208px; height:98px; z-index:11; padding:8px 12px;">
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <div style="font-size:10px; letter-spacing:0.14em; color:#5D40C4; font-weight:700;">SECURITY · LOOP</div>
+      <div style="font-size:11px; font-weight:700; color:#F5F3EE; background:#5D40C4; padding:2px 8px; border-radius:2px;">AND</div>
+    </div>
+    <div style="font-size:18px; font-weight:700; color:#1A1A1F; margin-top:4px;">청크 분석</div>
+    <div style="font-family:'JetBrains Mono', monospace; font-size:10.5px; color:#3A2A7A; margin-top:6px;">선택 ∧ 재시도 ∧ fan-in</div>
+  </div>
+
+  <!-- gate-refine : client col 3 (emphasis) -->
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:1020px; top:430px; width:220px; height:110px; background:#F0EBFA; border:2px solid #5D40C4; border-radius:2px; z-index:6;"></div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:1026px; top:436px; width:208px; height:98px; z-index:11; padding:8px 12px;">
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <div style="font-size:10px; letter-spacing:0.14em; color:#5D40C4; font-weight:700;">SECURITY · LOOP</div>
+      <div style="font-size:11px; font-weight:700; color:#F5F3EE; background:#C87814; padding:2px 8px; border-radius:2px;">OR</div>
+    </div>
+    <div style="font-size:18px; font-weight:700; color:#1A1A1F; margin-top:4px;">refine 검수</div>
+    <div style="font-family:'JetBrains Mono', monospace; font-size:10.5px; color:#3A2A7A; margin-top:6px;">자동수정 ∧ 수용 내재</div>
+  </div>
+
+  <!-- gate-question : client col 5 -->
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:1480px; top:430px; width:220px; height:110px; background:#FFFFFF; border:2px solid #1A1A1F; border-radius:2px; z-index:6;"></div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:1486px; top:436px; width:208px; height:98px; z-index:11; padding:8px 12px;">
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+      <div style="font-size:10px; letter-spacing:0.14em; color:#5D40C4; font-weight:700;">SECURITY · LOOP</div>
+      <div style="font-size:11px; font-weight:700; color:#F5F3EE; background:#1A1A1F; padding:2px 8px; border-radius:2px;">AND</div>
+    </div>
+    <div style="font-size:18px; font-weight:700; color:#1A1A1F; margin-top:4px;">질문 생성</div>
+    <div style="font-family:'JetBrains Mono', monospace; font-size:10.5px; color:#5D40C4; margin-top:6px;">선택 ∧ 재시도 ∧ fan-in</div>
+  </div>
+
+  <!-- error-precond : exceptions col 0 -->
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:320px; top:670px; width:200px; height:70px; background:#FFFFFF; border:2px solid #C13B3B; border-radius:2px; z-index:6;"></div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:326px; top:676px; width:188px; z-index:11; padding:4px 12px;">
+    <div style="font-size:10px; letter-spacing:0.14em; color:#C13B3B; font-weight:700;">EXTERNAL</div>
+    <div style="font-size:15px; font-weight:700; color:#1A1A1F; margin-top:1px;">오류 표시</div>
+    <div style="font-size:11px; color:#C13B3B; margin-top:1px; font-weight:600;">NO: 종료</div>
+  </div>
+
+  <!-- llm-analyse : llm col 1 -->
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:620px; top:820px; width:220px; height:80px; background:#FFFFFF; border:2px solid #4A9E7A; border-radius:40px; z-index:6;"></div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:626px; top:834px; width:208px; height:54px; z-index:11; text-align:center;">
+    <div style="font-size:10px; letter-spacing:0.14em; color:#4A9E7A; font-weight:700;">CLOUD</div>
+    <div style="font-family:'JetBrains Mono', monospace; font-size:15px; font-weight:600; color:#1A1A1F; margin-top:2px;">analyse_chunk</div>
+    <div style="font-size:11px; color:#6A6A75; margin-top:1px;">청크 분석</div>
+  </div>
+
+  <!-- llm-refine : llm col 3 -->
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:1020px; top:820px; width:220px; height:80px; background:#FFFFFF; border:2px solid #4A9E7A; border-radius:40px; z-index:6;"></div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:1026px; top:834px; width:208px; z-index:11; text-align:center;">
+    <div style="font-size:10px; letter-spacing:0.14em; color:#4A9E7A; font-weight:700;">CLOUD</div>
+    <div style="font-family:'JetBrains Mono', monospace; font-size:14px; font-weight:600; color:#1A1A1F; margin-top:2px;">refine 감사</div>
+    <div style="font-size:11px; color:#6A6A75; margin-top:1px;">수정 응답</div>
+  </div>
+
+  <!-- llm-questions : llm col 5 -->
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:1480px; top:820px; width:220px; height:80px; background:#FFFFFF; border:2px solid #4A9E7A; border-radius:40px; z-index:6;"></div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:1486px; top:834px; width:208px; height:54px; z-index:11; text-align:center;">
+    <div style="font-size:10px; letter-spacing:0.14em; color:#4A9E7A; font-weight:700;">CLOUD</div>
+    <div style="font-family:'JetBrains Mono', monospace; font-size:15px; font-weight:600; color:#1A1A1F; margin-top:2px;">generate_qs</div>
+    <div style="font-size:11px; color:#6A6A75; margin-top:1px;">질문 생성</div>
+  </div>
+
+  <!-- ============ FOOTER CARDS ============ -->
+  <!-- Card 1 : violet dot -->
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:64px; top:960px; width:900px; height:100px; background:#FFFFFF; border-top:3px solid #5D40C4; z-index:6;"></div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:80px; top:970px; width:868px; height:80px; z-index:11;">
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span style="width:8px; height:8px; border-radius:50%; background:#5D40C4; display:inline-block;"></span>
+      <span style="font-size:12px; font-weight:700; color:#1A1A1F; letter-spacing:0.04em;">AND/OR 게이트 근거 <span style="color:#8A7B5C; font-weight:500;">(파일:라인) · 4개 노드로 시각화, 원본 평가표 10행</span></span>
+    </div>
+    <div style="font-size:10.5px; color:#3A3A45; margin-top:6px; line-height:1.5; font-family:'JetBrains Mono', monospace;">
+      · 실행 전제(AND) — p01-runner.js:457-463 &nbsp;|&nbsp; 청크 분석 루프(AND, 4행 병합) — 492-495, 519-522, 526-530, 507-543<br>
+      · refine 검수(OR 종료 + 내재 AND 2건) — 594-645, 616-628, 261-285, 629-638 &nbsp;|&nbsp; 질문 생성 루프(AND, 4행 병합) — 678-711<br>
+      · refine 종료 판정 — scripts/java_curriculum_nvidia_pipeline.py:800-825와 동일 로직
+    </div>
+  </div>
+
+  <!-- Card 2 : amber dot -->
+  <div data-object="true" data-object-type="shape" style="position:absolute; left:980px; top:960px; width:876px; height:100px; background:#FFFFFF; border-top:3px solid #C87814; z-index:6;"></div>
+  <div data-object="true" data-object-type="textbox" style="position:absolute; left:996px; top:970px; width:844px; height:80px; z-index:11;">
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span style="width:8px; height:8px; border-radius:50%; background:#C87814; display:inline-block;"></span>
+      <span style="font-size:12px; font-weight:700; color:#1A1A1F; letter-spacing:0.04em;">원본 대비 편집 요약 <span style="color:#8A7B5C; font-weight:500;">(docs/lab/flow-diagrams/p01_flow_diagram.html)</span></span>
+    </div>
+    <div style="font-size:11px; color:#3A3A45; margin-top:6px; line-height:1.55;">
+      · archify workflow는 컬럼당 1노드·인접 컬럼 동시사용 불가 → <strong>17단계 + 10게이트를 4개 루프-게이트 노드로 압축</strong><br>
+      · PDF파싱·청크분할·wave호출·상태기록·실패청크제외·buildGraph·질문취합은 <strong>게이트 tag / 엣지 라벨로 흡수</strong><br>
+      · AND/OR 논리게이트 SVG 도형은 archify 미지원(고정 사각형 7종) → 렌더링 후 <strong>수작업으로 4곳 주입</strong>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
