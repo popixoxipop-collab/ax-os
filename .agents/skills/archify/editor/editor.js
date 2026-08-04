@@ -3024,7 +3024,7 @@ const ArchEditor = (() => {
     updateFmtBar();   // 새 문서 = 선택 모드 · 선택 없음 → 툴바는 접힌다(mode 대입 뒤 한 번 더)
   }
 
-  async function loadDom(html, name) {
+  function loadDom(html, name) {
     provenance = "dom";
     archModel = null;
     serveAvailable = false;
@@ -3039,9 +3039,6 @@ const ArchEditor = (() => {
     try { svgTexts = SvgAdapter.stampTexts(doc); } catch (_) { svgTexts = { count: 0 }; }
     // D18: marker-end를 가진 화살표를 svgedge:N으로 stamp — ★ 위 둘 뒤(박스 소유 화살표 제외).
     try { svgEdges = SvgAdapter.stampEdges(doc); } catch (_) { svgEdges = { count: 0 }; }
-    // D46: 문서가 자기 폰트를 안 갖고 있으면 굵은 한글 폰트 폴백을 주입(첫 undo 스냅샷 이전 —
-    //   bleedDiff의 maskedSerialize가 head 변경을 이후엔 반드시 걸러내므로 로드 시점에 끝나야 한다).
-    try { await DomAdapter.ensureBoldFallback(doc); } catch (_) { /* 폰트 fetch 실패해도 로드는 막지 않음 — 기존 synthesis로 degrade */ }
     sourceDoc = doc;
     resetLoadState(name);
     updateModeUI();          // gating: 6모드 전부 활성
