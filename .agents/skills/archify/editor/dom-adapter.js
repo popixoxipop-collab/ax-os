@@ -549,6 +549,12 @@ const DomAdapter = (() => {
       } else if (op.op === "setStyle") {
         const tgt = op.target === "text" ? editLine(el, op.line != null ? op.line : null) : el;
         for (const [k, v] of Object.entries(op.style)) tgt.style[k] = v;
+        // D46: 이 op이 한글 텍스트를 굵게 세팅하고 문서가 폴백 폰트를 쓰는 중이면, 같은 op이
+        //   font-family에도 "Pretendard"를 붙여 실물 굵기로 렌더되게 한다(합성 굵게 방지).
+        if (op.target === "text" && op.style.fontWeight != null && isBoldWeight(op.style.fontWeight)
+            && needsBoldFallback(doc) && HANGUL_RE.test(tgt.textContent || "")) {
+          tgt.style.fontFamily = prependFallbackFamily(tgt.style.fontFamily);
+        }
       } else if (op.op === "setLink") {
         // D37: 대상 (서브)줄을 <a href>로 감싼다. 굵게(setStyle target:text)와 같은 줄 스코프.
         const tgt = op.target === "text" ? editLine(el, op.line != null ? op.line : null) : el;
@@ -983,6 +989,103 @@ const DomAdapter = (() => {
     return { ops, reject, notes };
   }
 
+  // ---------------- D46: 다이어그램 콘텐츠 굵은 한글 폰트 폴백 ----------------
+  // 배경: srcdoc iframe(#diagram-frame)은 부모 페이지(styles.css)의 @font-face("Pretendard")를
+  //   상속하지 않는다 — 별개 document라 브라우저가 부모 스타일시트를 넘겨주지 않는다(표준 동작).
+  //   그래서 다이어그램 텍스트를 굵게 지정해도 iframe에는 실물 굵은 한글 글리프가 없어 브라우저가
+  //   합성(가짜 굵게)한다. 문서가 이미 자기 폰트(예: p01의 Google Fonts @import)를 갖고 있으면
+  //   손대지 않는다(불필요한 용량 증가 방지) — hasOwnFontSource가 그 판단을 맡는다.
+  const HANGUL_RE = /[ᄀ-ᇿ㄰-㆏ꥠ-꥿가-힣ힰ-퟿]/;
+
+  // editor.js의 isBoldWeight(D26)와 판정 기준을 반드시 일치시킨다(600 이상 또는 "bold").
+  function isBoldWeight(w) {
+    const n = parseInt(w, 10);
+    if (Number.isFinite(n)) return n >= 600;
+    return String(w || "").trim() === "bold";
+  }
+
+  // 문서 <head>에 이미 자기 폰트 소스(@font-face·@import 또는 폰트 관련 <link rel=stylesheet>)가
+  // 있는가 — 있으면 폴백을 주입하지 않는다(문서가 이미 스스로 해결한 문제).
+  function hasOwnFontSource(doc) {
+    if (!doc || !doc.head) return false;
+    const styleHit = [...doc.head.querySelectorAll("style")]
+      .some((s) => /@import\s+url\(|@font-face/i.test(s.textContent || ""));
+    if (styleHit) return true;
+    return [...doc.head.querySelectorAll('link[rel="stylesheet"]')]
+      .some((l) => /font/i.test(l.getAttribute("href") || ""));
+  }
+
+  // 이 문서가 이미 폴백 스타일을 주입받았는가(= 이후 편집도 폴백 처리를 받아야 하는가의 게이트).
+  function needsBoldFallback(doc) {
+    return !!(doc && doc.head && doc.head.querySelector("#arch-bold-fallback"));
+  }
+
+  // family 값 앞에 "Pretendard"를 접두(중복 접두 방지 idempotent).
+  function prependFallbackFamily(existing) {
+    const e = existing || "";
+    if (e.trim().indexOf('"Pretendard"') === 0) return e;
+    return '"Pretendard", ' + (existing || "sans-serif");
+  }
+
+  // Regular/Bold woff2를 base64로 읽어 세션 내 캐시(재호출 시 재사용, 중복 fetch 방지).
+  let _fallbackFontsCache = null;
+  async function loadFallbackFontsBase64() {
+    if (!_fallbackFontsCache) {
+      const toBase64 = (buf) => {
+        let binary = "";
+        const bytes = new Uint8Array(buf);
+        for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+        return btoa(binary);
+      };
+      _fallbackFontsCache = Promise.all([
+        fetch("fonts/Pretendard-Regular.woff2").then((r) => r.arrayBuffer()),
+        fetch("fonts/Pretendard-Bold.woff2").then((r) => r.arrayBuffer()),
+      ]).then(([regBuf, boldBuf]) => ({ regular64: toBase64(regBuf), bold64: toBase64(boldBuf) }));
+    }
+    return _fallbackFontsCache;
+  }
+
+  // base64 self-contained <style>을 <head>에 주입 — 다운로드한 파일을 서버 없이(file://) 열어도
+  // 그대로 작동한다. 400과 700-900 두 얼굴 모두 등록 필수(한 얼굴만 등록하면 CSS 폰트매칭이
+  // "그 family의 가장 가까운 등록 굵기"로 스냅되어 일반 본문(400)까지 Bold 글리프로 렌더되는
+  // 회귀가 생긴다 — styles.css:8-12의 실측 교훈과 동일한 함정).
+  function injectFallbackStyle(doc, regular64, bold64) {
+    if (needsBoldFallback(doc)) return;   // 방어적 idempotency
+    const style = doc.createElement("style");
+    style.id = "arch-bold-fallback";
+    style.textContent =
+      '@font-face { font-family: "Pretendard"; font-weight: 400; font-style: normal; ' +
+      'src: url(data:font/woff2;base64,' + regular64 + ') format("woff2"); }\n' +
+      '@font-face { font-family: "Pretendard"; font-weight: 700 900; font-style: normal; ' +
+      'src: url(data:font/woff2;base64,' + bold64 + ') format("woff2"); }';
+    doc.head.appendChild(style);
+  }
+
+  // 로드 시점에 이미 굵은(문서 자체 굵기 기준) 한글 텍스트가 있으면 소급으로 family를 붙인다 —
+  // (1) SVG <text font-weight> 속성 축, (2) obj(HTML) 인라인 style.fontWeight 축.
+  function retrofitExistingBoldHangul(doc) {
+    doc.querySelectorAll("text[font-weight]").forEach((t) => {
+      if (isBoldWeight(t.getAttribute("font-weight")) && HANGUL_RE.test(t.textContent || "")) {
+        t.setAttribute("font-family", prependFallbackFamily(t.getAttribute("font-family")));
+      }
+    });
+    doc.querySelectorAll("[style]").forEach((el) => {
+      if (isBoldWeight(el.style.fontWeight) && HANGUL_RE.test(el.textContent || "")) {
+        el.style.fontFamily = prependFallbackFamily(el.style.fontFamily);
+      }
+    });
+  }
+
+  // 문서 로드 시 1회 호출(editor.js loadDom, 첫 undo 스냅샷 이전) — 자기 폰트가 있으면 아무것도
+  // 안 하고 false, 없으면 폴백을 주입 + 기존 굵은 한글을 소급 수정하고 true.
+  async function ensureBoldFallback(doc) {
+    if (hasOwnFontSource(doc)) return false;
+    const { regular64, bold64 } = await loadFallbackFontsBase64();
+    injectFallbackStyle(doc, regular64, bold64);
+    retrofitExistingBoldHangul(doc);
+    return true;
+  }
+
   return {
     parse, load, assignEids, getByEid, objZIndex, enumerate, contextFor,
     buildToolSchema, sanitizeOps, applyOps, bleedDiff, addDiff,
@@ -997,5 +1100,8 @@ const DomAdapter = (() => {
     objLineDivs, objLeafLines, objTargetLine, editLine, objLineInfo, addObjLine, removeObjLine,
     // D28(B): <br> 서브라인 평탄화 모델
     objLineTargets, objLineText, setObjLineText,
+    // D46: 다이어그램 콘텐츠 굵은 한글 폰트 폴백
+    HANGUL_RE, isBoldWeight, hasOwnFontSource, needsBoldFallback, prependFallbackFamily,
+    loadFallbackFontsBase64, injectFallbackStyle, retrofitExistingBoldHangul, ensureBoldFallback,
   };
 })();

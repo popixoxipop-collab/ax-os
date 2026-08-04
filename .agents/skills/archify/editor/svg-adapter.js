@@ -1291,6 +1291,13 @@ const SvgAdapter = (() => {
       // D31-실행: rect에서만 x 재계산(비-rect는 bbox 폭이 실제 가용폭보다 넓어 모서리 오버플로).
       if (k === "textAnchor" && ownerBox && ownerBox.kind === "rect") { t.setAttribute("x", fmt(anchorXFor(ownerBox, style[k]))); movedX = true; }
     }
+    // D46: 이 굵기 세팅이 한글 텍스트를 굵게 만들고 문서가 폴백 폰트를 쓰는 중이면, font-family에도
+    //   "Pretendard"를 붙여 실물 굵기로 렌더되게 한다(합성 굵게 방지). dom-adapter.js의 obj(HTML)
+    //   경로(applyOps의 setStyle 브랜치)와 동형 — 저수준 지점을 훅해 툴바·LLM 자연어 편집 둘 다 커버.
+    if (style.fontWeight != null && DomAdapter.isBoldWeight(style.fontWeight)
+        && DomAdapter.needsBoldFallback(t.ownerDocument) && DomAdapter.HANGUL_RE.test(t.textContent || "")) {
+      t.setAttribute("font-family", DomAdapter.prependFallbackFamily(t.getAttribute("font-family")));
+    }
     return movedX;
   }
 

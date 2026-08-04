@@ -801,20 +801,30 @@ const ArchAgent = (() => {
     function px(v, dflt) { var n = parseFloat(v); return isNaN(n) ? dflt : n; }
 
     // ---- D18: 정점 드래그 / 중간점 드래그(=꼭짓점 추가) / Alt+클릭 삭제 ----
-    // Shift 스냅: 드래그 중인 정점을 "이웃 정점과 축 정렬"시킨다(더 가까운 축 하나만).
+    // Shift 스냅: 드래그 중인 정점을 이웃 정점과 축 정렬시킨다.
     //   WHY: 이 슬라이드의 라우팅이 전부 직교라 자유 드래그는 대개 직교를 깨뜨린다. 그렇다고
     //   상시 자동 스냅을 걸면 의도적 사선 배치를 막아 사용자와 싸운다 → Figma/Illustrator 관용구인
     //   "Shift=제약"을 따른다(기본 자유, Shift 누르면 직교).
+    // D47: 중간 정점(양옆 이웃 둘 다 존재)이 서로 다른 이웃에서 x/y를 각각 따올 수 있을 때는 두 축을
+    //   동시에 맞춘다(예: 이전 정점과는 x가, 다음 정점과는 y가 맞아떨어지는 "코너" 배치 — 사용자
+    //   재현: "수직/수평 동기화가 하나만 되는 것 같다"). 단 두 축이 같은 이웃에서 나오면(그 이웃이
+    //   x·y 둘 다 더 가까움) 기존 단일축 방식을 유지한다 — 안 그러면 반환값이 그 이웃 좌표와 완전히
+    //   같아져 드래그 중인 정점이 이웃 위에 포개져 세그먼트 길이가 0이 되는 퇴화가 생긴다(이웃이
+    //   하나뿐인 끝쪽 정점도 같은 이유로 항상 단일축 유지).
+    //   WHY: 두 이웃이 있고 각기 다른 축을 대표할 때만 "동시 스냅"이 의미 있는 코너를 만든다.
+    //   COST: 판정 분기 하나 추가(이웃 소스가 같은지 비교) — 기존 무임계값(항상 스냅) 정책은 그대로.
+    //   EXIT: 늘 단일축으로 되돌리려면 아래 소스-비교 분기를 지우고 기존 삼항연산자만 남기면 됨.
     function orthoSnap(pts, i, x, y) {
       var cands = [];
       if (i > 0) cands.push(pts[i - 1]);
       if (i + 1 < pts.length) cands.push(pts[i + 1]);
       if (!cands.length) return { x: x, y: y };
-      var bx = null, by = null, bdx = Infinity, bdy = Infinity;
+      var bx = null, by = null, bdx = Infinity, bdy = Infinity, bxSrc = -1, bySrc = -1;
       for (var k = 0; k < cands.length; k++) {
-        var ddx = Math.abs(cands[k].x - x); if (ddx < bdx) { bdx = ddx; bx = cands[k].x; }
-        var ddy = Math.abs(cands[k].y - y); if (ddy < bdy) { bdy = ddy; by = cands[k].y; }
+        var ddx = Math.abs(cands[k].x - x); if (ddx < bdx) { bdx = ddx; bx = cands[k].x; bxSrc = k; }
+        var ddy = Math.abs(cands[k].y - y); if (ddy < bdy) { bdy = ddy; by = cands[k].y; bySrc = k; }
       }
+      if (cands.length > 1 && bxSrc !== bySrc) return { x: bx, y: by };
       return bdx <= bdy ? { x: bx, y: y } : { x: x, y: by };
     }
 
